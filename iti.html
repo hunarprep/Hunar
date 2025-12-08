@@ -122,6 +122,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const lang = urlParams.get('lang') || 'en';
 
+    // UI TRANSLATION DICTIONARY
     const ui = {
         en: { home:"← Home", select:"Select Mode:", prac:"Practice Quiz", pracSub:"Instant Feedback", test:"Test Mode", testSub:"Time Limit", next:"Next Question", qnum:"Question", score:"Score Card", review:"Review Answers", share:"Share Score", menu:"Back to Menu", close:"Close" },
         hi: { home:"← होम", select:"मोड चुनें:", prac:"अभ्यास क्विज़", pracSub:"तुरंत उत्तर", test:"परीक्षा मोड", testSub:"समय सीमा", next:"अगला प्रश्न", qnum:"प्रश्न", score:"स्कोर कार्ड", review:"उत्तर देखें", share:"स्कोर शेयर करें", menu:"मेन्यू पर जाएं", close:"बंद करें" },
@@ -131,6 +132,7 @@
         bn: { home:"← হোম", select:"মোড নির্বাচন:", prac:"অনুশীলন কুইজ", pracSub:"তাত্ক্ষণিক উত্তর", test:"পরীক্ষা মোড", testSub:"সময় সীমা", next:"পরবর্তী প্রশ্ন", qnum:"প্রশ্ন", score:"স্কোর কার্ড", review:"উত্তর দেখুন", share:"শেয়ার করুন", menu:"মেনু", close:"বন্ধ করুন" }
     };
 
+    // APPLY TRANSLATIONS
     const t = ui[lang] || ui['en'];
     document.getElementById('lbl-home').innerText = t.home;
     document.getElementById('lbl-select').innerText = t.select;
@@ -157,27 +159,46 @@
         return array;
     }
 
-    function startPractice() {
-        if (typeof masterDB === 'undefined') { alert("Error: DB not linked! Check itiquestions.js"); return; }
+    // --- FIX: SAFE DATABASE LOADING ---
+    function getSafePool() {
+        if (typeof masterDB === 'undefined') {
+            alert("Critical Error: Database file (itiquestions.js) is not loaded. Check the file name.");
+            return null;
+        }
+        if (!masterDB.iti) {
+            alert("Error: 'iti' data is missing in the database file. Check itiquestions.js structure.");
+            return null;
+        }
         
-        let pool = (masterDB.iti && masterDB.iti[lang] && masterDB.iti[lang].length > 0) ? masterDB.iti[lang] : masterDB.iti['en'];
+        let pool = masterDB.iti[lang]; // Try selected language
         
-        if (!pool || pool.length === 0) { alert("No questions available for this language."); return; }
+        // If not found or empty, fallback to English
+        if (!pool || pool.length === 0) {
+            pool = masterDB.iti['en'];
+        }
+        
+        if (!pool || pool.length === 0) {
+            alert("No questions found for this category.");
+            return null;
+        }
+        return pool;
+    }
 
-        fullQuestionPool = shuffleArray([...pool]); 
+    function startPractice() {
+        fullQuestionPool = getSafePool();
+        if(!fullQuestionPool) return; // Stop if error
+
+        fullQuestionPool = shuffleArray([...fullQuestionPool]); 
         currentSessionQuestions = fullQuestionPool.slice(0, 5); 
         setupScreen('practice');
     }
 
     function startExam() {
-        if (typeof masterDB === 'undefined') { alert("Error: DB not linked!"); return; }
-        
-        let pool = (masterDB.iti && masterDB.iti[lang] && masterDB.iti[lang].length > 0) ? masterDB.iti[lang] : masterDB.iti['en'];
-        
-        if (!pool || pool.length === 0) { alert("No questions available for this language."); return; }
+        fullQuestionPool = getSafePool();
+        if(!fullQuestionPool) return; // Stop if error
 
-        let count = Math.min(30, pool.length);
-        fullQuestionPool = shuffleArray([...pool]); 
+        let count = Math.min(30, fullQuestionPool.length);
+        fullQuestionPool = shuffleArray([...fullQuestionPool]); 
         currentSessionQuestions = fullQuestionPool.slice(0, count); 
         setupScreen('exam');
         startTimer(600);
