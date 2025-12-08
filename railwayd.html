@@ -6,33 +6,47 @@
     <title>Railway Group D</title>
     
     <script src="railwaydquestions.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; margin: 0; display: flex; justify-content: center; }
         .app-container { width: 100%; max-width: 480px; background: white; min-height: 100vh; box-shadow: 0 0 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
         
-        /* HEADER COLOR: Matte Red for Railway */
+        /* HEADER */
         .header { background: #dc2626; color: white; padding: 20px 20px 30px; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; position: relative; }
         .header a { color: white; text-decoration: none; font-size: 14px; opacity: 0.9; position: absolute; top: 20px; left: 20px; }
         .header h1 { margin: 15px 0 5px; font-size: 24px; }
         
         .screen { display: none; padding: 25px; flex-grow: 1; }
         .active { display: block; }
+        
+        /* MENU CARDS */
         .menu-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; transition: 0.2s; }
         .menu-card:hover { border-color: #dc2626; background: #fef2f2; }
         
-        /* TIMER BOX */
+        /* QUIZ UI */
         #timer-box { text-align: right; font-weight: bold; color: #dc2626; margin-bottom: 10px; display: none; font-size: 18px; }
-        
         .question-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
         .q-text { font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 20px; }
         .opt-btn { display: block; width: 100%; padding: 15px; margin-bottom: 10px; border: 2px solid #e2e8f0; background: white; border-radius: 10px; text-align: left; font-size: 16px; cursor: pointer; }
-        .correct { background: #dcfce7; border-color: #22c55e; color: #14532d; }
-        .wrong { background: #fee2e2; border-color: #ef4444; color: #7f1d1d; }
-        .action-btn { background: #dc2626; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         
-        #premium-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 85%; max-width: 320px; padding: 30px; border-radius: 16px; text-align: center; }
+        /* Answer Colors */
+        .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #14532d !important; }
+        .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d !important; }
+        
+        /* Buttons */
+        .action-btn { background: #dc2626; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .secondary-btn { background: #64748b; }
+        .share-btn { background: #25D366; } /* WhatsApp Green */
+        .review-btn { background: #3b82f6; } /* Blue */
+
+        /* REVIEW SCREEN STYLES */
+        .review-item { border-bottom: 1px solid #e2e8f0; padding: 15px 0; }
+        .review-q { font-weight: bold; margin-bottom: 5px; color: #333; }
+        .review-ans { font-size: 14px; color: #666; }
+        .ans-right { color: #16a34a; font-weight: bold; }
+        .ans-wrong { color: #dc2626; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -70,8 +84,18 @@
     <div id="screen-result" class="screen" style="text-align:center;">
         <h2>Score Card</h2>
         <h1 id="score" style="font-size:48px; color:#dc2626; margin:20px 0;">0/0</h1>
-        <p id="result-msg" style="color:#64748b;">Great Job!</p>
-        <button class="action-btn" onclick="goToMenu()">Back to Main Menu 🏠</button>
+        <p id="result-msg" style="color:#64748b; font-size: 18px; font-weight: 500;">Calculating...</p>
+        
+        <button class="action-btn review-btn" onclick="showReview()">Review Answers 🧐</button>
+        <button class="action-btn share-btn" onclick="shareScore()">Share Score 📲</button>
+        <button class="action-btn secondary-btn" onclick="goToMenu()">Back to Main Menu 🏠</button>
+    </div>
+
+    <div id="screen-review" class="screen">
+        <h3>Review Answers</h3>
+        <div id="review-list" style="overflow-y: auto; max-height: 60vh;">
+            </div>
+        <button class="action-btn secondary-btn" onclick="closeReview()">Close Review</button>
     </div>
 </div>
 
@@ -82,6 +106,7 @@
     // VARIABLES
     let fullQuestionPool = [];
     let currentSessionQuestions = [];
+    let userAnswers = [];
     let idx = 0;
     let score = 0;
     let timerInterval;
@@ -95,20 +120,12 @@
     }
 
     function startPractice() {
-        // ✅ LOAD FROM EXTERNAL DB
-        if (typeof masterDB === 'undefined') { 
-            alert("Error: Database file not linked! Check railwaydquestions.js"); 
-            return; 
-        }
+        if (typeof masterDB === 'undefined') { alert("Error: DB not linked! Check railwaydquestions.js"); return; }
         
-        // Safer Check: Does 'railway' exist? Does language exist?
         if (masterDB.railway && masterDB.railway[lang] && masterDB.railway[lang].length > 0) {
             fullQuestionPool = masterDB.railway[lang];
-        } else if (masterDB.railway) {
-            fullQuestionPool = masterDB.railway['en']; // Default to English
         } else {
-            alert("Error: Railway data missing in database file.");
-            return;
+            fullQuestionPool = masterDB.railway['en'];
         }
         
         fullQuestionPool = shuffleArray([...fullQuestionPool]); 
@@ -117,22 +134,15 @@
     }
 
     function startExam() {
-        if (typeof masterDB === 'undefined') { 
-            alert("Error: Database file not linked!"); 
-            return; 
-        }
+        if (typeof masterDB === 'undefined') { alert("Error: DB not linked!"); return; }
         
         if (masterDB.railway && masterDB.railway[lang] && masterDB.railway[lang].length > 0) {
             fullQuestionPool = masterDB.railway[lang];
-        } else if (masterDB.railway) {
-            fullQuestionPool = masterDB.railway['en'];
         } else {
-            alert("Error: Railway data missing.");
-            return;
+            fullQuestionPool = masterDB.railway['en'];
         }
 
         let count = Math.min(30, fullQuestionPool.length);
-        
         fullQuestionPool = shuffleArray([...fullQuestionPool]); 
         currentSessionQuestions = fullQuestionPool.slice(0, count); 
         setupScreen('exam');
@@ -142,35 +152,57 @@
     function setupScreen(mode) {
         document.getElementById('screen-modes').classList.remove('active');
         document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-review').classList.remove('active');
         document.getElementById('screen-quiz').classList.add('active');
+        
         if(mode === 'practice') {
             document.getElementById('timer-box').style.display = 'none';
         } else {
             document.getElementById('timer-box').style.display = 'block';
         }
-        idx = 0; score = 0; loadQ();
+        
+        idx = 0; score = 0; userAnswers = [];
+        loadQ();
     }
 
     function loadQ() {
         if(idx >= currentSessionQuestions.length) { showRes(); return; }
+        
         let q = currentSessionQuestions[idx];
         document.getElementById('q-num').innerText = idx + 1;
         document.getElementById('q-text').innerText = q.q;
-        let box = document.getElementById('opts'); box.innerHTML = "";
+        
+        let box = document.getElementById('opts'); 
+        box.innerHTML = "";
         document.getElementById('next-btn').style.display='none';
         document.getElementById('feedback').innerText="";
         
+        let btnArray = [];
+
         q.o.forEach((txt, i) => {
             let btn = document.createElement('button');
-            btn.className = 'opt-btn'; btn.innerText = txt;
+            btn.className = 'opt-btn'; 
+            btn.innerText = txt;
+            btnArray.push(btn); 
+
             btn.onclick = () => {
-                document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+                btnArray.forEach(b => b.disabled = true);
+                
+                userAnswers.push({
+                    question: q.q,
+                    selected: i,
+                    correct: q.a,
+                    options: q.o
+                });
+
                 if(i === q.a) { 
-                    btn.classList.add('correct'); score++; 
+                    btn.classList.add('correct'); 
+                    score++; 
                     document.getElementById('feedback').innerText="✅ Correct"; 
                     document.getElementById('feedback').style.color="green"; 
                 } else { 
                     btn.classList.add('wrong'); 
+                    btnArray[q.a].classList.add('correct'); 
                     document.getElementById('feedback').innerText="❌ Wrong"; 
                     document.getElementById('feedback').style.color="red"; 
                 }
@@ -186,7 +218,67 @@
         clearInterval(timerInterval);
         document.getElementById('screen-quiz').classList.remove('active');
         document.getElementById('screen-result').classList.add('active');
-        document.getElementById('score').innerText = score + "/" + currentSessionQuestions.length;
+        
+        let total = currentSessionQuestions.length;
+        document.getElementById('score').innerText = score + "/" + total;
+        
+        // --- CONFETTI LOGIC ---
+        let percentage = Math.round((score / total) * 100);
+        let msgElement = document.getElementById('result-msg');
+
+        if(percentage >= 80) {
+            msgElement.innerText = `🎉 Outstanding! You scored ${percentage}%!`;
+            msgElement.style.color = "#16a34a"; // Green Text
+            
+            // Trigger Confetti
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        } else if (percentage >= 50) {
+            msgElement.innerText = `👍 Good Job! You scored ${percentage}%.`;
+            msgElement.style.color = "#ca8a04"; // Yellow/Gold Text
+        } else {
+            msgElement.innerText = `📚 Keep Practicing! You scored ${percentage}%.`;
+            msgElement.style.color = "#dc2626"; // Red Text
+        }
+    }
+
+    function showReview() {
+        document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-review').classList.add('active');
+        
+        let list = document.getElementById('review-list');
+        list.innerHTML = ""; 
+
+        userAnswers.forEach((item, index) => {
+            let div = document.createElement('div');
+            div.className = "review-item";
+            let status = (item.selected === item.correct) 
+                ? "<span style='color:green'>✅ Correct</span>" 
+                : "<span style='color:red'>❌ Wrong</span>";
+
+            let userText = item.options[item.selected];
+            let correctText = item.options[item.correct];
+
+            div.innerHTML = `
+                <div class="review-q">${index+1}. ${item.question}</div>
+                <div class="review-ans">Your Answer: <b>${userText}</b> ${status}</div>
+                ${item.selected !== item.correct ? `<div class="ans-right">Correct Answer: ${correctText}</div>` : ''}
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function closeReview() {
+        document.getElementById('screen-review').classList.remove('active');
+        document.getElementById('screen-result').classList.add('active');
+    }
+
+    function shareScore() {
+        let text = `🔥 I just scored ${score}/${currentSessionQuestions.length} in Railway Group D practice on Hunar App! Can you beat me? Try now: https://anchit2012.github.io/hunar-app/`;
+        window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
     }
 
     function goToMenu() {
@@ -196,8 +288,6 @@
 
     function startTimer(duration) {
         let timer = duration, minutes, seconds;
-        
-        // Helper to update text immediately
         function updateDisplay() {
             minutes = parseInt(timer / 60, 10);
             seconds = parseInt(timer % 60, 10);
@@ -205,9 +295,7 @@
             seconds = seconds < 10 ? "0" + seconds : seconds;
             document.getElementById('time-left').textContent = minutes + ":" + seconds;
         }
-
-        updateDisplay(); // Run once instantly
-
+        updateDisplay();
         timerInterval = setInterval(() => {
             if (--timer < 0) { 
                 clearInterval(timerInterval);
