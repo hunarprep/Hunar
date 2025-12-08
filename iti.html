@@ -119,172 +119,176 @@
 </div>
 
 <script>
+    // 1. GET URL PARAMETERS (Language)
     const urlParams = new URLSearchParams(window.location.search);
     const lang = urlParams.get('lang') || 'en';
-
-    // UI TRANSLATION DICTIONARY
+    
+    // 2. UI TRANSLATIONS
     const ui = {
-        en: { home:"← Home", select:"Select Mode:", prac:"Practice Quiz", pracSub:"Instant Feedback", test:"Test Mode", testSub:"Time Limit", next:"Next Question", qnum:"Question", score:"Score Card", review:"Review Answers", share:"Share Score", menu:"Back to Menu", close:"Close" },
-        hi: { home:"← होम", select:"मोड चुनें:", prac:"अभ्यास क्विज़", pracSub:"तुरंत उत्तर", test:"परीक्षा मोड", testSub:"समय सीमा", next:"अगला प्रश्न", qnum:"प्रश्न", score:"स्कोर कार्ड", review:"उत्तर देखें", share:"स्कोर शेयर करें", menu:"मेन्यू पर जाएं", close:"बंद करें" },
-        mr: { home:"← होम", select:"मोड निवडा:", prac:"सराव प्रश्नमंजुषा", pracSub:"त्वरित उत्तरे", test:"परीक्षा मोड", testSub:"वेळ मर्यादा", next:"पुढचा प्रश्न", qnum:"प्रश्न", score:"गुणपत्रक", review:"उत्तरे तपासा", share:"गुण शेअर करा", menu:"मेनूवर जा", close:"बंद करा" },
-        ta: { home:"← முகப்பு", select:"முறை தேர்வு:", prac:"பயிற்சி வினாடி வினா", pracSub:"உடனடி பதில்", test:"தேர்வு முறை", testSub:"நேர வரம்பு", next:"அடுத்த கேள்வி", qnum:"கேள்வி", score:"மதிப்பெண் அட்டை", review:"பதில்களை சரிபார்க்கவும்", share:"பகிரவும்", menu:"மெனு", close:"மூடு" },
-        te: { home:"← హోమ్", select:"మోడ్ ఎంచుకోండి:", prac:"ప్రాక్టీస్ క్విజ్", pracSub:"తక్షణ సమాధానం", test:"పరీక్ష మోడ్", testSub:"సమయ పరిమితి", next:"తదుపరి ప్రశ్న", qnum:"ప్రశ్న", score:"స్కోర్ కార్డ్", review:"సమాధానాలు", share:"భాగస్వామ్యం", menu:"మెను", close:"మూసివేయి" },
-        bn: { home:"← হোম", select:"মোড নির্বাচন:", prac:"অনুশীলন কুইজ", pracSub:"তাত্ক্ষণিক উত্তর", test:"পরীক্ষা মোড", testSub:"সময় সীমা", next:"পরবর্তী প্রশ্ন", qnum:"প্রশ্ন", score:"স্কোর কার্ড", review:"উত্তর দেখুন", share:"শেয়ার করুন", menu:"মেনু", close:"বন্ধ করুন" }
+        en: { home: "← Home", title: "ITI Taiyaari", practice: "Practice Quiz", practiceSub: "5 Random Questions", test: "Test Mode", testSub: "100 Questions • 90 Mins", qNum: "Question", next: "Next", finish: "Finish", review: "Review Answers", share: "Share Score", menu: "Main Menu" },
+        hi: { home: "← घर", title: "ITI तैयारी", practice: "अभ्यास क्विज़", practiceSub: "5 यादृच्छिक प्रश्न", test: "परीक्षा मोड", testSub: "100 प्रश्न • 90 मिनट", qNum: "प्रश्न", next: "अगला", finish: "समाप्त करें", review: "उत्तर देखें", share: "स्कोर साझा करें", menu: "मेनू" },
+        mr: { home: "← मुख्यपृष्ठ", title: "ITI तयारी", practice: "सराव प्रश्नमंजुषा", practiceSub: "5 यादृच्छिक प्रश्न", test: "परीक्षा मोड", testSub: "100 प्रश्न • 90 मिनिटे", qNum: "प्रश्न", next: "पुढील", finish: "समाप्त करा", review: "उत्तरे तपासा", share: "स्कोर शेअर करा", menu: "मेनू" },
+        bn: { home: "← বাড়ি", title: "ITI প্রস্তুতি", practice: "অনুশীলন কুইজ", practiceSub: "৫টি র্যান্ডম প্রশ্ন", test: "টেস্ট মোড", testSub: "১০০টি প্রশ্ন • ৯০ মিনিট", qNum: "প্রশ্ন", next: "পরবর্তী", finish: "শেষ করুন", review: "উত্তর দেখুন", share: "শেয়ার করুন", menu: "মেনু" },
+        ta: { home: "← முகப்பு", title: "ITI தயாரிப்பு", practice: "பயிற்சி வினாடி வினா", practiceSub: "5 சீரற்ற கேள்விகள்", test: "தேர்வு முறை", testSub: "100 கேள்விகள் • 90 நிமிடங்கள்", qNum: "கேள்வி", next: "அடுத்து", finish: "முடிக்கவும்", review: "பதில்களைப் பார்க்கவும்", share: "மதிப்பெண்ணைப் பகிரவும்", menu: "மெனு" },
+        te: { home: "← హోమ్", title: "ITI తయారీ", practice: "ప్రాక్టీస్ క్విజ్", practiceSub: "5 యాదృచ్ఛిక ప్రశ్నలు", test: "పరీక్ష మోడ్", testSub: "100 ప్రశ్నలు • 90 నిమిషాలు", qNum: "ప్రశ్న", next: "తరువాత", finish: "పూర్తి చేయండి", review: "సమాధానాలను చూడండి", share: "స్కోర్‌ను షేర్ చేయండి", menu: "మెను" }
     };
 
-    // APPLY TRANSLATIONS
+    // Apply Translations immediately
     const t = ui[lang] || ui['en'];
     document.getElementById('lbl-home').innerText = t.home;
-    document.getElementById('lbl-select').innerText = t.select;
-    document.getElementById('lbl-prac').innerText = t.prac;
-    document.getElementById('lbl-prac-sub').innerText = t.pracSub;
+    document.getElementById('lbl-title').innerText = t.title;
+    document.getElementById('lbl-prac').innerText = t.practice;
+    document.getElementById('lbl-prac-sub').innerText = t.practiceSub;
     document.getElementById('lbl-test').innerText = t.test;
     document.getElementById('lbl-test-sub').innerText = t.testSub;
-    document.getElementById('next-btn').innerText = t.next;
-    document.getElementById('lbl-qnum').innerText = t.qnum;
-    document.getElementById('lbl-scorecard').innerText = t.score;
-    document.getElementById('btn-review').innerText = t.review;
-    document.getElementById('btn-share').innerText = t.share;
-    document.getElementById('btn-menu').innerText = t.menu;
-    document.getElementById('lbl-review').innerText = t.review;
-    document.getElementById('btn-close').innerText = t.close;
 
-    let fullQuestionPool = [], currentSessionQuestions = [], userAnswers = [], idx = 0, score = 0, timerInterval;
+    // 3. GAME LOGIC VARIABLES
+    let currentSessionQuestions = [];
+    let currentQIndex = 0;
+    let score = 0;
+    let userAnswers = [];
+    let timerInterval;
 
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    // --- FIX: SAFE DATABASE LOADING ---
-    function getSafePool() {
-        if (typeof masterDB === 'undefined') {
-            alert("Critical Error: Database file (itiquestions.js) is not loaded. Check the file name.");
-            return null;
-        }
-        if (!masterDB.iti) {
-            alert("Error: 'iti' data is missing in the database file. Check itiquestions.js structure.");
-            return null;
-        }
-        
-        let pool = masterDB.iti[lang]; // Try selected language
-        
-        // If not found or empty, fallback to English
-        if (!pool || pool.length === 0) {
-            pool = masterDB.iti['en'];
-        }
-        
-        if (!pool || pool.length === 0) {
-            alert("No questions found for this category.");
-            return null;
-        }
-        return pool;
-    }
-
+    // 4. START FUNCTIONS
     function startPractice() {
-        fullQuestionPool = getSafePool();
-        if(!fullQuestionPool) return; // Stop if error
-
-        fullQuestionPool = shuffleArray([...fullQuestionPool]); 
-        currentSessionQuestions = fullQuestionPool.slice(0, 5); 
-        setupScreen('practice');
+        // Validation: Check if DB loaded
+        if (typeof masterDB === 'undefined') {
+            alert("Database not loaded! Check if 'itiquestions.js' exists.");
+            return;
+        }
+        
+        // Fetch 5 random questions
+        let allQs = masterDB.iti[lang] || masterDB.iti['en'];
+        let shuffled = [...allQs].sort(() => 0.5 - Math.random());
+        currentSessionQuestions = shuffled.slice(0, 5);
+        
+        startQuiz();
     }
 
     function startExam() {
-        fullQuestionPool = getSafePool();
-        if(!fullQuestionPool) return; // Stop if error
-
-        let count = Math.min(30, fullQuestionPool.length);
-        fullQuestionPool = shuffleArray([...fullQuestionPool]); 
-        currentSessionQuestions = fullQuestionPool.slice(0, count); 
-        setupScreen('exam');
-        startTimer(600);
+        if (typeof masterDB === 'undefined') { alert("Database Error"); return; }
+        let allQs = masterDB.iti[lang] || masterDB.iti['en'];
+        currentSessionQuestions = [...allQs].sort(() => 0.5 - Math.random()).slice(0, 100); // Full Exam
+        startQuiz(true); // true = enable timer
     }
 
-    function setupScreen(mode) {
+    function startQuiz(isExam = false) {
+        currentQIndex = 0;
+        score = 0;
+        userAnswers = [];
+        
         document.getElementById('screen-modes').classList.remove('active');
-        document.getElementById('screen-result').classList.remove('active');
-        document.getElementById('screen-review').classList.remove('active');
         document.getElementById('screen-quiz').classList.add('active');
-        document.getElementById('timer-box').style.display = (mode === 'practice') ? 'none' : 'block';
-        idx = 0; score = 0; userAnswers = [];
-        loadQ();
+        
+        loadQuestion();
+        
+        if (isExam) {
+            document.getElementById('timer-box').style.display = "block";
+            startTimer(90 * 60); // 90 minutes
+        } else {
+            document.getElementById('timer-box').style.display = "none";
+        }
     }
 
-    function loadQ() {
-        if(idx >= currentSessionQuestions.length) { showRes(); return; }
-        let q = currentSessionQuestions[idx];
-        document.getElementById('q-num').innerText = idx + 1;
+    function loadQuestion() {
+        let q = currentSessionQuestions[currentQIndex];
+        document.getElementById('q-num').innerText = currentQIndex + 1;
         document.getElementById('q-text').innerText = q.q;
-        let box = document.getElementById('opts'); box.innerHTML = "";
-        document.getElementById('next-btn').style.display='none';
-        document.getElementById('feedback').innerText="";
+        
+        let optsDiv = document.getElementById('opts');
+        optsDiv.innerHTML = "";
+        document.getElementById('feedback').innerHTML = ""; // Clear feedback
+        
         let btnArray = [];
-
-        q.o.forEach((txt, i) => {
+        
+        q.o.forEach((optText, idx) => {
             let btn = document.createElement('button');
-            btn.className = 'opt-btn'; btn.innerText = txt;
+            btn.className = 'opt-btn';
+            btn.innerText = optText;
+            btn.onclick = () => checkAnswer(idx, q.a, btn, btnArray, q);
+            optsDiv.appendChild(btn);
             btnArray.push(btn);
-            btn.onclick = () => {
-                btnArray.forEach(b => b.disabled = true);
-                userAnswers.push({ q: q.q, sel: i, cor: q.a, opts: q.o });
-                if(i === q.a) { 
-                    btn.classList.add('correct'); score++; 
-                    document.getElementById('feedback').innerText="✅ Correct"; 
-                    document.getElementById('feedback').style.color="green"; 
-                } else { 
-                    btn.classList.add('wrong'); 
-                    btnArray[q.a].classList.add('correct');
-                    document.getElementById('feedback').innerText="❌ Wrong"; 
-                    document.getElementById('feedback').style.color="red"; 
-                }
-                document.getElementById('next-btn').style.display='block';
-            };
-            box.appendChild(btn);
         });
     }
 
-    function nextQ() { idx++; loadQ(); }
+    function checkAnswer(selectedIdx, correctIdx, btn, btnArray, qData) {
+        // Disable all buttons
+        btnArray.forEach(b => b.disabled = true);
+        
+        let isCorrect = (selectedIdx === correctIdx);
+        if (isCorrect) score++;
+        
+        // Save for review
+        userAnswers.push({
+            q: qData.q,
+            opts: qData.o,
+            sel: selectedIdx,
+            cor: correctIdx
+        });
 
-    function showRes() {
+        // Visual Feedback
+        if (isCorrect) {
+            btn.classList.add('correct');
+            document.getElementById('feedback').innerHTML = "<span style='color:green; font-weight:bold'>✅ Correct!</span>";
+        } else {
+            btn.classList.add('wrong');
+            btnArray[correctIdx].classList.add('correct'); // Show right answer
+            document.getElementById('feedback').innerHTML = "<span style='color:red; font-weight:bold'>❌ Wrong!</span>";
+        }
+
+        // Auto next after 1.5s
+        setTimeout(() => {
+            if (currentQIndex < currentSessionQuestions.length - 1) {
+                currentQIndex++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }, 1500);
+    }
+
+    function showResults() {
         clearInterval(timerInterval);
         document.getElementById('screen-quiz').classList.remove('active');
         document.getElementById('screen-result').classList.add('active');
-        let total = currentSessionQuestions.length;
-        document.getElementById('score').innerText = score + "/" + total;
-        let pct = Math.round((score/total)*100);
+        
+        let percentage = (score / currentSessionQuestions.length) * 100;
+        document.getElementById('score-text').innerText = `You Scored ${score} / ${currentSessionQuestions.length}`;
+        
         let msg = document.getElementById('result-msg');
-        if(pct >= 80) { msg.innerText = `🎉 Amazing! You scored ${pct}%!`; msg.style.color="#16a34a"; confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); }
-        else { msg.innerText = `📚 Keep practicing! You scored ${pct}%.`; msg.style.color="#0f172a"; }
+        if (percentage >= 35) {
+            msg.innerText = "🎉 Congratulations! You Passed!";
+            msg.style.color = "green";
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        } else {
+            msg.innerText = "⚠️ Needs Improvement. Keep Studying!";
+            msg.style.color = "#dc2626";
+        }
     }
 
-    function showReview() {
-        document.getElementById('screen-result').classList.remove('active');
-        document.getElementById('screen-review').classList.add('active');
-        let list = document.getElementById('review-list'); list.innerHTML = "";
-        userAnswers.forEach((item, index) => {
-            let div = document.createElement('div'); div.className = "review-item";
-            let status = (item.sel === item.cor) ? "<span style='color:green'>✅</span>" : "<span style='color:red'>❌</span>";
-            div.innerHTML = `<div class="review-q">${index+1}. ${item.q}</div>
-                <div class="review-ans">You: <b>${item.opts[item.sel]}</b> ${status}</div>
-                ${item.sel !== item.cor ? `<div class="ans-right">Ans: ${item.opts[item.cor]}</div>` : ''}`;
-            list.appendChild(div);
-        });
-    }
-
-    function closeReview() { document.getElementById('screen-review').classList.remove('active'); document.getElementById('screen-result').classList.add('active'); }
-    function shareScore() { window.open("https://wa.me/?text=" + encodeURIComponent(`🔥 I scored ${score}/${currentSessionQuestions.length} in ITI Taiyaari! Try here: https://anchit2012.github.io/hunar-app/`), "_blank"); }
-    function goToMenu() { document.getElementById('screen-result').classList.remove('active'); document.getElementById('screen-modes').classList.add('active'); }
-    
+    // Helper: Timer
     function startTimer(duration) {
-        let timer = duration, m, s;
-        function update() { m=parseInt(timer/60,10); s=parseInt(timer%60,10); m=m<10?"0"+m:m; s=s<10?"0"+s:s; document.getElementById('time-left').textContent=m+":"+s; }
-        update();
-        timerInterval = setInterval(() => { if (--timer < 0) { clearInterval(timerInterval); showRes(); } else { update(); } }, 1000);
+        let timer = duration, minutes, seconds;
+        timerInterval = setInterval(() => {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            document.getElementById('time-left').textContent = minutes + ":" + seconds;
+            if (--timer < 0) {
+                clearInterval(timerInterval);
+                showResults();
+            }
+        }, 1000);
     }
+    
+    // Navigation Functions
+    function goToMenu() {
+        window.location.reload(); // Simple reload to reset
+    }
+    
+    // (Add review function if needed similar to logic above)
+
 </script>
 </body>
 </html>
