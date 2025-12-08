@@ -95,14 +95,20 @@
     }
 
     function startPractice() {
-        // ✅ LOAD FROM EXTERNAL DB (masterDB.railway)
-        if (typeof masterDB === 'undefined') { alert("Error: Database file not linked!"); return; }
+        // ✅ LOAD FROM EXTERNAL DB
+        if (typeof masterDB === 'undefined') { 
+            alert("Error: Database file not linked! Check railwaydquestions.js"); 
+            return; 
+        }
         
-        // Check if language exists, else default to English
-        if (masterDB.railway[lang] && masterDB.railway[lang].length > 0) {
+        // Safer Check: Does 'railway' exist? Does language exist?
+        if (masterDB.railway && masterDB.railway[lang] && masterDB.railway[lang].length > 0) {
             fullQuestionPool = masterDB.railway[lang];
+        } else if (masterDB.railway) {
+            fullQuestionPool = masterDB.railway['en']; // Default to English
         } else {
-            fullQuestionPool = masterDB.railway['en'];
+            alert("Error: Railway data missing in database file.");
+            return;
         }
         
         fullQuestionPool = shuffleArray([...fullQuestionPool]); 
@@ -111,12 +117,18 @@
     }
 
     function startExam() {
-        if (typeof masterDB === 'undefined') { alert("Error: Database file not linked!"); return; }
+        if (typeof masterDB === 'undefined') { 
+            alert("Error: Database file not linked!"); 
+            return; 
+        }
         
-        if (masterDB.railway[lang] && masterDB.railway[lang].length > 0) {
+        if (masterDB.railway && masterDB.railway[lang] && masterDB.railway[lang].length > 0) {
             fullQuestionPool = masterDB.railway[lang];
-        } else {
+        } else if (masterDB.railway) {
             fullQuestionPool = masterDB.railway['en'];
+        } else {
+            alert("Error: Railway data missing.");
+            return;
         }
 
         let count = Math.min(30, fullQuestionPool.length);
@@ -184,13 +196,25 @@
 
     function startTimer(duration) {
         let timer = duration, minutes, seconds;
-        timerInterval = setInterval(function () {
+        
+        // Helper to update text immediately
+        function updateDisplay() {
             minutes = parseInt(timer / 60, 10);
             seconds = parseInt(timer % 60, 10);
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
             document.getElementById('time-left').textContent = minutes + ":" + seconds;
-            if (--timer < 0) { showRes(); }
+        }
+
+        updateDisplay(); // Run once instantly
+
+        timerInterval = setInterval(() => {
+            if (--timer < 0) { 
+                clearInterval(timerInterval);
+                showRes(); 
+            } else {
+                updateDisplay();
+            }
         }, 1000);
     }
 </script>
