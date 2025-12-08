@@ -3,329 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITI Taiyaari</title>
+    <title>ITI Electrician - Premium</title>
     
     <script src="itiquestions.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         :root {
-            /* ITI THEME: EMERALD */
-            --primary: #0f766e;
-            --primary-light: #f0fdfa;
-            --text-dark: #0f172a;
-            --white: #ffffff;
+            --primary: #059669; --primary-dark: #047857; --primary-soft: #ecfdf5;
+            --bg-body: #f3f4f6; --surface: #ffffff; --text-main: #111827;
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; margin: 0; display: flex; justify-content: center; min-height: 100vh; }
-        .app-container { width: 100%; max-width: 480px; background: white; min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; display: flex; justify-content: center; }
+        .app-container { width: 100%; max-width: 480px; background: var(--surface); min-height: 100vh; display: flex; flex-direction: column; box-shadow: 0 0 25px rgba(0,0,0,0.05); }
 
-        /* HEADER - Flexbox to prevent overlap */
+        /* HEADER */
         .header {
-            background: var(--primary);
-            color: var(--white);
-            padding: 20px;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 4px 10px rgba(15, 118, 110, 0.3);
+            background: linear-gradient(180deg, var(--primary-dark), var(--primary));
+            color: white; padding: 30px 25px 40px;
+            border-bottom-left-radius: 32px; border-bottom-right-radius: 32px;
         }
-
-        .header-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
+        .header-nav a {
+            background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px;
+            text-decoration: none; color: white; font-size: 13px; font-weight: 600;
+            backdrop-filter: blur(4px);
         }
+        .header h1 { margin: 20px 0 5px; font-size: 28px; }
 
-        .header a {
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            background: rgba(255,255,255,0.1);
-            padding: 5px 10px;
-            border-radius: 12px;
-        }
-
-        .header h1 { margin: 0; font-size: 24px; font-weight: 700; }
-        .header p { margin: 2px 0 0; opacity: 0.9; font-size: 13px; }
-
-        /* SCREENS */
-        .screen { display: none; padding: 25px; flex-grow: 1; animation: fadeIn 0.3s ease-in-out; }
+        /* CONTENT */
+        .content { padding: 30px; flex-grow: 1; }
+        .screen { display: none; animation: fadeIn 0.3s ease-out; }
         .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
 
-        /* MENU CARDS */
+        /* CARDS */
         .menu-card {
-            background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 15px;
-            display: flex; align-items: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05);
+            background: white; border: 1px solid #e5e7eb; border-radius: 20px; padding: 20px;
+            margin-bottom: 16px; display: flex; align-items: center; cursor: pointer;
+            box-shadow: var(--shadow-card); transition: transform 0.2s;
         }
-        .menu-card:active { transform: scale(0.98); background: var(--primary-light); border-color: var(--primary); }
+        .menu-card:active { transform: scale(0.98); background: var(--primary-soft); }
 
-        /* QUIZ BUTTONS */
+        /* QUIZ UI */
         .opt-btn {
-            width: 100%; padding: 18px; margin-bottom: 12px; border: 2px solid #e2e8f0; background: white;
-            border-radius: 14px; font-size: 16px; text-align: left; color: var(--text-dark); cursor: pointer;
-            transition: background 0.2s;
+            width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #e5e7eb;
+            background: white; border-radius: 16px; font-size: 16px; text-align: left;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); color: var(--text-main);
         }
-        .opt-btn:active { background: #f8fafc; }
         .opt-btn.correct { background: #dcfce7; border-color: #22c55e; color: #14532d; }
         .opt-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #7f1d1d; }
-
-        /* RESULT CIRCLE */
-        .result-box { text-align: center; padding: 40px 20px; }
-        .score-circle {
-            width: 120px; height: 120px; background: var(--primary); color: white; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; margin: 0 auto 20px;
-            box-shadow: 0 10px 20px rgba(15, 118, 110, 0.4);
-        }
-        .action-btn {
-            background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px;
-            font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px;
-        }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    
     <div class="header">
-        <div class="header-nav">
-            <a href="index.html" id="lbl-home">← Home</a>
-        </div>
+        <div class="header-nav"><a href="index.html" id="lbl-home">← Home</a></div>
         <h1 id="lbl-title">ITI Electrician</h1>
-        <p>Theory, Safety & Tools</p>
+        <p>Theory & Safety</p>
     </div>
 
-    <div id="screen-modes" class="screen active">
-        <h3 id="lbl-select" style="color:#64748b; margin-bottom:20px;">Select Mode:</h3>
-
-        <div class="menu-card" onclick="startPractice()">
-            <span style="font-size:24px; margin-right:15px;">⚡</span>
-            <div>
-                <strong id="lbl-prac">Practice Quiz</strong><br>
-                <span id="lbl-prac-sub" style="font-size:12px; color:#64748b;">5 Random Questions</span>
-            </div>
-        </div>
-
-        <div class="menu-card" onclick="startExam()">
-            <span style="font-size:24px; margin-right:15px;">⏱️</span>
-            <div>
-                <strong id="lbl-test">Test Mode</strong><br>
-                <span id="lbl-test-sub" style="font-size:12px; color:#64748b;">100 Questions • 90 Mins</span>
-            </div>
-        </div>
-    </div>
-
-    <div id="screen-quiz" class="screen">
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:600; color:#64748b;">
-            <span id="lbl-qnum">Question <span id="q-num">1</span></span>
-            <span id="timer-box" style="color:#ef4444; display:none;">⏱️ <span id="time-left">90:00</span></span>
-        </div>
-
-        <h2 id="q-text" style="font-size:18px; margin-bottom:25px; line-height:1.5;">Question text loading...</h2>
-        
-        <div id="opts"></div>
-        <div id="feedback" style="height:30px; margin-top:15px; text-align:center;"></div>
-    </div>
-
-    <div id="screen-result" class="screen">
-        <div class="result-box">
-            <div class="score-circle" id="final-score">0</div>
-            <h2 id="score-text">You Scored</h2>
-            <p id="result-msg" style="font-size:18px; margin-bottom:30px;"></p>
+    <div class="content">
+        <div id="screen-modes" class="screen active">
+            <h3 id="lbl-select" style="color:#6b7280; margin-bottom:20px; text-transform:uppercase; font-size:13px; letter-spacing:1px;">Select Mode</h3>
             
-            <button class="action-btn" onclick="showReview()" id="lbl-review" style="background:#fff; color:#333; border:1px solid #ddd; margin-bottom:10px;">Review Answers</button>
-            <button class="action-btn" onclick="shareScore()" id="lbl-share">Share Score</button>
-            <button class="action-btn" onclick="goToMenu()" id="lbl-menu" style="background:transparent; color:#64748b; margin-top:5px;">Back to Menu</button>
+            <div class="menu-card" onclick="startPractice()">
+                <div style="font-size:28px; margin-right:15px;">⚡</div>
+                <div><strong id="lbl-prac">Practice Quiz</strong><br><span id="lbl-prac-sub" style="font-size:13px; color:#6b7280;">5 Random Questions</span></div>
+            </div>
+
+            <div class="menu-card" onclick="startExam()">
+                <div style="font-size:28px; margin-right:15px;">⏱️</div>
+                <div><strong id="lbl-test">Test Mode</strong><br><span id="lbl-test-sub" style="font-size:13px; color:#6b7280;">100 Questions • 90 Mins</span></div>
+            </div>
+        </div>
+
+        <div id="screen-quiz" class="screen">
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px; color:#6b7280; font-weight:600;">
+                <span id="lbl-qnum">Question <span id="q-num">1</span></span>
+                <span id="timer-box" style="color:#ef4444; display:none;">⏱️ <span id="time-left">90:00</span></span>
+            </div>
+            <h2 id="q-text" style="font-size:19px; line-height:1.5; margin-bottom:25px;">Loading...</h2>
+            <div id="opts"></div>
+        </div>
+
+        <div id="screen-result" class="screen" style="text-align:center;">
+            <div style="font-size:60px; margin-bottom:10px;">🏆</div>
+            <h2 id="score-text" style="margin-bottom:5px;">Score: 0</h2>
+            <p id="result-msg" style="color:#6b7280; margin-bottom:30px;">Keep Learning!</p>
+            <button class="opt-btn" onclick="location.reload()" style="text-align:center; background:var(--primary); color:white; font-weight:bold;">Back to Menu</button>
         </div>
     </div>
-
-    <div id="screen-review" class="screen">
-        <h3 style="margin-bottom:20px;">Review Answers</h3>
-        <div id="review-list"></div>
-        <button class="action-btn" onclick="closeReview()">Close</button>
-    </div>
-
 </div>
 
 <script>
-    // 1. URL & LANGUAGE
+    // 1. SETUP
     const urlParams = new URLSearchParams(window.location.search);
     const lang = urlParams.get('lang') || 'en';
-
+    
+    // 2. TEXT DATA
     const ui = {
-        en: { home: "← Home", title: "ITI Electrician", select: "Select Mode:", prac: "Practice Quiz", pracSub: "5 Random Questions", test: "Test Mode", testSub: "100 Questions • 90 Mins", qNum: "Question", review: "Review Answers", share: "Share Score", menu: "Main Menu" },
-        hi: { home: "← घर", title: "ITI इलेक्ट्रीशियन", select: "मोड चुनें:", prac: "अभ्यास क्विज़", pracSub: "5 यादृच्छिक प्रश्न", test: "परीक्षा मोड", testSub: "100 प्रश्न • 90 मिनट", qNum: "प्रश्न", review: "उत्तर देखें", share: "स्कोर साझा करें", menu: "मेनू" },
-        mr: { home: "← मुख्यपृष्ठ", title: "ITI इलेक्ट्रिशियन", select: "मोड निवडा:", prac: "सराव प्रश्नमंजुषा", pracSub: "5 यादृच्छिक प्रश्न", test: "परीक्षा मोड", testSub: "100 प्रश्न • 90 मिनिटे", qNum: "प्रश्न", review: "उत्तरे तपासा", share: "स्कोर शेअर करा", menu: "मेनू" },
-        bn: { home: "← বাড়ি", title: "ITI ইলেকট্রিশিয়ান", select: "মোড নির্বাচন করুন:", prac: "অনুশীলন কুইজ", pracSub: "৫টি র্যান্ডম প্রশ্ন", test: "টেস্ট মোড", testSub: "১০০টি প্রশ্ন • ৯০ মিনিট", qNum: "প্রশ্ন", review: "উত্তর দেখুন", share: "শেয়ার করুন", menu: "মেনু" },
-        ta: { home: "← முகப்பு", title: "ஐடிஐ எலக்ட்ரீசியன்", select: "முறையைத் தேர்ந்தெடுக்கவும்:", prac: "பயிற்சி வினாடி வினா", pracSub: "5 சீரற்ற கேள்விகள்", test: "தேர்வு முறை", testSub: "100 கேள்விகள் • 90 நிமிடங்கள்", qNum: "கேள்வி", review: "பதில்களைப் பார்க்கவும்", share: "பகிரவும்", menu: "மெனு" },
-        te: { home: "← హోమ్", title: "ITI ఎలక్ట్రీషియన్", select: "మోడ్‌ని ఎంచుకోండి:", prac: "ప్రాక్టీస్ క్విజ్", pracSub: "5 యాదృచ్ఛిక ప్రశ్నలు", test: "పరీక్ష మోడ్", testSub: "100 ప్రశ్నలు • 90 నిమిషాలు", qNum: "ప్రశ్న", review: "సమాధానాలు", share: "షేర్ చేయండి", menu: "మెను" }
+        en: { home:"← Home", title:"ITI Electrician", select:"Select Mode", prac:"Practice Quiz", pracSub:"5 Random Questions", test:"Test Mode", testSub:"100 Qs • 90 Mins", qNum:"Question" },
+        hi: { home:"← घर", title:"ITI इलेक्ट्रीशियन", select:"मोड चुनें", prac:"अभ्यास क्विज़", pracSub:"5 यादृच्छिक प्रश्न", test:"परीक्षा मोड", testSub:"100 प्रश्न • 90 मिनट", qNum:"प्रश्न" },
+        mr: { home:"← मुख्यपृष्ठ", title:"ITI इलेक्ट्रिशियन", select:"मोड निवडा", prac:"सराव प्रश्नमंजुषा", pracSub:"5 प्रश्न", test:"परीक्षा मोड", testSub:"100 प्रश्न • 90 मिनिटे", qNum:"प्रश्न" },
+        bn: { home:"← বাড়ি", title:"ITI ইলেকট্রিশিয়ান", select:"মোড নির্বাচন", prac:"অনুশীলন কুইজ", pracSub:"৫টি প্রশ্ন", test:"টেস্ট মোড", testSub:"১০০টি প্রশ্ন • ৯০ মিনিট", qNum:"প্রশ্ন" },
+        ta: { home:"← முகப்பு", title:"ஐடிஐ எலக்ட்ரீசியன்", select:"முறை தேர்வு", prac:"பயிற்சி", pracSub:"5 கேள்விகள்", test:"தேர்வு", testSub:"100 கேள்விகள்", qNum:"கேள்வி" },
+        te: { home:"← హోమ్", title:"ITI ఎలక్ట్రీషియన్", select:"మోడ్ ఎంపిక", prac:"ప్రాక్టీస్", pracSub:"5 ప్రశ్నలు", test:"పరీక్ష", testSub:"100 ప్రశ్నలు", qNum:"ప్రశ్న" }
     };
 
-    const t = ui[lang] || ui['en'];
-    
-    // Apply UI Text
-    document.getElementById('lbl-home').innerText = t.home;
-    document.getElementById('lbl-title').innerText = t.title;
-    document.getElementById('lbl-select').innerText = t.select;
-    document.getElementById('lbl-prac').innerText = t.prac;
-    document.getElementById('lbl-prac-sub').innerText = t.pracSub;
-    document.getElementById('lbl-test').innerText = t.test;
-    document.getElementById('lbl-test-sub').innerText = t.testSub;
-    document.getElementById('lbl-qnum').firstChild.nodeValue = t.qNum + " ";
-    document.getElementById('lbl-review').innerText = t.review;
-    document.getElementById('lbl-share').innerText = t.share;
-    document.getElementById('lbl-menu').innerText = t.menu;
+    // 3. APPLY TEXT & CHECK DB
+    window.onload = function() {
+        if(typeof masterDB === 'undefined') {
+            alert("⚠️ Error: 'itiquestions.js' not found.\nPlease rename 'itiquestions (1).js' to 'itiquestions.js'");
+        }
+        const t = ui[lang] || ui['en'];
+        document.getElementById('lbl-home').innerText = t.home;
+        document.getElementById('lbl-title').innerText = t.title;
+        document.getElementById('lbl-select').innerText = t.select;
+        document.getElementById('lbl-prac').innerText = t.prac;
+        document.getElementById('lbl-prac-sub').innerText = t.pracSub;
+        document.getElementById('lbl-test').innerText = t.test;
+        document.getElementById('lbl-test-sub').innerText = t.testSub;
+        document.getElementById('lbl-qnum').firstChild.nodeValue = t.qNum + " ";
+    };
 
-    // 2. LOGIC
-    let currentSessionQuestions = [];
-    let currentQIndex = 0;
-    let score = 0;
-    let userAnswers = [];
-    let timerInterval;
+    // 4. GAME LOGIC
+    let questions = [], index = 0, score = 0, timer;
 
     function startPractice() {
-        if (typeof masterDB === 'undefined') { alert("Error: 'itiquestions.js' not found. Please rename the file."); return; }
-        
-        // Fetch Questions
-        let allQs = masterDB.iti[lang] || masterDB.iti['en'];
-        // Shuffle
-        let shuffled = [...allQs].sort(() => 0.5 - Math.random());
-        currentSessionQuestions = shuffled.slice(0, 5);
-        startQuiz();
+        if(typeof masterDB === 'undefined') return alert("Database Missing!");
+        let all = masterDB.iti[lang] || masterDB.iti['en'];
+        questions = [...all].sort(()=>0.5-Math.random()).slice(0, 5);
+        startQuiz(false);
     }
 
     function startExam() {
-        if (typeof masterDB === 'undefined') { alert("Error: DB not loaded"); return; }
-        let allQs = masterDB.iti[lang] || masterDB.iti['en'];
-        currentSessionQuestions = [...allQs].sort(() => 0.5 - Math.random()).slice(0, 100);
+        if(typeof masterDB === 'undefined') return alert("Database Missing!");
+        let all = masterDB.iti[lang] || masterDB.iti['en'];
+        questions = [...all].sort(()=>0.5-Math.random()).slice(0, 100);
         startQuiz(true);
     }
 
-    function startQuiz(isExam = false) {
-        currentQIndex = 0;
-        score = 0;
-        userAnswers = [];
+    function startQuiz(isExam) {
+        index = 0; score = 0;
         document.getElementById('screen-modes').classList.remove('active');
         document.getElementById('screen-quiz').classList.add('active');
-        loadQuestion();
-        
-        if (isExam) {
-            document.getElementById('timer-box').style.display = "inline";
-            startTimer(90 * 60);
-        } else {
-            document.getElementById('timer-box').style.display = "none";
-        }
+        document.getElementById('timer-box').style.display = isExam ? "inline" : "none";
+        loadQ();
+        if(isExam) startTimer(90*60);
     }
 
-    function loadQuestion() {
-        let q = currentSessionQuestions[currentQIndex];
-        document.getElementById('q-num').innerText = currentQIndex + 1;
+    function loadQ() {
+        let q = questions[index];
+        document.getElementById('q-num').innerText = index + 1;
         document.getElementById('q-text').innerText = q.q;
-        
-        let optsDiv = document.getElementById('opts');
-        optsDiv.innerHTML = "";
-        document.getElementById('feedback').innerHTML = "";
-        
-        let btnArray = [];
-        q.o.forEach((optText, idx) => {
+        let div = document.getElementById('opts');
+        div.innerHTML = "";
+        q.o.forEach((opt, i) => {
             let btn = document.createElement('button');
             btn.className = 'opt-btn';
-            btn.innerText = optText;
-            btn.onclick = () => checkAnswer(idx, q.a, btn, btnArray, q);
-            optsDiv.appendChild(btn);
-            btnArray.push(btn);
+            btn.innerText = opt;
+            btn.onclick = () => check(i, q.a, btn, q.o.length);
+            div.appendChild(btn);
         });
     }
 
-    function checkAnswer(selectedIdx, correctIdx, btn, btnArray, qData) {
-        btnArray.forEach(b => b.disabled = true);
-        let isCorrect = (selectedIdx === correctIdx);
-        if (isCorrect) score++;
+    function check(sel, cor, btn, count) {
+        let btns = document.getElementsByClassName('opt-btn');
+        for(let b of btns) b.disabled = true;
         
-        userAnswers.push({ q: qData.q, opts: qData.o, sel: selectedIdx, cor: correctIdx });
-
-        if (isCorrect) btn.classList.add('correct');
-        else {
-            btn.classList.add('wrong');
-            btnArray[correctIdx].classList.add('correct');
-        }
+        if(sel === cor) { score++; btn.classList.add('correct'); }
+        else { btn.classList.add('wrong'); btns[cor].classList.add('correct'); }
 
         setTimeout(() => {
-            if (currentQIndex < currentSessionQuestions.length - 1) {
-                currentQIndex++;
-                loadQuestion();
-            } else {
-                showResults();
-            }
-        }, 1200);
+            if(index < questions.length - 1) { index++; loadQ(); }
+            else endQuiz();
+        }, 1000);
     }
 
-    function showResults() {
-        clearInterval(timerInterval);
+    function endQuiz() {
+        clearInterval(timer);
         document.getElementById('screen-quiz').classList.remove('active');
         document.getElementById('screen-result').classList.add('active');
-        
-        let percentage = (score / currentSessionQuestions.length) * 100;
-        document.getElementById('final-score').innerText = score;
-        document.getElementById('score-text').innerText = `You Scored ${score} / ${currentSessionQuestions.length}`;
-        
-        let msg = document.getElementById('result-msg');
-        if (percentage >= 35) {
-            msg.innerText = "🎉 Congratulations! You Passed!";
-            msg.style.color = "green";
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        } else {
-            msg.innerText = "⚠️ Needs Improvement. Keep Studying!";
-            msg.style.color = "#dc2626";
-        }
+        document.getElementById('score-text').innerText = `Score: ${score} / ${questions.length}`;
+        if(score/questions.length >= 0.35) confetti();
     }
 
-    function showReview() {
-        document.getElementById('screen-result').classList.remove('active');
-        document.getElementById('screen-review').classList.add('active');
-        let list = document.getElementById('review-list');
-        list.innerHTML = "";
-        userAnswers.forEach((item, index) => {
-            let div = document.createElement('div');
-            div.style.cssText = "margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;";
-            let status = (item.sel === item.cor) ? "✅" : "❌";
-            div.innerHTML = `<div style="font-weight:600; font-size:14px;">${index+1}. ${item.q}</div>
-                <div style="font-size:13px; color:#555; margin-top:4px;">
-                Your Ans: <b>${item.opts[item.sel]}</b> ${status} <br>
-                ${item.sel !== item.cor ? `<span style="color:green">Correct: ${item.opts[item.cor]}</span>` : ''}</div>`;
-            list.appendChild(div);
-        });
-    }
-
-    function closeReview() {
-        document.getElementById('screen-review').classList.remove('active');
-        document.getElementById('screen-result').classList.add('active');
-    }
-
-    function shareScore() {
-        let text = `🔥 I just scored ${score}/${currentSessionQuestions.length} in ITI Electrician practice on Hunar App!`;
-        window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
-    }
-
-    function goToMenu() { window.location.reload(); }
-
-    function startTimer(duration) {
-        let timer = duration, m, s;
-        timerInterval = setInterval(() => {
-            m = parseInt(timer / 60, 10);
-            s = parseInt(timer % 60, 10);
-            m = m < 10 ? "0" + m : m;
-            s = s < 10 ? "0" + s : s;
-            document.getElementById('time-left').textContent = m + ":" + s;
-            if (--timer < 0) { clearInterval(timerInterval); showResults(); }
+    function startTimer(sec) {
+        timer = setInterval(() => {
+            let m = Math.floor(sec/60), s = sec%60;
+            document.getElementById('time-left').innerText = `${m}:${s<10?'0'+s:s}`;
+            if(--sec < 0) endQuiz();
         }, 1000);
     }
 </script>
-
 </body>
 </html>
