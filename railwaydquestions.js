@@ -1,8 +1,8 @@
 // railwaydquestions.js
 // Master Database for Railway Group D (100 Qs: Eng, Hin, Mar)
 
-const masterDB = {
-    railway: {
+window.masterDB = window.masterDB || {};
+window.masterDB.railway = {
         // ================= ENGLISH (100 Qs) =================
         en: [
             // --- GENERAL SCIENCE (1-35) ---
