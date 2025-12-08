@@ -3,86 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Railway Group D - Premium</title>
+    <title>Railway Group D</title>
     
     <script src="railwaydquestions.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
+        /* RAILWAY RED THEME */
         :root {
-            --primary: #dc2626; --primary-dark: #b91c1c; --primary-soft: #fef2f2;
-            --bg-body: #f3f4f6; --surface: #ffffff; --text-main: #111827;
+            --primary: #dc2626;
+            --primary-light: #fef2f2;
+            --primary-dark: #b91c1c;
+            --bg-color: #f1f5f9;
+            --white: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; display: flex; justify-content: center; }
-        .app-container { width: 100%; max-width: 480px; background: var(--surface); min-height: 100vh; display: flex; flex-direction: column; box-shadow: 0 0 25px rgba(0,0,0,0.05); }
 
-        .header { background: linear-gradient(180deg, var(--primary-dark), var(--primary)); color: white; padding: 30px 25px 40px; border-bottom-left-radius: 32px; border-bottom-right-radius: 32px; }
-        .header-nav a { background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; text-decoration: none; color: white; font-size: 13px; font-weight: 600; backdrop-filter: blur(4px); }
-        .header h1 { margin: 20px 0 5px; font-size: 28px; }
-
-        .content { padding: 30px; flex-grow: 1; }
-        .screen { display: none; animation: fadeIn 0.3s ease-out; }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg-color); margin: 0; display: flex; justify-content: center; color: var(--text-main); }
+        .app-container { width: 100%; max-width: 500px; background: var(--white); min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white; padding: 30px 20px 40px;
+            border-bottom-left-radius: 24px; border-bottom-right-radius: 24px;
+            position: relative; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+        }
+        .header a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; position: absolute; top: 20px; left: 20px; }
+        .header h1 { margin: 15px 0 5px; font-size: 24px; font-weight: 700; }
+        .header p { margin: 0; opacity: 0.9; font-size: 14px; }
+        
+        .screen { display: none; padding: 25px; flex-grow: 1; animation: fadeIn 0.3s ease; }
         .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .menu-card { 
+            background: var(--white); border: 1px solid #e2e8f0; border-radius: 16px; 
+            padding: 20px; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; 
+            transition: 0.2s; box-shadow: var(--shadow);
+        }
+        .menu-card:hover { border-color: var(--primary); background: var(--primary-light); transform: translateY(-2px); }
+        
+        #timer-box { text-align: right; font-weight: bold; color: var(--primary); margin-bottom: 10px; display: none; font-size: 18px; }
+        .question-card { background: var(--white); border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: var(--shadow); }
+        .q-text { font-size: 18px; font-weight: 600; color: var(--text-main); margin-bottom: 20px; line-height: 1.5; }
+        
+        .opt-btn { 
+            display: block; width: 100%; padding: 15px; margin-bottom: 10px; 
+            border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 12px; 
+            text-align: left; font-size: 16px; cursor: pointer; transition: 0.2s; color: var(--text-main);
+        }
+        .opt-btn:hover { border-color: var(--primary); background: white; }
+        
+        .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #14532d !important; }
+        .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d !important; }
+        
+        .action-btn { background: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2); }
+        .action-btn:hover { background: var(--primary-dark); }
+        .secondary-btn { background: #64748b; }
+        .share-btn { background: #25D366; }
+        .review-btn { background: #3b82f6; }
 
-        .menu-card { background: white; border: 1px solid #e5e7eb; border-radius: 20px; padding: 20px; margin-bottom: 16px; display: flex; align-items: center; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: transform 0.2s; }
-        .menu-card:active { transform: scale(0.98); background: var(--primary-soft); }
-
-        .opt-btn { width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #e5e7eb; background: white; border-radius: 16px; font-size: 16px; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.02); color: var(--text-main); cursor: pointer; }
-        .opt-btn.correct { background: #dcfce7; border-color: #22c55e; color: #14532d; }
-        .opt-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #7f1d1d; }
-
-        .action-btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 600; font-size: 16px; margin-top: 10px; cursor: pointer; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-outline { background: white; border: 1px solid #d1d5db; color: var(--text-main); }
+        .review-item { border-bottom: 1px solid #e2e8f0; padding: 15px 0; }
+        .ans-right { color: #16a34a; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="header">
-        <div class="header-nav"><a href="index.html" id="lbl-home">← Home</a></div>
+        <a href="index.html" id="lbl-home">← Home</a>
         <h1 id="lbl-title">Railway Group D</h1>
-        <p>Science & Math</p>
+        <p>NTPC, ALP & General Awareness</p>
     </div>
 
-    <div class="content">
-        <div id="screen-modes" class="screen active">
-            <h3 id="lbl-select" style="color:#6b7280; margin-bottom:20px; text-transform:uppercase; font-size:13px; letter-spacing:1px;">Select Mode</h3>
-            <div class="menu-card" onclick="startPractice()">
-                <div style="font-size:28px; margin-right:15px;">🚂</div>
-                <div><strong id="lbl-prac">Practice Quiz</strong><br><span id="lbl-prac-sub" style="font-size:13px; color:#6b7280;">5 Random Questions</span></div>
-            </div>
-            <div class="menu-card" onclick="startExam()">
-                <div style="font-size:28px; margin-right:15px;">⏱️</div>
-                <div><strong id="lbl-test">Test Mode</strong><br><span id="lbl-test-sub" style="font-size:13px; color:#6b7280;">100 Questions • 90 Mins</span></div>
-            </div>
+    <div id="screen-modes" class="screen active">
+        <h3 style="color:var(--text-sub); margin-bottom:20px;" id="lbl-select">Select Mode:</h3>
+        <div class="menu-card" onclick="startPractice()">
+            <span style="font-size:24px; margin-right:15px;">📝</span>
+            <div><strong id="lbl-prac">Practice Quiz</strong><br><span style="font-size:12px; color:var(--text-sub);" id="lbl-prac-sub">Instant Feedback (5 Qs)</span></div>
         </div>
+        <div class="menu-card" onclick="startExam()">
+            <span style="font-size:24px; margin-right:15px;">⏱️</span>
+            <div><strong id="lbl-test">Test Mode</strong><br><span style="font-size:12px; color:var(--text-sub);" id="lbl-test-sub">Time Limit (30 Qs, 10 Mins)</span></div>
+        </div>
+    </div>
 
-        <div id="screen-quiz" class="screen">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px; color:#6b7280; font-weight:600;">
-                <span id="lbl-qnum">Question <span id="q-num">1</span></span>
-                <span id="timer-box" style="color:#ef4444; display:none;">⏱️ <span id="time-left">90:00</span></span>
-            </div>
-            <h2 id="q-text" style="font-size:19px; line-height:1.5; margin-bottom:25px;">Loading...</h2>
+    <div id="screen-quiz" class="screen">
+        <div id="timer-box">⏳ <span id="time-left">00:00</span></div>
+        <div class="question-card">
+            <div style="font-size:12px; color:var(--text-sub); margin-bottom:10px;"><span id="lbl-qnum">Question</span> <span id="q-num">1</span></div>
+            <div id="q-text" class="q-text">Loading...</div>
             <div id="opts"></div>
         </div>
+        <div id="feedback" style="text-align:center; font-weight:bold; height:20px; margin-bottom:10px;"></div>
+        <button id="next-btn" class="action-btn" style="display:none;" onclick="nextQ()">Next Question</button>
+    </div>
 
-        <div id="screen-result" class="screen" style="text-align:center;">
-            <div style="font-size:60px; margin-bottom:10px;">🏆</div>
-            <h2 id="score-text" style="margin-bottom:5px;">Score: 0</h2>
-            <p id="result-msg" style="color:#6b7280; margin-bottom:30px;">Great Effort!</p>
-            
-            <button class="action-btn btn-outline" onclick="showReview()">Review Answers</button>
-            <button class="action-btn btn-primary" onclick="shareScore()">Share on WhatsApp</button>
-            <button class="action-btn btn-outline" onclick="window.location.reload()" style="border:none; background:transparent; color:#6b7280;">Back to Menu</button>
-        </div>
+    <div id="screen-result" class="screen" style="text-align:center;">
+        <h2 id="lbl-scorecard">Score Card</h2>
+        <h1 id="score" style="font-size:48px; color:var(--primary); margin:20px 0;">0/0</h1>
+        <p id="result-msg" style="color:var(--text-sub); font-size:18px;">...</p>
+        <button class="action-btn review-btn" id="btn-review" onclick="showReview()">Review Answers 🧐</button>
+        <button class="action-btn share-btn" id="btn-share" onclick="shareScore()">Share Score 📲</button>
+        <button class="action-btn secondary-btn" id="btn-menu" onclick="goToMenu()">Back to Menu 🏠</button>
+    </div>
 
-        <div id="screen-review" class="screen">
-            <h3 style="margin-bottom:20px;">Review Answers</h3>
-            <div id="review-list"></div>
-            <button class="action-btn btn-primary" onclick="closeReview()">Close Review</button>
-        </div>
+    <div id="screen-review" class="screen">
+        <h3 id="lbl-review">Review Answers</h3>
+        <div id="review-list" style="overflow-y: auto; max-height: 60vh;"></div>
+        <button class="action-btn secondary-btn" id="btn-close" onclick="closeReview()">Close</button>
     </div>
 </div>
 
@@ -90,95 +122,148 @@
     const urlParams = new URLSearchParams(window.location.search);
     const lang = urlParams.get('lang') || 'en';
 
+    // --- COMPLETE 6-LANGUAGE TRANSLATION DICTIONARY ---
     const ui = {
-        en: { home:"← Home", title:"Railway Group D", select:"Select Mode", prac:"Practice Quiz", pracSub:"5 Random Questions", test:"Test Mode", testSub:"100 Qs • 90 Mins", qNum:"Question" },
-        hi: { home:"← घर", title:"रेलवे ग्रुप डी", select:"मोड चुनें", prac:"अभ्यास क्विज़", pracSub:"5 यादृच्छिक प्रश्न", test:"परीक्षा मोड", testSub:"100 प्रश्न • 90 मिनट", qNum:"प्रश्न" },
-        mr: { home:"← मुख्यपृष्ठ", title:"रेल्वे ग्रुप डी", select:"मोड निवडा", prac:"सराव प्रश्नमंजुषा", pracSub:"5 प्रश्न", test:"परीक्षा मोड", testSub:"100 प्रश्न • 90 मिनिटे", qNum:"प्रश्न" },
-        bn: { home:"← বাড়ি", title:"রেলওয়ে গ্রুপ ডি", select:"মোড নির্বাচন", prac:"অনুশীলন কুইজ", pracSub:"৫টি প্রশ্ন", test:"টেস্ট মোড", testSub:"১০০টি প্রশ্ন • ৯০ মিনিট", qNum:"প্রশ্ন" },
-        ta: { home:"← முகப்பு", title:"ரயில்வே குரூப் டி", select:"முறை தேர்வு", prac:"பயிற்சி", pracSub:"5 கேள்விகள்", test:"தேர்வு", testSub:"100 கேள்விகள்", qNum:"கேள்வி" },
-        te: { home:"← హోమ్", title:"రైల్వే గ్రూప్ D", select:"మోడ్ ఎంపిక", prac:"ప్రాక్టీస్", pracSub:"5 ప్రశ్నలు", test:"పరీక్ష", testSub:"100 ప్రశ్నలు", qNum:"ప్రశ్న" }
+        en: { home:"← Home", select:"Select Mode:", prac:"Practice Quiz", pracSub:"Instant Feedback (5 Qs)", test:"Test Mode", testSub:"Time Limit (30 Qs, 10 Mins)", next:"Next Question", qnum:"Question", score:"Score Card", review:"Review Answers 🧐", share:"Share Score 📲", menu:"Back to Menu 🏠", close:"Close" },
+        hi: { home:"← घर", select:"मोड चुनें:", prac:"अभ्यास क्विज़", pracSub:"तुरंत उत्तर (5 प्रश्न)", test:"परीक्षा मोड", testSub:"समय सीमा (30 प्रश्न, 10 मिनट)", next:"अगला प्रश्न", qnum:"प्रश्न", score:"स्कोर कार्ड", review:"उत्तर देखें 🧐", share:"स्कोर शेयर करें 📲", menu:"मेन्यू पर जाएं 🏠", close:"बंद करें" },
+        mr: { home:"← मुख्यपृष्ठ", select:"मोड निवडा:", prac:"सराव प्रश्नमंजुषा", pracSub:"त्वरित उत्तरे (5 प्रश्न)", test:"परीक्षा मोड", testSub:"वेळ मर्यादा (30 प्रश्न, 10 मिनिटे)", next:"पुढचा प्रश्न", qnum:"प्रश्न", score:"गुणपत्रक", review:"उत्तरे तपासा 🧐", share:"गुण शेअर करा 📲", menu:"मेनूवर जा 🏠", close:"बंद करें" },
+        bn: { home:"← হোম", select:"মোড নির্বাচন:", prac:"অনুশীলন কুইজ", pracSub:"তাত্ক্ষণিক উত্তর (5 প্রশ্ন)", test:"পরীক্ষা মোড", testSub:"সময় সীমা (30 প্রশ্ন, 10 মিনিট)", next:"পরবর্তী প্রশ্ন", qnum:"প্রশ্ন", score:"স্কোর কার্ড", review:"উত্তর দেখুন 🧐", share:"শেয়ার করুন 📲", menu:"মেনু 🏠", close:"বন্ধ করুন" },
+        ta: { home:"← முகப்பு", select:"முறை தேர்வு:", prac:"பயிற்சி வினாடி வினா", pracSub:"உடனடி பதில் (5 கேள்விகள்)", test:"தேர்வு முறை", testSub:"நேர வரம்பு (30 கேள்விகள்)", next:"அடுத்த கேள்வி", qnum:"கேள்வி", score:"மதிப்பெண் அட்டை", review:"பதில்களை சரிபார்க்கவும் 🧐", share:"பகிரவும் 📲", menu:"மெனு 🏠", close:"மூடு" },
+        te: { home:"← హోమ్", select:"మోడ్ ఎంచుకోండి:", prac:"ప్రాక్టీస్ క్విజ్", pracSub:"తక్షణ సమాధానం (5 ప్రశ్నలు)", test:"పరీక్ష మోడ్", testSub:"సమయ పరిమితి (30 ప్రశ్నలు)", next:"తదుపరి ప్రశ్న", qnum:"ప్రశ్న", score:"స్కోర్ కార్డ్", review:"సమాధానాలు 🧐", share:"భాగస్వామ్యం 📲", menu:"మెను 🏠", close:"మూసివేయి" }
     };
 
+    // APPLY TRANSLATIONS
     window.onload = function() {
-        if(typeof masterDB === 'undefined') alert("⚠️ Error: 'railwaydquestions.js' not found.");
+        if (typeof masterDB === 'undefined' || !masterDB.railway) {
+            alert("❌ Database Error: 'railwaydquestions.js' file is missing, misnamed, or incorrectly structured. Quiz buttons will not work until this is fixed.");
+        }
         const t = ui[lang] || ui['en'];
         document.getElementById('lbl-home').innerText = t.home;
-        document.getElementById('lbl-title').innerText = t.title;
         document.getElementById('lbl-select').innerText = t.select;
         document.getElementById('lbl-prac').innerText = t.prac;
         document.getElementById('lbl-prac-sub').innerText = t.pracSub;
         document.getElementById('lbl-test').innerText = t.test;
         document.getElementById('lbl-test-sub').innerText = t.testSub;
-        document.getElementById('lbl-qnum').firstChild.nodeValue = t.qNum + " ";
+        document.getElementById('next-btn').innerText = t.next;
+        document.getElementById('lbl-qnum').innerText = t.qnum;
+        document.getElementById('lbl-scorecard').innerText = t.score.replace('🧐','').replace('📲','').replace('🏠','');
+        document.getElementById('btn-review').innerText = t.review;
+        document.getElementById('btn-share').innerText = t.share;
+        document.getElementById('btn-menu').innerText = t.menu;
+        document.getElementById('lbl-review').innerText = t.review.replace('🧐','');
+        document.getElementById('btn-close').innerText = t.close;
     };
 
-    let questions = [], index = 0, score = 0, timer, userAnswers = [];
+
+    let fullQuestionPool = [], currentSessionQuestions = [], userAnswers = [], idx = 0, score = 0, timerInterval;
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function getSafePool() {
+        if (typeof masterDB === 'undefined' || !masterDB.railway) return null;
+        let pool = masterDB.railway[lang] || masterDB.railway['en'];
+        return pool && pool.length > 0 ? pool : null;
+    }
 
     function startPractice() {
-        if(typeof masterDB === 'undefined') return alert("Database Missing!");
-        let all = masterDB.railway[lang] || masterDB.railway['en'];
-        questions = [...all].sort(()=>0.5-Math.random()).slice(0, 5);
-        startQuiz(false);
+        fullQuestionPool = getSafePool();
+        if(!fullQuestionPool) return;
+        fullQuestionPool = shuffleArray([...fullQuestionPool]); 
+        currentSessionQuestions = fullQuestionPool.slice(0, 5); 
+        setupScreen('practice');
     }
 
     function startExam() {
-        if(typeof masterDB === 'undefined') return alert("Database Missing!");
-        let all = masterDB.railway[lang] || masterDB.railway['en'];
-        questions = [...all].sort(()=>0.5-Math.random()).slice(0, 100);
-        startQuiz(true);
+        fullQuestionPool = getSafePool();
+        if(!fullQuestionPool) return;
+        let count = Math.min(30, fullQuestionPool.length);
+        fullQuestionPool = shuffleArray([...fullQuestionPool]); 
+        currentSessionQuestions = fullQuestionPool.slice(0, count); 
+        setupScreen('exam');
+        startTimer(600); // 10 minutes (600 seconds)
     }
 
-    function startQuiz(isExam) {
-        index = 0; score = 0; userAnswers = [];
+    function setupScreen(mode) {
         document.getElementById('screen-modes').classList.remove('active');
+        document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-review').classList.remove('active');
         document.getElementById('screen-quiz').classList.add('active');
-        document.getElementById('timer-box').style.display = isExam ? "inline" : "none";
+        document.getElementById('timer-box').style.display = (mode === 'practice') ? 'none' : 'block';
+        idx = 0; score = 0; userAnswers = [];
         loadQ();
-        if(isExam) startTimer(90*60);
     }
 
     function loadQ() {
-        let q = questions[index];
-        document.getElementById('q-num').innerText = index + 1;
+        if(idx >= currentSessionQuestions.length) { showRes(); return; }
+        let q = currentSessionQuestions[idx];
+        document.getElementById('q-num').innerText = idx + 1;
         document.getElementById('q-text').innerText = q.q;
-        let div = document.getElementById('opts');
-        div.innerHTML = "";
-        q.o.forEach((opt, i) => {
+        let box = document.getElementById('opts'); box.innerHTML = "";
+        document.getElementById('next-btn').style.display='none';
+        document.getElementById('feedback').innerText="";
+        let btnArray = [];
+
+        q.o.forEach((txt, i) => {
             let btn = document.createElement('button');
-            btn.className = 'opt-btn';
-            btn.innerText = opt;
-            btn.onclick = () => check(i, q.a, btn, q);
-            div.appendChild(btn);
+            btn.className = 'opt-btn'; btn.innerText = txt;
+            btnArray.push(btn);
+            btn.onclick = () => {
+                btnArray.forEach(b => b.disabled = true);
+                userAnswers.push({ q: q.q, sel: i, cor: q.a, opts: q.o });
+                if(i === q.a) { score++; btn.classList.add('correct'); document.getElementById('feedback').innerText="✅ Correct"; document.getElementById('feedback').style.color="green"; } 
+                else { btn.classList.add('wrong'); btnArray[q.a].classList.add('correct'); document.getElementById('feedback').innerText="❌ Wrong"; document.getElementById('feedback').style.color="red"; }
+                document.getElementById('next-btn').style.display='block';
+            };
+            box.appendChild(btn);
         });
     }
 
-    function check(sel, cor, btn, qData) {
-        let btns = document.getElementsByClassName('opt-btn');
-        for(let b of btns) b.disabled = true;
-        userAnswers.push({ q: qData.q, opts: qData.o, sel: sel, cor: cor });
-        if(sel === cor) { score++; btn.classList.add('correct'); }
-        else { btn.classList.add('wrong'); btns[cor].classList.add('correct'); }
-        setTimeout(() => { if(index < questions.length - 1) { index++; loadQ(); } else endQuiz(); }, 1000);
-    }
+    function nextQ() { idx++; loadQ(); }
 
-    function endQuiz() {
-        clearInterval(timer);
+    function showRes() {
+        clearInterval(timerInterval);
         document.getElementById('screen-quiz').classList.remove('active');
         document.getElementById('screen-result').classList.add('active');
-        document.getElementById('score-text').innerText = `Score: ${score} / ${questions.length}`;
-        if(score/questions.length >= 0.35) confetti();
-    }
-
-    function shareScore() {
-        let msg = `🔥 I scored ${score}/${questions.length} in Railway Group D! Can you beat me?`;
-        window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+        let total = currentSessionQuestions.length;
+        document.getElementById('score').innerText = score + "/" + total;
+        let pct = Math.round((score/total)*100);
+        let msg = document.getElementById('result-msg');
+        if(pct >= 80) { msg.innerText = `🎉 Amazing! You scored ${pct}%!`; msg.style.color="#16a34a"; confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); }
+        else { msg.innerText = `📚 Keep practicing! You scored ${pct}%.`; msg.style.color="#0f172a"; }
     }
 
     function showReview() {
         document.getElementById('screen-result').classList.remove('active');
         document.getElementById('screen-review').classList.add('active');
-        let list = document.getElementById('review-list');
-        list.innerHTML = "";
-        userAnswers.forEach((item, i) => {
-            let color = item.sel === item.cor ? "green" : "red";
-            let div = document
+        let list = document.getElementById('review-list'); list.innerHTML = "";
+        userAnswers.forEach((item, index) => {
+            let div = document.createElement('div'); div.className = "review-item";
+            let status = (item.sel === item.cor) ? "<span style='color:green'>✅</span>" : "<span style='color:red'>❌</span>";
+            div.innerHTML = `<div class="review-q">${index+1}. ${item.q}</div>
+                <div class="review-ans">You: <b>${item.opts[item.sel]}</b> ${status}</div>
+                ${item.sel !== item.cor ? `<div class="ans-right">Ans: ${item.opts[item.cor]}</div>` : ''}`;
+            list.appendChild(div);
+        });
+    }
+
+    function closeReview() { document.getElementById('screen-review').classList.remove('active'); document.getElementById('screen-result').classList.add('active'); }
+    function shareScore() { window.open("https://wa.me/?text=" + encodeURIComponent(`🔥 I scored ${score}/${currentSessionQuestions.length} in Railway Group D practice! Can you beat me?`), "_blank"); }
+    
+    // FIX: Back to Menu button now performs a full page reload for a reliable state reset.
+    function goToMenu() { window.location.reload(); }
+    
+    function startTimer(duration) {
+        let timer = duration, m, s;
+        function update() { m=parseInt(timer/60,10); s=parseInt(timer%60,10); m=m<10?"0"+m:m; s=s<10?"0"+s:s; document.getElementById('time-left').textContent=m+":"+s; }
+        update();
+        timerInterval = setInterval(() => { if (--timer < 0) { clearInterval(timerInterval); showRes(); } else { update(); } }, 1000);
+    }
+</script>
+</body>
+</html>
