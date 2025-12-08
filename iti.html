@@ -40,7 +40,6 @@ body{font-family:Segoe UI, Roboto, sans-serif;background:var(--bg-color);margin:
 
 .action-btn{background:var(--primary);color:white;border:none;padding:16px;width:100%;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px;box-shadow:0 4px 6px rgba(15,118,110,0.2);transition:.2s}
 .action-btn:hover{background:var(--primary-dark)}
-.action-btn:disabled{background:#cbd5e1;cursor:not-allowed;box-shadow:none}
 .secondary-btn{background:var(--text-sub)}
 .share-btn{background:#25D366}
 .review-btn{background:#3b82f6}
@@ -55,6 +54,7 @@ body{font-family:Segoe UI, Roboto, sans-serif;background:var(--bg-color);margin:
 </style>
 </head>
 <body>
+
 <div class="app-container">
   <div class="header">
     <a href="index.html" id="lbl-home">← Home</a>
@@ -104,7 +104,7 @@ body{font-family:Segoe UI, Roboto, sans-serif;background:var(--bg-color);margin:
 </div>
 
 <script>
-/* ---------- CONFIG: replace these CSV publish URLs with your sheets ---------- */
+/* --- CLEAN WORKING GOOGLE SHEET URL CONFIG --- */
 const SHEET_URLS = {
   en: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=0&single=true&output=csv",
   hi: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=1440984595&single=true&output=csv",
@@ -114,21 +114,21 @@ const SHEET_URLS = {
   bn: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=901218882&single=true&output=csv"
 };
 
-/* -------------------------------------------------------------------------- */
-
+/* --- UI TEXT --- */
 const urlParams = new URLSearchParams(window.location.search);
 const lang = urlParams.get('lang') || 'en';
 
 const ui = {
   en:{title:"ITI Taiyaari",sub:"Electrician & Fitter",home:"← Home",select:"Select Mode:",prac:"Practice Quiz",pracSub:"Instant Feedback",test:"Test Mode",testSub:"Time Limit",qnum:"Question",score:"Score Card",review:"Review Answers",share:"Share Score",menu:"Back to Menu",close:"Close"},
-  hi:{title:"आईटीआई तैयारी",sub:"इलेक्ट्रीशियन और फिटर",home:"← होम",select:"मोड चुनें:",prac:"अभ्यास क्विज़",pracSub:"तुरंत उत्तर",test:"परीक्षा मोड",testSub:"समय सीमा",qnum:"प्रश्न",score:"स्कोर कार्ड",review:"उत्तर देखें",share:"स्कोर शेयर करें",menu:"मेन्यू पर जाएं",close:"बंद करें"},
-  mr:{title:"आय.टी.आय. तयारी",sub:"इलेक्ट्रिशियन आणि फिटर",home:"← होम",select:"मोड निवडा:",prac:"सराव प्रश्नमंजुषा",pracSub:"त्वरित उत्तरे",test:"परीक्षा मोड",testSub:"वेळ मर्यादा",qnum:"प्रश्न",score:"गुणपत्रक",review:"उत्तरे तपासा",share:"गुण शेअर करा",menu:"मेनूवर जा",close:"बंद करा"},
+  hi:{title:"आईटीआई तैयारी",sub:"इलेक्ट्रीशियन और फिटर",home:"← होम",select:"मोड चुनें:",prac:"अभ्यास क्विज़",pracSub:"तुरंत उत्तर",test:"परीक्षा मोड",testSub:"समय सीमा",qnum:"प्रश্ন",score:"स्कোর कार्ड",review:"उत्तर देखें",share:"स्कोर शेयर करें",menu:"मেন्यू पर जाएं",close:"बंद करें"},
+  mr:{title:"आय.टी.आय. तयारी",sub:"इलेक्ट्रिशियन आणि फिटर",home:"← होम",select:"मोड निवडा:",prac:"सराव प्रश्नमंजुषा",pracSub:"त्वरित उत्तरे",test:"परीक्षा मोড",testSub:"वेळ मर्यादा",qnum:"प्रश্ন",score:"गुणपत्रक",review:"उत्तरे तपासा",share:"गुण शेअर करा",menu:"মেনু",close:"বন্ধ करा"},
   ta:{title:"ஐடிஐ தயாரிப்பு",sub:"எலக்ட்ரீஷியன் & பிட்டர்",home:"← முகப்பு",select:"முறை தேர்வு:",prac:"பயிற்சி வினாடி வினா",pracSub:"உடனடி பதில்",test:"தேர்வு முறை",testSub:"நேர வரம்பு",qnum:"கேள்வி",score:"மதிப்பெண் அட்டை",review:"பதில்களை சரிபார்க்கவும்",share:"பகிரவும்",menu:"மெனு",close:"மூடு"},
   te:{title:"ITI తయారీ",sub:"ఎలక్ట్రీషియన్ & ఫిట్టర్",home:"← హోమ్",select:"మోడ్ ఎంచుకోండి:",prac:"ప్రాక్టీస్ క్విజ్",pracSub:"తక్షణ సమాధానం",test:"పరీక్ష మోడ్",testSub:"సమయ పరిమితి",qnum:"ప్రశ్న",score:"స్కోర్ కార్డ్",review:"సమాధానాలు",share:"భాగస్వామ్యం",menu:"మెను",close:"మూసివేయి"},
   bn:{title:"আইটিআই প্রস্তুতি",sub:"ইলেকট্রিশিয়ান এবং ফিটার",home:"← হোম",select:"মোড নির্বাচন:",prac:"অনুশীলন কুইজ",pracSub:"তাত্ক্ষণিক উত্তর",test:"পরীক্ষা মোড",testSub:"সময় সীমা",qnum:"প্রশ্ন",score:"স্কোর কার্ড",review:"উত্তর দেখুন",share:"শেয়ার করুন",menu:"মেনু",close:"বন্ধ করুন"}
 };
 
 const t = ui[lang] || ui.en;
+
 document.getElementById('lbl-title').innerText = t.title;
 document.getElementById('lbl-subtitle').innerText = t.sub;
 document.getElementById('lbl-home').innerText = t.home;
@@ -145,166 +145,161 @@ document.getElementById('btn-menu').innerText = t.menu;
 document.getElementById('lbl-review').innerText = t.review;
 document.getElementById('btn-close').innerText = t.close;
 
-/* data */
+/* --- QUIZ LOGIC --- */
 let masterData = [], fullQuestionPool = [], currentSessionQuestions = [], userAnswers = [], idx = 0, score = 0, timerInterval;
 
-/* load CSV via PapaParse */
 function loadData(){
-  const targetURL = SHEET_URLS[lang] || SHEET_URLS.en;
-  Papa.parse(targetURL, {
-    download: true, header: true, skipEmptyLines: true,
-    complete: function(results){
-      // Filter out empty rows (some sheets can return empty objects)
-      masterData = results.data.filter(r => Boolean(r.q) && (r.o1 || r.o2 || r.o3 || r.o4));
-      if(masterData.length > 0){
-        document.getElementById('loading-msg').style.display = 'none';
-        const b1 = document.getElementById('btn-practice');
-        const b2 = document.getElementById('btn-exam');
-        b1.style.opacity = "1"; b1.style.pointerEvents = "auto";
-        b2.style.opacity = "1"; b2.style.pointerEvents = "auto";
-      } else {
-        document.getElementById('loading-msg').innerText = "⚠️ No questions found in this sheet.";
+  Papa.parse(SHEET_URLS[lang], {
+    download:true, header:true, skipEmptyLines:true,
+    complete: res => {
+      masterData = res.data.filter(r => r.q);
+      if(masterData.length){
+        document.getElementById("loading-msg").style.display = "none";
+        document.getElementById("btn-practice").style.opacity = "1";
+        document.getElementById("btn-practice").style.pointerEvents = "auto";
+        document.getElementById("btn-exam").style.opacity = "1";
+        document.getElementById("btn-exam").style.pointerEvents = "auto";
       }
-    },
-    error: function(err){
-      document.getElementById('loading-msg').innerText = "⚠️ Network Error: Could not load questions.";
-      console.error(err);
     }
   });
 }
 loadData();
 
-function shuffleArray(array){ for(let i=array.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[array[i],array[j]]=[array[j],array[i]];} return array; }
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
 function startPractice(){
-  fullQuestionPool = shuffleArray([...masterData]);
-  const count = Math.min(5, fullQuestionPool.length);
-  currentSessionQuestions = fullQuestionPool.slice(0,count);
-  setupScreen('practice');
+  fullQuestionPool = shuffle([...masterData]);
+  currentSessionQuestions = fullQuestionPool.slice(0, Math.min(5, fullQuestionPool.length));
+  setupScreen("practice");
 }
 
 function startExam(){
-  const count = Math.min(30, masterData.length);
-  fullQuestionPool = shuffleArray([...masterData]);
-  currentSessionQuestions = fullQuestionPool.slice(0,count);
-  setupScreen('exam');
+  fullQuestionPool = shuffle([...masterData]);
+  currentSessionQuestions = fullQuestionPool.slice(0, Math.min(30, masterData.length));
+  setupScreen("exam");
   startTimer(600);
 }
 
 function setupScreen(mode){
-  document.getElementById('screen-modes').classList.remove('active');
-  document.getElementById('screen-result').classList.remove('active');
-  document.getElementById('screen-review').classList.remove('active');
-  document.getElementById('screen-quiz').classList.add('active');
-  document.getElementById('timer-box').style.display = (mode === 'practice') ? 'none' : 'block';
+  document.getElementById("screen-modes").classList.remove("active");
+  document.getElementById("screen-result").classList.remove("active");
+  document.getElementById("screen-review").classList.remove("active");
+  document.getElementById("screen-quiz").classList.add("active");
+  document.getElementById("timer-box").style.display = mode === "practice" ? "none" : "block";
   idx = 0; score = 0; userAnswers = [];
   loadQ();
 }
 
-function safeParseInt(val, fallback=0){
-  const n = parseInt(val,10);
-  return Number.isNaN(n) ? fallback : n;
-}
-
 function loadQ(){
   if(idx >= currentSessionQuestions.length){ showRes(); return; }
+
   const q = currentSessionQuestions[idx];
-  document.getElementById('q-num').innerText = idx + 1;
-  document.getElementById('q-text').innerText = q.q || "(No question text)";
-  const box = document.getElementById('opts'); box.innerHTML = "";
-  document.getElementById('feedback').innerText = "";
+  document.getElementById("q-num").innerText = idx+1;
+  document.getElementById("q-text").innerText = q.q;
+  const box = document.getElementById("opts");
+  box.innerHTML = "";
+  document.getElementById("feedback").innerText = "";
 
-  // collect available options (skip empty ones)
-  const options = [];
-  ['o1','o2','o3','o4'].forEach(k => { if(q[k] && q[k].trim()!=="") options.push(q[k]); });
+  const opts = [q.o1,q.o2,q.o3,q.o4].filter(v => v);
+  const correct = Math.max(0, (parseInt(q.a)-1) || 0);
+  const btns = [];
 
-  // correct index from sheet a (1-based). if invalid, default to 0.
-  const correctIndex = Math.max(0, safeParseInt(q.a,1) - 1);
-  const btnArray = [];
+  opts.forEach((opt,i)=>{
+    const b = document.createElement("button");
+    b.className = "opt-btn";
+    b.innerText = opt;
+    btns.push(b);
 
-  // create option buttons
-  options.forEach((txt,i) => {
-    const btn = document.createElement('button');
-    btn.className = 'opt-btn';
-    btn.innerText = txt;
-    btnArray.push(btn);
+    b.onclick = () => {
+      btns.forEach(x=>x.disabled=true);
+      userAnswers.push({ q:q.q,sel:i,cor:correct,opts:opts,exp:q.explain });
 
-    btn.onclick = () => {
-      // disable all
-      btnArray.forEach(b => b.disabled = true);
-
-      // ensure correctIndex within options range
-      const cor = Math.min(correctIndex, options.length - 1);
-
-      userAnswers.push({ q: q.q, sel: i, cor: cor, opts: options, exp: q.explain || "" });
-
-      if(i === cor){
-        btn.classList.add('correct'); score++;
-        document.getElementById('feedback').innerText = "✅ Correct"; document.getElementById('feedback').style.color = "green";
-      } else {
-        btn.classList.add('wrong');
-        if(btnArray[cor]) btnArray[cor].classList.add('correct');
-        document.getElementById('feedback').innerText = "❌ Wrong"; document.getElementById('feedback').style.color = "red";
+      if(i===correct){
+        b.classList.add("correct");
+        score++;
+        feedback("Correct","green");
+      }else{
+        b.classList.add("wrong");
+        btns[correct].classList.add("correct");
+        feedback("Wrong","red");
       }
 
-      setTimeout(()=>{ idx++; loadQ(); }, 1000);
+      setTimeout(()=>{idx++;loadQ();},900);
     };
-
-    box.appendChild(btn);
+    box.appendChild(b);
   });
+}
 
-  // if there are no options (malformed row) show skip
-  if(options.length === 0){
-    const skip = document.createElement('div');
-    skip.style.color = 'var(--text-sub)';
-    skip.style.textAlign = 'center';
-    skip.style.margin = '20px 0';
-    skip.innerText = '⚠️ This question has no options — skipping.';
-    box.appendChild(skip);
-    setTimeout(()=>{ idx++; loadQ(); }, 800);
-  }
+function feedback(msg,color){
+  const f = document.getElementById("feedback");
+  f.innerText = msg === "Correct" ? "✅ Correct" : "❌ Wrong";
+  f.style.color = color;
 }
 
 function showRes(){
   clearInterval(timerInterval);
-  document.getElementById('screen-quiz').classList.remove('active');
-  document.getElementById('screen-result').classList.add('active');
+  document.getElementById("screen-quiz").classList.remove("active");
+  document.getElementById("screen-result").classList.add("active");
+
   const total = currentSessionQuestions.length;
-  document.getElementById('score').innerText = score + "/" + total;
-  const pct = total ? Math.round((score/total)*100) : 0;
-  const msg = document.getElementById('result-msg');
-  if(pct >= 80){ msg.innerText = `🎉 Amazing! You scored ${pct}%!`; msg.style.color = "#16a34a"; confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); }
-  else { msg.innerText = `📚 Keep practicing! You scored ${pct}%.`; msg.style.color = "#0f172a"; }
+  const pct = Math.round((score/total)*100);
+
+  document.getElementById("score").innerText = `${score}/${total}`;
+
+  if(pct>=80){
+    document.getElementById("result-msg").innerText = `🎉 Amazing! You scored ${pct}%!`;
+    document.getElementById("result-msg").style.color="#16a34a";
+    confetti({particleCount:120,spread:70,origin:{y:0.6}});
+  }else{
+    document.getElementById("result-msg").innerText = `📚 Keep practicing! You scored ${pct}%.`;
+  }
 }
 
 function showReview(){
-  document.getElementById('screen-result').classList.remove('active');
-  document.getElementById('screen-review').classList.add('active');
-  const list = document.getElementById('review-list'); list.innerHTML = "";
-  userAnswers.forEach((item, index) => {
-    const div = document.createElement('div'); div.className = "review-item";
-    const status = (item.sel === item.cor) ? "<span style='color:green'>✅</span>" : "<span style='color:red'>❌</span>";
-    const explainHtml = (item.exp && item.exp !== "") ? `<div class="explanation">💡 <b>Explanation:</b> ${item.exp}</div>` : "";
-    const userOpt = item.opts[item.sel] || "(no answer)";
-    const correctOpt = item.opts[item.cor] || "(no answer)";
-    div.innerHTML = `<div class="review-q">${index+1}. ${item.q}</div>
-      <div class="review-ans">You: <b>${userOpt}</b> ${status}</div>
-      ${item.sel !== item.cor ? `<div class="ans-right">Ans: ${correctOpt}</div>` : ''}
-      ${explainHtml}`;
+  document.getElementById("screen-result").classList.remove("active");
+  document.getElementById("screen-review").classList.add("active");
+
+  const list = document.getElementById("review-list");
+  list.innerHTML = "";
+
+  userAnswers.forEach((item,i)=>{
+    const div = document.createElement("div");
+    div.className="review-item";
+    div.innerHTML = `
+      <div class="review-q">${i+1}. ${item.q}</div>
+      <div class="review-ans">You: <b>${item.opts[item.sel]||""}</b> 
+        ${item.sel===item.cor ? "<span style='color:green'>✅</span>":"<span style='color:red'>❌</span>"}
+      </div>
+      ${item.sel!==item.cor ? `<div class="ans-right">Ans: ${item.opts[item.cor]}</div>` : ""}
+      ${item.exp ? `<div class="explanation">💡 <b>Explanation:</b> ${item.exp}</div>`:""}
+    `;
     list.appendChild(div);
   });
 }
 
-function closeReview(){ document.getElementById('screen-review').classList.remove('active'); document.getElementById('screen-result').classList.add('active'); }
-function shareScore(){ window.open("https://wa.me/?text=" + encodeURIComponent(`🔥 I scored ${score}/${currentSessionQuestions.length} in ITI Taiyaari!`), "_blank"); }
-function goToMenu(){ document.getElementById('screen-result').classList.remove('active'); document.getElementById('screen-modes').classList.add('active'); }
+function closeReview(){
+  document.getElementById("screen-review").classList.remove("active");
+  document.getElementById("screen-result").classList.add("active");
+}
 
-function startTimer(duration){
-  let timer = duration, m, s;
-  function update(){ m = parseInt(timer/60,10); s = parseInt(timer%60,10); m = m<10 ? "0"+m : m; s = s<10 ? "0"+s : s; document.getElementById('time-left').textContent = m + ":" + s; }
-  update();
-  timerInterval = setInterval(()=>{ if(--timer < 0){ clearInterval(timerInterval); showRes(); } else update(); }, 1000);
+function shareScore(){
+  window.open("https://wa.me/?text=" + encodeURIComponent(`🔥 I scored ${score}/${currentSessionQuestions.length} in ITI Taiyaari!`),"blank");
+}
+
+function goToMenu(){
+  document.getElementById("screen-result").classList.remove("active");
+  document.getElementById("screen-modes").classList.add("active");
+}
+
+function startTimer(sec){
+  const tl = document.getElementById("time-left");
+  timerInterval = setInterval(()=>{
+    let m = Math.floor(sec/60), s = sec%60;
+    tl.innerText = `${m<10?"0"+m:m}:${s<10?"0"+s:s}`;
+    if(sec-- <= 0){ clearInterval(timerInterval); showRes(); }
+  },1000);
 }
 </script>
+
 </body>
 </html>
