@@ -25,7 +25,6 @@
         body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg-color); margin: 0; display: flex; justify-content: center; color: var(--text-main); }
         .app-container { width: 100%; max-width: 500px; background: var(--white); min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
         
-        /* HEADER */
         .header {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary));
             color: white; padding: 30px 20px 40px;
@@ -40,7 +39,6 @@
         .active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* CARDS */
         .menu-card { 
             background: var(--white); border: 1px solid #e2e8f0; border-radius: 16px; 
             padding: 20px; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; 
@@ -48,7 +46,6 @@
         }
         .menu-card:hover { border-color: var(--primary); background: var(--primary-light); transform: translateY(-2px); }
         
-        /* QUIZ */
         #timer-box { text-align: right; font-weight: bold; color: #dc2626; margin-bottom: 10px; display: none; font-size: 18px; }
         .question-card { background: var(--white); border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: var(--shadow); }
         .q-text { font-size: 18px; font-weight: 600; color: var(--text-main); margin-bottom: 20px; line-height: 1.5; }
@@ -125,7 +122,6 @@
     const urlParams = new URLSearchParams(window.location.search);
     const lang = urlParams.get('lang') || 'en';
 
-    // UI TRANSLATION DICTIONARY
     const ui = {
         en: { home:"← Home", select:"Select Mode:", prac:"Practice Quiz", pracSub:"Instant Feedback", test:"Test Mode", testSub:"Time Limit", next:"Next Question", qnum:"Question", score:"Score Card", review:"Review Answers", share:"Share Score", menu:"Back to Menu", close:"Close" },
         hi: { home:"← होम", select:"मोड चुनें:", prac:"अभ्यास क्विज़", pracSub:"तुरंत उत्तर", test:"परीक्षा मोड", testSub:"समय सीमा", next:"अगला प्रश्न", qnum:"प्रश्न", score:"स्कोर कार्ड", review:"उत्तर देखें", share:"स्कोर शेयर करें", menu:"मेन्यू पर जाएं", close:"बंद करें" },
@@ -135,7 +131,6 @@
         bn: { home:"← হোম", select:"মোড নির্বাচন:", prac:"অনুশীলন কুইজ", pracSub:"তাত্ক্ষণিক উত্তর", test:"পরীক্ষা মোড", testSub:"সময় সীমা", next:"পরবর্তী প্রশ্ন", qnum:"প্রশ্ন", score:"স্কোর কার্ড", review:"উত্তর দেখুন", share:"শেয়ার করুন", menu:"মেনু", close:"বন্ধ করুন" }
     };
 
-    // APPLY TRANSLATIONS
     const t = ui[lang] || ui['en'];
     document.getElementById('lbl-home').innerText = t.home;
     document.getElementById('lbl-select').innerText = t.select;
@@ -152,7 +147,6 @@
     document.getElementById('lbl-review').innerText = t.review;
     document.getElementById('btn-close').innerText = t.close;
 
-    // LOGIC
     let fullQuestionPool = [], currentSessionQuestions = [], userAnswers = [], idx = 0, score = 0, timerInterval;
 
     function shuffleArray(array) {
@@ -164,18 +158,26 @@
     }
 
     function startPractice() {
-        if (typeof masterDB === 'undefined') { alert("Error: DB not linked!"); return; }
-        fullQuestionPool = (masterDB.iti && masterDB.iti[lang] && masterDB.iti[lang].length > 0) ? masterDB.iti[lang] : masterDB.iti['en'];
-        fullQuestionPool = shuffleArray([...fullQuestionPool]); 
+        if (typeof masterDB === 'undefined') { alert("Error: DB not linked! Check itiquestions.js"); return; }
+        
+        let pool = (masterDB.iti && masterDB.iti[lang] && masterDB.iti[lang].length > 0) ? masterDB.iti[lang] : masterDB.iti['en'];
+        
+        if (!pool || pool.length === 0) { alert("No questions available for this language."); return; }
+
+        fullQuestionPool = shuffleArray([...pool]); 
         currentSessionQuestions = fullQuestionPool.slice(0, 5); 
         setupScreen('practice');
     }
 
     function startExam() {
         if (typeof masterDB === 'undefined') { alert("Error: DB not linked!"); return; }
-        fullQuestionPool = (masterDB.iti && masterDB.iti[lang] && masterDB.iti[lang].length > 0) ? masterDB.iti[lang] : masterDB.iti['en'];
-        let count = Math.min(30, fullQuestionPool.length);
-        fullQuestionPool = shuffleArray([...fullQuestionPool]); 
+        
+        let pool = (masterDB.iti && masterDB.iti[lang] && masterDB.iti[lang].length > 0) ? masterDB.iti[lang] : masterDB.iti['en'];
+        
+        if (!pool || pool.length === 0) { alert("No questions available for this language."); return; }
+
+        let count = Math.min(30, pool.length);
+        fullQuestionPool = shuffleArray([...pool]); 
         currentSessionQuestions = fullQuestionPool.slice(0, count); 
         setupScreen('exam');
         startTimer(600);
@@ -234,8 +236,8 @@
         document.getElementById('score').innerText = score + "/" + total;
         let pct = Math.round((score/total)*100);
         let msg = document.getElementById('result-msg');
-        if(pct >= 80) { msg.innerText = `🎉 ${pct}%!`; msg.style.color="#16a34a"; confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); }
-        else { msg.innerText = `${pct}%`; msg.style.color="#0f172a"; }
+        if(pct >= 80) { msg.innerText = `🎉 Amazing! You scored ${pct}%!`; msg.style.color="#16a34a"; confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); }
+        else { msg.innerText = `📚 Keep practicing! You scored ${pct}%.`; msg.style.color="#0f172a"; }
     }
 
     function showReview() {
@@ -245,13 +247,15 @@
         userAnswers.forEach((item, index) => {
             let div = document.createElement('div'); div.className = "review-item";
             let status = (item.sel === item.cor) ? "<span style='color:green'>✅</span>" : "<span style='color:red'>❌</span>";
-            div.innerHTML = `<div class="review-q">${index+1}. ${item.q}</div><div class="review-ans">Ans: <b>${item.opts[item.sel]}</b> ${status}</div>`;
+            div.innerHTML = `<div class="review-q">${index+1}. ${item.q}</div>
+                <div class="review-ans">You: <b>${item.opts[item.sel]}</b> ${status}</div>
+                ${item.sel !== item.cor ? `<div class="ans-right">Ans: ${item.opts[item.cor]}</div>` : ''}`;
             list.appendChild(div);
         });
     }
 
     function closeReview() { document.getElementById('screen-review').classList.remove('active'); document.getElementById('screen-result').classList.add('active'); }
-    function shareScore() { window.open("https://wa.me/?text=" + encodeURIComponent(`🔥 I scored ${score}/${currentSessionQuestions.length} in ITI Taiyaari!`), "_blank"); }
+    function shareScore() { window.open("https://wa.me/?text=" + encodeURIComponent(`🔥 I scored ${score}/${currentSessionQuestions.length} in ITI Taiyaari! Try here: https://anchit2012.github.io/hunar-app/`), "_blank"); }
     function goToMenu() { document.getElementById('screen-result').classList.remove('active'); document.getElementById('screen-modes').classList.add('active'); }
     
     function startTimer(duration) {
