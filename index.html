@@ -6,7 +6,7 @@
     <title>Hunar App - Exam Prep</title>
     <style>
         :root {
-            /* PROFESSIONAL EMERALD THEME */
+            /* THEME: PROFESSIONAL EMERALD */
             --primary: #0f766e;
             --primary-dark: #115e59;
             --bg-color: #f8fafc;
@@ -22,6 +22,7 @@
             display: flex;
             justify-content: center;
             color: var(--text-main);
+            -webkit-tap-highlight-color: transparent;
         }
 
         .app-container {
@@ -29,129 +30,133 @@
             max-width: 480px;
             background: var(--white);
             min-height: 100vh;
-            box-shadow: 0 0 25px rgba(0,0,0,0.08);
+            box-shadow: 0 0 30px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
             position: relative;
         }
 
-        /* MODERN HEADER - No Overlap */
+        /* --- MODERN HEADER WITH GLASS EFFECT --- */
         .header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: var(--white);
-            padding: 25px 25px 35px;
-            border-bottom-left-radius: 30px;
-            border-bottom-right-radius: 30px;
-            box-shadow: 0 10px 20px -10px rgba(15, 118, 110, 0.5);
+            padding: 30px 25px 40px;
+            border-bottom-left-radius: 35px;
+            border-bottom-right-radius: 35px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -10px rgba(15, 118, 110, 0.6);
+        }
+
+        /* Decorative circles in header */
+        .header::before {
+            content: ''; position: absolute; top: -20px; right: -20px;
+            width: 100px; height: 100px; background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        .header::after {
+            content: ''; position: absolute; top: 40px; left: -30px;
+            width: 80px; height: 80px; background: rgba(255,255,255,0.05);
+            border-radius: 50%;
         }
 
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand-logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .lang-badge {
             background: rgba(255, 255, 255, 0.2);
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             backdrop-filter: blur(5px);
             cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s;
         }
+        .lang-badge:active { background: rgba(255,255,255,0.3); }
 
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
+        .header h2 { margin: 0; font-size: 28px; font-weight: 700; position: relative; z-index: 2; }
+        .header p { margin: 5px 0 0; font-size: 15px; opacity: 0.9; position: relative; z-index: 2; }
 
-        .header p {
-            margin: 5px 0 0;
-            font-size: 15px;
-            opacity: 0.9;
-            font-weight: 400;
-        }
+        /* --- CONTENT AREA --- */
+        .content { padding: 25px; flex-grow: 1; margin-top: -30px; position: relative; z-index: 5; }
 
-        /* CONTENT AREA */
-        .content {
-            padding: 25px;
-            flex-grow: 1;
-        }
-
-        .screen { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .screen { display: none; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         .active { display: block; }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* LANGUAGE GRID */
-        .lang-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
+        /* --- LANGUAGE GRID --- */
+        .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
         .lang-btn {
             background: white;
             border: 1px solid #e2e8f0;
-            padding: 20px;
+            padding: 18px;
             border-radius: 16px;
             text-align: center;
             font-size: 16px;
             font-weight: 600;
             color: var(--text-main);
             cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             transition: all 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
+        .lang-btn:active { transform: scale(0.96); border-color: var(--primary); background: #f0fdfa; }
 
-        .lang-btn:active {
-            transform: scale(0.96);
-            border-color: var(--primary);
-            background: #f0fdfa;
-        }
-
-        /* COURSE CARDS */
+        /* --- COURSE CARDS --- */
         .course-card {
             background: white;
             border-radius: 20px;
-            padding: 20px;
+            padding: 18px;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             cursor: pointer;
             border: 1px solid #f1f5f9;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-
         .course-card:active { transform: scale(0.98); }
 
         .icon-box {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-right: 15px;
+            width: 50px; height: 50px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 15px; flex-shrink: 0;
         }
+        
+        /* SVG Icon styling */
+        .icon-box svg { width: 24px; height: 24px; }
 
         .section-title {
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-sub);
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            display: block;
+            font-size: 12px; font-weight: 700; text-transform: uppercase;
+            color: var(--text-sub); letter-spacing: 1px; margin-bottom: 15px; display: block;
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            text-align: center; padding: 20px;
+            color: #94a3b8; font-size: 12px;
+            border-top: 1px solid #f1f5f9;
         }
     </style>
 </head>
@@ -161,11 +166,14 @@
     
     <div class="header">
         <div class="header-top">
-            <span style="font-size:24px;">🎓</span>
+            <div class="brand-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10v6"/><path d="M20 20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12z"/><path d="M10 22v-8"/><path d="M14 22v-8"/><path d="M12 2v4"/></svg>
+                Hunar
+            </div>
             <div id="lbl-back" class="lang-badge" onclick="window.location.reload()" style="display:none;">Change Language</div>
         </div>
-        <h1>Hunar App</h1>
-        <p id="header-sub">Prepare for your future</p>
+        <h2 id="header-title">Welcome!</h2>
+        <p id="header-sub">Let's prepare for success.</p>
     </div>
 
     <div class="content">
@@ -186,7 +194,9 @@
             <span class="section-title" id="lbl-courses">Available Courses</span>
 
             <div class="course-card" onclick="goToApp('iti.html')">
-                <div class="icon-box" style="background:#ccfbf1; color:#0f766e;">⚡</div>
+                <div class="icon-box" style="background:#ccfbf1; color:#0f766e;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                </div>
                 <div>
                     <strong id="lbl-iti" style="font-size:16px;">ITI Electrician</strong><br>
                     <span style="font-size:13px; color:#64748b;">Theory & Safety</span>
@@ -194,7 +204,9 @@
             </div>
 
             <div class="course-card" onclick="goToApp('railwayd.html')">
-                <div class="icon-box" style="background:#fee2e2; color:#dc2626;">🚂</div>
+                <div class="icon-box" style="background:#fee2e2; color:#dc2626;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M12 3v16"/><path d="M8 19l-2 3"/><path d="M16 19l2 3"/><circle cx="8" cy="13" r="1"/><circle cx="16" cy="13" r="1"/></svg>
+                </div>
                 <div>
                     <strong id="lbl-rail" style="font-size:16px;">Railway Group D</strong><br>
                     <span style="font-size:13px; color:#64748b;">Science & Math</span>
@@ -202,7 +214,9 @@
             </div>
 
             <div class="course-card" onclick="goToApp('policeconstable.html')">
-                <div class="icon-box" style="background:#fefce8; color:#854d0e;">👮</div>
+                <div class="icon-box" style="background:#fefce8; color:#854d0e;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
                 <div>
                     <strong id="lbl-police" style="font-size:16px;">Police Constable</strong><br>
                     <span style="font-size:13px; color:#64748b;">GK & Reasoning</span>
@@ -211,18 +225,23 @@
         </div>
 
     </div>
+
+    <div class="footer">
+        © 2024 Hunar App • Made with ❤️ in India
+    </div>
 </div>
 
 <script>
     let selectedLang = 'en';
 
+    // UI TRANSLATION
     const uiText = {
-        en: { sub: "Choose your Exam", courses: "Select Course", iti: "ITI Electrician", rail: "Railway Group D", police: "Police Constable", back: "Change Lang" },
-        hi: { sub: "अपनी परीक्षा चुनें", courses: "कोर्स चुनें", iti: "ITI इलेक्ट्रीशियन", rail: "रेलवे ग्रुप डी", police: "पुलिस कांस्टेबल", back: "भाषा बदलें" },
-        mr: { sub: "तुमची परीक्षा निवडा", courses: "अभ्यासक्रम निवडा", iti: "ITI इलेक्ट्रिशियन", rail: "रेल्वे ग्रुप डी", police: "पोलीस भरती", back: "भाषा बदला" },
-        ta: { sub: "உங்கள் தேர்வைத் தேர்ந்தெடுக்கவும்", courses: "பாடநெறியைத் தேர்ந்தெடுக்கவும்", iti: "ஐடிஐ எலக்ட்ரீசியன்", rail: "ரயில்வே குரூப் டி", police: "போலீஸ் கான்ஸ்டபிள்", back: "மொழி மாற்றம்" },
-        te: { sub: "మీ పరీక్షను ఎంచుకోండి", courses: "కోర్సును ఎంచుకోండి", iti: "ITI ఎలక్ట్రీషియన్", rail: "రైల్వే గ్రూప్ D", police: "పోలీస్ కానిస్టేబుల్", back: "భాష మార్చండి" },
-        bn: { sub: "আপনার পরীক্ষা নির্বাচন করুন", courses: "কোর্স নির্বাচন করুন", iti: "আইটিআই ইলেকট্রিশিয়ান", rail: "রেলওয়ে গ্রুপ ডি", police: "পুলিশ কনস্টেবল", back: "ভাষা পরিবর্তন" }
+        en: { title: "Welcome!", sub: "Choose your Exam", courses: "Select Course", iti: "ITI Electrician", rail: "Railway Group D", police: "Police Constable", back: "Change Lang" },
+        hi: { title: "स्वागत है!", sub: "अपनी परीक्षा चुनें", courses: "कोर्स चुनें", iti: "ITI इलेक्ट्रीशियन", rail: "रेलवे ग्रुप डी", police: "पुलिस कांस्टेबल", back: "भाषा बदलें" },
+        mr: { title: "स्वागत आहे!", sub: "तुमची परीक्षा निवडा", courses: "अभ्यासक्रम निवडा", iti: "ITI इलेक्ट्रिशियन", rail: "रेल्वे ग्रुप डी", police: "पोलीस भरती", back: "भाषा बदला" },
+        ta: { title: "வரவேற்கிறோம்!", sub: "தேர்வைத் தேர்ந்தெடுக்கவும்", courses: "பாடநெறியைத் தேர்வுசெய்க", iti: "ஐடிஐ எலக்ட்ரீசியன்", rail: "ரயில்வே குரூப் டி", police: "போலீஸ் கான்ஸ்டபிள்", back: "மொழி மாற்றம்" },
+        te: { title: "స్వాగతం!", sub: "మీ పరీక్షను ఎంచుకోండి", courses: "కోర్సును ఎంచుకోండి", iti: "ITI ఎలక్ట్రీషియన్", rail: "రైల్వే గ్రూప్ D", police: "పోలీస్ కానిస్టేబుల్", back: "భాష మార్చండి" },
+        bn: { title: "স্বাগতম!", sub: "আপনার পরীক্ষা নির্বাচন করুন", courses: "কোর্স নির্বাচন করুন", iti: "আইটিআই ইলেকট্রিশিয়ান", rail: "রেলওয়ে গ্রুপ ডি", police: "পুলিশ কনস্টেবল", back: "ভাষা পরিবর্তন" }
     };
 
     function setLang(lang) {
@@ -235,6 +254,7 @@
         
         // Apply Text
         const t = uiText[lang] || uiText['en'];
+        document.getElementById('header-title').innerText = t.title;
         document.getElementById('header-sub').innerText = t.sub;
         document.getElementById('lbl-courses').innerText = t.courses;
         document.getElementById('lbl-iti').innerText = t.iti;
