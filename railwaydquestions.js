@@ -1,7 +1,9 @@
-// ============================================
-    // 2. RAILWAY GROUP D (100 Qs: Eng, Hin, Mar)
-    // ============================================
+// railwaydquestions.js
+// Master Database for Railway Group D (100 Qs: Eng, Hin, Mar)
+
+const masterDB = {
     railway: {
+        // ================= ENGLISH (100 Qs) =================
         en: [
             // --- GENERAL SCIENCE (1-35) ---
             {q:"Light year is a unit of?",o:["Time","Distance","Light","Speed"],a:1},
@@ -110,6 +112,7 @@
             {q:"Largest 3 digit number?",o:["100","900","999","1000"],a:2}
         ],
 
+        // ================= HINDI (100 Qs) =================
         hi: [
             // --- HINDI (Aligned 1-100) ---
             {q:"प्रकाश वर्ष किसकी इकाई है?",o:["समय","दूरी","प्रकाश","गति"],a:1},
@@ -216,6 +219,7 @@
             {q:"3 अंकों की सबसे बड़ी संख्या?",o:["100","900","999","1000"],a:2}
         ],
 
+        // ================= MARATHI (100 Qs) =================
         mr: [
             // --- MARATHI (Aligned 1-100) ---
             {q:"प्रकाश वर्ष (Light year) कशाचे एकक आहे?",o:["वेळ","अंतर","प्रकाश","वेग"],a:1},
@@ -321,9 +325,5 @@
             {q:"एका दिवसात किती तास असतात?",o:["12","24","48","36"],a:1},
             {q:"3 अंकी सर्वात मोठी संख्या?",o:["100","900","999","1000"],a:2}
         ]
-    },
-
-    // Placeholder for other courses (Can be empty for now if not used)
-    iti: { en: [], hi: [], mr: [] }, 
-    police: { en: [], hi: [], mr: [] }
+    }
 };
