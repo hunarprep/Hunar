@@ -5,64 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hunar App - Home</title>
     <style>
+        :root {
+            --primary: #2563eb; /* Professional Royal Blue */
+            --primary-dark: #1e40af;
+            --bg-color: #f8fafc; /* Very light slate grey */
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f1f5f9; /* Light Matte Grey */
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
             margin: 0; padding: 0;
+            color: var(--text-main);
             display: flex; justify-content: center;
         }
+
         .app-container {
-            width: 100%; max-width: 480px;
-            background: white; min-height: 100vh;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            width: 100%; max-width: 500px;
+            background: var(--white);
+            min-height: 100vh;
+            box-shadow: 0 0 25px rgba(0,0,0,0.05);
             display: flex; flex-direction: column;
         }
 
-        /* MATTE HEADER */
+        /* HERO HEADER */
         .header {
-            background-color: #1e293b; /* Dark Slate Matte */
-            color: white; padding: 30px 20px;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6); /* Deep Professional Gradient */
+            color: white;
+            padding: 40px 25px 50px 25px;
             text-align: center;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            margin-bottom: 20px;
         }
-        .header h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.5px; }
-        .header p { margin: 8px 0 0; color: #94a3b8; font-size: 14px; }
+        .header h1 { 
+            margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -0.5px; 
+        }
+        .header p { 
+            margin: 8px 0 0; opacity: 0.9; font-size: 15px; font-weight: 400; 
+        }
 
-        /* CONTENT */
-        .content { padding: 25px; flex-grow: 1; display: none; }
+        /* CONTENT AREA */
+        .content { padding: 0 25px 30px 25px; flex-grow: 1; display: none; animation: fadeIn 0.4s ease; }
         .active { display: block; }
 
-        /* GRID BUTTONS */
-        .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        
-        .card {
-            background: white; border: 2px solid #e2e8f0;
-            border-radius: 12px; padding: 20px;
-            text-align: center; cursor: pointer;
-            transition: transform 0.2s, border-color 0.2s;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .card:hover {
-            border-color: #3b82f6; /* Matte Blue */
-            background-color: #f8fafc;
-            transform: translateY(-3px);
-        }
-        .card h3 { margin: 10px 0 5px; color: #334155; font-size: 16px; }
-        .card span { font-size: 12px; color: #64748b; }
-        .card-icon { font-size: 32px; display: block; margin-bottom: 5px; }
 
-        /* Category List Style */
-        .list-btn {
-            display: flex; align-items: center;
-            background: white; border: 2px solid #e2e8f0;
-            padding: 18px; border-radius: 12px;
-            margin-bottom: 15px; cursor: pointer;
-            transition: 0.2s;
+        .section-title {
+            font-size: 14px; font-weight: 700; color: var(--text-sub);
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 15px; display: block;
         }
-        .list-btn:hover { border-color: #3b82f6; background-color: #f8fafc; transform: translateX(5px); }
-        .list-icon { font-size: 24px; margin-right: 15px; width: 40px; text-align: center; }
-        .list-text h3 { margin: 0; font-size: 17px; color: #1e293b; }
-        .list-text p { margin: 2px 0 0; font-size: 13px; color: #64748b; }
+
+        /* LANGUAGE GRID */
+        .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        .lang-card {
+            background: white; border: 1px solid #e2e8f0;
+            border-radius: 16px; padding: 20px;
+            text-align: center; cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+        }
+        .lang-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+        .lang-card h3 { margin: 0; font-size: 18px; color: var(--text-main); }
+        .lang-card span { font-size: 13px; color: var(--text-sub); }
+
+        /* EXAM CATEGORY CARDS */
+        .exam-card {
+            display: flex; align-items: center;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px; padding: 18px;
+            margin-bottom: 16px; cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow);
+            position: relative; overflow: hidden;
+        }
+        .exam-card:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary);
+        }
+        
+        /* Icon Circle Backgrounds */
+        .icon-box {
+            width: 50px; height: 50px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; margin-right: 18px;
+            flex-shrink: 0;
+        }
+        .icon-iti { background: #eff6ff; color: #2563eb; } /* Blue tint */
+        .icon-rail { background: #fef2f2; color: #dc2626; } /* Red tint */
+        .icon-police { background: #fff7ed; color: #ea580c; } /* Orange tint */
+
+        .card-text h3 { margin: 0 0 4px; font-size: 17px; font-weight: 700; color: var(--text-main); }
+        .card-text p { margin: 0; font-size: 13px; color: var(--text-sub); }
+        
+        /* Arrow Icon */
+        .arrow { margin-left: auto; color: #cbd5e1; font-weight: bold; font-size: 20px; }
+
+        /* Back Button */
+        .back-btn {
+            background: none; border: none; color: var(--text-sub);
+            font-size: 14px; cursor: pointer; text-decoration: underline;
+            margin-top: 20px; display: block; width: 100%; text-align: center;
+        }
 
     </style>
 </head>
@@ -76,46 +136,47 @@
     </div>
 
     <div id="screen-lang" class="content active">
-        <div class="grid-menu">
-            <div class="card" onclick="setLang('en')"><h3>English</h3><span>General</span></div>
-            <div class="card" onclick="setLang('hi')"><h3>हिंदी</h3><span>Hindi</span></div>
-            <div class="card" onclick="setLang('mr')"><h3>मराठी</h3><span>Marathi</span></div>
-            <div class="card" onclick="setLang('ta')"><h3>தமிழ்</h3><span>Tamil</span></div>
-            <div class="card" onclick="setLang('te')"><h3>తెలుగు</h3><span>Telugu</span></div>
-            <div class="card" onclick="setLang('bn')"><h3>বাংলা</h3><span>Bengali</span></div>
+        <div class="lang-grid">
+            <div class="lang-card" onclick="setLang('en')"><h3>English</h3><span>General</span></div>
+            <div class="lang-card" onclick="setLang('hi')"><h3>हिंदी</h3><span>Hindi</span></div>
+            <div class="lang-card" onclick="setLang('mr')"><h3>मराठी</h3><span>Marathi</span></div>
+            <div class="lang-card" onclick="setLang('ta')"><h3>தமிழ்</h3><span>Tamil</span></div>
+            <div class="lang-card" onclick="setLang('te')"><h3>తెలుగు</h3><span>Telugu</span></div>
+            <div class="lang-card" onclick="setLang('bn')"><h3>বাংলা</h3><span>Bengali</span></div>
         </div>
     </div>
 
     <div id="screen-cat" class="content">
-        <div style="margin-bottom: 20px; color: #64748b; font-size: 14px;">Select Exam Category:</div>
+        <span class="section-title">Available Courses</span>
         
-        <div class="list-btn" onclick="goToApp('iti.html')">
-            <div class="list-icon">⚡</div>
-            <div class="list-text">
+        <div class="exam-card" onclick="goToApp('iti.html')">
+            <div class="icon-box icon-iti">⚡</div>
+            <div class="card-text">
                 <h3>ITI Taiyaari</h3>
                 <p>Electrician, Fitter & Welder</p>
             </div>
+            <div class="arrow">›</div>
         </div>
 
-        <div class="list-btn" onclick="goToApp('railwayd.html')">
-            <div class="list-icon">🚂</div>
-            <div class="list-text">
+        <div class="exam-card" onclick="goToApp('railwayd.html')">
+            <div class="icon-box icon-rail">🚂</div>
+            <div class="card-text">
                 <h3>Railway Group D</h3>
-                <p>NTPC, ALP & Tech</p>
+                <p>NTPC, ALP & General Knowledge</p>
             </div>
+            <div class="arrow">›</div>
         </div>
 
-        <div class="list-btn" onclick="goToApp('policeconstable.html')">
-            <div class="list-icon">👮</div>
-            <div class="list-text">
+        <div class="exam-card" onclick="goToApp('policeconstable.html')">
+            <div class="icon-box icon-police">👮</div>
+            <div class="card-text">
                 <h3>Police Constable</h3>
-                <p>State Police Exams</p>
+                <p>State Police & Defense Exams</p>
             </div>
+            <div class="arrow">›</div>
         </div>
         
-        <div style="text-align: center; margin-top: 30px;">
-            <button onclick="location.reload()" style="background:none; border:none; color:#94a3b8; text-decoration:underline; cursor:pointer;">Back to Language</button>
-        </div>
+        <button class="back-btn" onclick="location.reload()">← Change Language</button>
     </div>
 
 </div>
@@ -125,9 +186,13 @@
 
     function setLang(lang) {
         selectedLang = lang;
+        // Animation transition
         document.getElementById('screen-lang').classList.remove('active');
         document.getElementById('screen-cat').classList.add('active');
-        document.getElementById('header-sub').innerText = "Select Category";
+        
+        // Update Header Text based on selection logic
+        const headerSub = document.getElementById('header-sub');
+        headerSub.innerText = "Select Your Exam";
     }
 
     function goToApp(filename) {
