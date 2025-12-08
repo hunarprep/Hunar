@@ -96,18 +96,23 @@
 
     function startPractice() {
         if (typeof masterDB === 'undefined') { 
-            alert("Error: Database file not linked!"); 
+            alert("Error: Database file not linked! Check policeconstablequestions.js"); 
             return; 
         }
 
-        // Ensure proper questions exist for Practice Mode (5 questions)
-        if (masterDB.police[lang] && masterDB.police[lang].length > 0) {
+        // Safer Check: Does 'police' exist? Does language exist?
+        if (masterDB.police && masterDB.police[lang] && masterDB.police[lang].length > 0) {
             fullQuestionPool = masterDB.police[lang];
+        } else if (masterDB.police) {
+            fullQuestionPool = masterDB.police['en']; // Default to English
         } else {
-            fullQuestionPool = masterDB.police['en'];
+            alert("Error: Police data missing in database file.");
+            return;
         }
 
-        fullQuestionPool = fullQuestionPool.filter(q => q.o.length === 4); // Confirm questions have 4 options
+        // Filter valid questions (must have 4 options)
+        fullQuestionPool = fullQuestionPool.filter(q => q.o && q.o.length === 4); 
+        
         fullQuestionPool = shuffleArray([...fullQuestionPool]);
         currentSessionQuestions = fullQuestionPool.slice(0, 5);
         setupScreen('practice');
@@ -119,24 +124,31 @@
             return; 
         }
 
-        // Ensure proper questions exist for Test Mode (30 questions)
-        if (masterDB.police[lang] && masterDB.police[lang].length > 0) {
+        if (masterDB.police && masterDB.police[lang] && masterDB.police[lang].length > 0) {
             fullQuestionPool = masterDB.police[lang];
-        } else {
+        } else if (masterDB.police) {
             fullQuestionPool = masterDB.police['en'];
+        } else {
+            alert("Error: Police data missing.");
+            return;
         }
 
-        fullQuestionPool = fullQuestionPool.filter(q => q.o.length === 4); // Confirm questions have 4 options
+        fullQuestionPool = fullQuestionPool.filter(q => q.o && q.o.length === 4);
+        
         fullQuestionPool = shuffleArray([...fullQuestionPool]);
-        currentSessionQuestions = fullQuestionPool.slice(0, Math.min(30, fullQuestionPool.length));
+        // Take 30 questions OR however many we have if less than 30
+        let count = Math.min(30, fullQuestionPool.length);
+        currentSessionQuestions = fullQuestionPool.slice(0, count);
+        
         setupScreen('exam');
-        startTimer(600); // 10 minutes in seconds
+        startTimer(600); // 10 minutes
     }
 
     function setupScreen(mode) {
         document.getElementById('screen-modes').classList.remove('active');
         document.getElementById('screen-result').classList.remove('active');
         document.getElementById('screen-quiz').classList.add('active');
+        
         if (mode === 'practice') {
             document.getElementById('timer-box').style.display = 'none';
         } else if (mode === 'exam') {
@@ -202,15 +214,24 @@
 
     function startTimer(duration) {
         let timer = duration, minutes, seconds;
-        timerInterval = setInterval(() => {
+        
+        // Helper to update text immediately
+        function updateDisplay() {
             minutes = parseInt(timer / 60, 10);
             seconds = parseInt(timer % 60, 10);
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
             document.getElementById('time-left').textContent = minutes + ":" + seconds;
+        }
+
+        updateDisplay(); // Run once instantly
+
+        timerInterval = setInterval(() => {
             if (--timer < 0) { 
                 clearInterval(timerInterval);
                 showRes(); 
+            } else {
+                updateDisplay();
             }
         }, 1000);
     }
