@@ -1,8 +1,8 @@
 // questions.js - Master Database
 // Contains 100 ITI Electrician Questions in English, Hindi, and Marathi.
 
-window.masterDB = window.masterDB || {};
-window.masterDB.iti = {
+const masterDB = {
+    railway: {
         // ================= ENGLISH (100 Qs) =================
         en: [
             // --- BASICS (1-10) ---
@@ -689,5 +689,9 @@ window.masterDB.iti = {
             {q:"భారతదేశంలో ప్రామాణిక ఫ్రీక్వెన్సీ?",o:["60 Hz","50 Hz","100 Hz","25 Hz"],a:1}
         ]
     }
-    
+};
+// CommonJS export (optional)
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = masterDB;
+}
 
