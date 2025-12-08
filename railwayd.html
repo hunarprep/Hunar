@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railway Group D</title>
+    
+    <script src="railwaydquestions.js"></script>
+
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; margin: 0; display: flex; justify-content: center; }
+        .app-container { width: 100%; max-width: 480px; background: white; min-height: 100vh; box-shadow: 0 0 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        
+        /* HEADER COLOR: Matte Red for Railway */
+        .header { background: #dc2626; color: white; padding: 20px 20px 30px; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; position: relative; }
+        .header a { color: white; text-decoration: none; font-size: 14px; opacity: 0.9; position: absolute; top: 20px; left: 20px; }
+        .header h1 { margin: 15px 0 5px; font-size: 24px; }
+        
+        .screen { display: none; padding: 25px; flex-grow: 1; }
+        .active { display: block; }
+        .menu-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; transition: 0.2s; }
+        .menu-card:hover { border-color: #dc2626; background: #fef2f2; }
+        
+        /* TIMER BOX */
+        #timer-box { text-align: right; font-weight: bold; color: #dc2626; margin-bottom: 10px; display: none; font-size: 18px; }
+        
+        .question-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
+        .q-text { font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 20px; }
+        .opt-btn { display: block; width: 100%; padding: 15px; margin-bottom: 10px; border: 2px solid #e2e8f0; background: white; border-radius: 10px; text-align: left; font-size: 16px; cursor: pointer; }
+        .correct { background: #dcfce7; border-color: #22c55e; color: #14532d; }
+        .wrong { background: #fee2e2; border-color: #ef4444; color: #7f1d1d; }
+        .action-btn { background: #dc2626; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        
+        #premium-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 85%; max-width: 320px; padding: 30px; border-radius: 16px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <a href="index.html">← Home</a>
+        <h1>Railway Group D</h1>
+        <p>NTPC, ALP & General Awareness</p>
+    </div>
+
+    <div id="screen-modes" class="screen active">
+        <h3 style="color:#64748b; margin-bottom:20px;">Select Mode:</h3>
+        <div class="menu-card" onclick="startPractice()">
+            <span style="font-size:24px; margin-right:15px;">📝</span>
+            <div><strong>Practice Quiz</strong><br><span style="font-size:12px; color:#64748b;">5 Random Questions</span></div>
+        </div>
+        <div class="menu-card" onclick="startExam()">
+            <span style="font-size:24px; margin-right:15px;">⏱️</span>
+            <div><strong>Test Mode</strong><br><span style="font-size:12px; color:#64748b;">30 Questions • 10 Mins</span></div>
+        </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+        <div id="timer-box">⏳ <span id="time-left">00:00</span></div>
+        <div class="question-card">
+            <div style="font-size:12px; color:#64748b; margin-bottom:10px;">Question <span id="q-num">1</span></div>
+            <div id="q-text" class="q-text">Loading...</div>
+            <div id="opts"></div>
+        </div>
+        <div id="feedback" style="text-align:center; font-weight:bold; height:20px; margin-bottom:10px;"></div>
+        <button id="next-btn" class="action-btn" style="display:none;" onclick="nextQ()">Next Question</button>
+    </div>
+
+    <div id="screen-result" class="screen" style="text-align:center;">
+        <h2>Score Card</h2>
+        <h1 id="score" style="font-size:48px; color:#dc2626; margin:20px 0;">0/0</h1>
+        <p id="result-msg" style="color:#64748b;">Great Job!</p>
+        <button class="action-btn" onclick="goToMenu()">Back to Main Menu 🏠</button>
+    </div>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const lang = urlParams.get('lang') || 'en';
+
+    // VARIABLES
+    let fullQuestionPool = [];
+    let currentSessionQuestions = [];
+    let idx = 0;
+    let score = 0;
+    let timerInterval;
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function startPractice() {
+        // ✅ LOAD FROM EXTERNAL DB (masterDB.railway)
+        if (typeof masterDB === 'undefined') { alert("Error: Database file not linked!"); return; }
+        
+        // Check if language exists, else default to English
+        if (masterDB.railway[lang] && masterDB.railway[lang].length > 0) {
+            fullQuestionPool = masterDB.railway[lang];
+        } else {
+            fullQuestionPool = masterDB.railway['en'];
+        }
+        
+        fullQuestionPool = shuffleArray([...fullQuestionPool]); 
+        currentSessionQuestions = fullQuestionPool.slice(0, 5); 
+        setupScreen('practice');
+    }
+
+    function startExam() {
+        if (typeof masterDB === 'undefined') { alert("Error: Database file not linked!"); return; }
+        
+        if (masterDB.railway[lang] && masterDB.railway[lang].length > 0) {
+            fullQuestionPool = masterDB.railway[lang];
+        } else {
+            fullQuestionPool = masterDB.railway['en'];
+        }
+
+        let count = Math.min(30, fullQuestionPool.length);
+        
+        fullQuestionPool = shuffleArray([...fullQuestionPool]); 
+        currentSessionQuestions = fullQuestionPool.slice(0, count); 
+        setupScreen('exam');
+        startTimer(600);
+    }
+
+    function setupScreen(mode) {
+        document.getElementById('screen-modes').classList.remove('active');
+        document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-quiz').classList.add('active');
+        if(mode === 'practice') {
+            document.getElementById('timer-box').style.display = 'none';
+        } else {
+            document.getElementById('timer-box').style.display = 'block';
+        }
+        idx = 0; score = 0; loadQ();
+    }
+
+    function loadQ() {
+        if(idx >= currentSessionQuestions.length) { showRes(); return; }
+        let q = currentSessionQuestions[idx];
+        document.getElementById('q-num').innerText = idx + 1;
+        document.getElementById('q-text').innerText = q.q;
+        let box = document.getElementById('opts'); box.innerHTML = "";
+        document.getElementById('next-btn').style.display='none';
+        document.getElementById('feedback').innerText="";
+        
+        q.o.forEach((txt, i) => {
+            let btn = document.createElement('button');
+            btn.className = 'opt-btn'; btn.innerText = txt;
+            btn.onclick = () => {
+                document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+                if(i === q.a) { 
+                    btn.classList.add('correct'); score++; 
+                    document.getElementById('feedback').innerText="✅ Correct"; 
+                    document.getElementById('feedback').style.color="green"; 
+                } else { 
+                    btn.classList.add('wrong'); 
+                    document.getElementById('feedback').innerText="❌ Wrong"; 
+                    document.getElementById('feedback').style.color="red"; 
+                }
+                document.getElementById('next-btn').style.display='block';
+            };
+            box.appendChild(btn);
+        });
+    }
+
+    function nextQ() { idx++; loadQ(); }
+
+    function showRes() {
+        clearInterval(timerInterval);
+        document.getElementById('screen-quiz').classList.remove('active');
+        document.getElementById('screen-result').classList.add('active');
+        document.getElementById('score').innerText = score + "/" + currentSessionQuestions.length;
+    }
+
+    function goToMenu() {
+        document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-modes').classList.add('active');
+    }
+
+    function startTimer(duration) {
+        let timer = duration, minutes, seconds;
+        timerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            document.getElementById('time-left').textContent = minutes + ":" + seconds;
+            if (--timer < 0) { showRes(); }
+        }, 1000);
+    }
+</script>
+</body>
+</html>
