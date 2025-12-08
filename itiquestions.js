@@ -1,8 +1,8 @@
 // questions.js - Master Database
 // Contains 100 ITI Electrician Questions in English, Hindi, and Marathi.
 
-const masterDB = {
-    iti: {
+window.masterDB = window.masterDB || {};
+window.masterDB.iti = {
         // ================= ENGLISH (100 Qs) =================
         en: [
             // --- BASICS (1-10) ---
