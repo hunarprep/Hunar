@@ -6,33 +6,40 @@
     <title>Police Constable Prep</title>
     
     <script src="policeconstablequestions.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; margin: 0; display: flex; justify-content: center; }
         .app-container { width: 100%; max-width: 480px; background: white; min-height: 100vh; box-shadow: 0 0 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
         
-        /* HEADER COLOR: Matte Khaki/Brown for Police */
+        /* POLICE KHAKI HEADER */
         .header { background: #854d0e; color: white; padding: 20px 20px 30px; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; position: relative; }
         .header a { color: white; text-decoration: none; font-size: 14px; opacity: 0.9; position: absolute; top: 20px; left: 20px; }
         .header h1 { margin: 15px 0 5px; font-size: 24px; }
         
         .screen { display: none; padding: 25px; flex-grow: 1; }
         .active { display: block; }
+        
         .menu-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; transition: 0.2s; }
         .menu-card:hover { border-color: #854d0e; background: #fefce8; }
         
-        /* TIMER BOX */
         #timer-box { text-align: right; font-weight: bold; color: #dc2626; margin-bottom: 10px; display: none; font-size: 18px; }
-        
         .question-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
         .q-text { font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 20px; }
         .opt-btn { display: block; width: 100%; padding: 15px; margin-bottom: 10px; border: 2px solid #e2e8f0; background: white; border-radius: 10px; text-align: left; font-size: 16px; cursor: pointer; }
-        .correct { background: #dcfce7; border-color: #22c55e; color: #14532d; }
-        .wrong { background: #fee2e2; border-color: #ef4444; color: #7f1d1d; }
-        .action-btn { background: #854d0e; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         
-        #premium-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; }
-        .modal-content { background: white; width: 85%; max-width: 320px; padding: 30px; border-radius: 16px; text-align: center; }
+        .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #14532d !important; }
+        .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d !important; }
+        
+        .action-btn { background: #854d0e; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .secondary-btn { background: #64748b; }
+        .share-btn { background: #25D366; }
+        .review-btn { background: #3b82f6; }
+
+        .review-item { border-bottom: 1px solid #e2e8f0; padding: 15px 0; }
+        .review-q { font-weight: bold; margin-bottom: 5px; color: #333; }
+        .review-ans { font-size: 14px; color: #666; }
+        .ans-right { color: #16a34a; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -41,7 +48,7 @@
     <div class="header">
         <a href="index.html">← Home</a>
         <h1>Police Constable</h1>
-        <p>State Police & Delhi Police Exams</p>
+        <p>State Police Exams</p>
     </div>
 
     <div id="screen-modes" class="screen active">
@@ -70,8 +77,16 @@
     <div id="screen-result" class="screen" style="text-align:center;">
         <h2>Score Card</h2>
         <h1 id="score" style="font-size:48px; color:#854d0e; margin:20px 0;">0/0</h1>
-        <p id="result-msg" style="color:#64748b;">Keep training!</p>
-        <button class="action-btn" onclick="goToMenu()">Back to Main Menu 🏠</button>
+        <p id="result-msg" style="color:#64748b; font-size:18px; font-weight:500;">...</p>
+        <button class="action-btn review-btn" onclick="showReview()">Review Answers 🧐</button>
+        <button class="action-btn share-btn" onclick="shareScore()">Share Score 📲</button>
+        <button class="action-btn secondary-btn" onclick="goToMenu()">Back to Menu 🏠</button>
+    </div>
+
+    <div id="screen-review" class="screen">
+        <h3>Review Answers</h3>
+        <div id="review-list" style="overflow-y: auto; max-height: 60vh;"></div>
+        <button class="action-btn secondary-btn" onclick="closeReview()">Close Review</button>
     </div>
 </div>
 
@@ -79,12 +94,8 @@
     const urlParams = new URLSearchParams(window.location.search);
     const lang = urlParams.get('lang') || 'en';
 
-    // VARIABLES
-    let fullQuestionPool = [];
-    let currentSessionQuestions = [];
-    let idx = 0;
-    let score = 0;
-    let timerInterval;
+    let fullQuestionPool = [], currentSessionQuestions = [], userAnswers = [];
+    let idx = 0, score = 0, timerInterval;
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -95,145 +106,111 @@
     }
 
     function startPractice() {
-        if (typeof masterDB === 'undefined') { 
-            alert("Error: Database file not linked! Check policeconstablequestions.js"); 
-            return; 
-        }
-
-        // Safer Check: Does 'police' exist? Does language exist?
-        if (masterDB.police && masterDB.police[lang] && masterDB.police[lang].length > 0) {
-            fullQuestionPool = masterDB.police[lang];
-        } else if (masterDB.police) {
-            fullQuestionPool = masterDB.police['en']; // Default to English
-        } else {
-            alert("Error: Police data missing in database file.");
-            return;
-        }
-
-        // Filter valid questions (must have 4 options)
-        fullQuestionPool = fullQuestionPool.filter(q => q.o && q.o.length === 4); 
-        
-        fullQuestionPool = shuffleArray([...fullQuestionPool]);
-        currentSessionQuestions = fullQuestionPool.slice(0, 5);
+        if (typeof masterDB === 'undefined') { alert("Error: DB not linked! Check policeconstablequestions.js"); return; }
+        // Access 'police' DB safely
+        fullQuestionPool = (masterDB.police && masterDB.police[lang] && masterDB.police[lang].length > 0) ? masterDB.police[lang] : masterDB.police['en'];
+        fullQuestionPool = shuffleArray([...fullQuestionPool]); 
+        currentSessionQuestions = fullQuestionPool.slice(0, 5); 
         setupScreen('practice');
     }
 
     function startExam() {
-        if (typeof masterDB === 'undefined') { 
-            alert("Error: Database file not linked!"); 
-            return; 
-        }
-
-        if (masterDB.police && masterDB.police[lang] && masterDB.police[lang].length > 0) {
-            fullQuestionPool = masterDB.police[lang];
-        } else if (masterDB.police) {
-            fullQuestionPool = masterDB.police['en'];
-        } else {
-            alert("Error: Police data missing.");
-            return;
-        }
-
-        fullQuestionPool = fullQuestionPool.filter(q => q.o && q.o.length === 4);
-        
-        fullQuestionPool = shuffleArray([...fullQuestionPool]);
-        // Take 30 questions OR however many we have if less than 30
+        if (typeof masterDB === 'undefined') { alert("Error: DB not linked!"); return; }
+        fullQuestionPool = (masterDB.police && masterDB.police[lang] && masterDB.police[lang].length > 0) ? masterDB.police[lang] : masterDB.police['en'];
         let count = Math.min(30, fullQuestionPool.length);
-        currentSessionQuestions = fullQuestionPool.slice(0, count);
-        
+        fullQuestionPool = shuffleArray([...fullQuestionPool]); 
+        currentSessionQuestions = fullQuestionPool.slice(0, count); 
         setupScreen('exam');
-        startTimer(600); // 10 minutes
+        startTimer(600);
     }
 
     function setupScreen(mode) {
         document.getElementById('screen-modes').classList.remove('active');
         document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-review').classList.remove('active');
         document.getElementById('screen-quiz').classList.add('active');
-        
-        if (mode === 'practice') {
-            document.getElementById('timer-box').style.display = 'none';
-        } else if (mode === 'exam') {
-            document.getElementById('timer-box').style.display = 'block';
-        }
-        idx = 0; 
-        score = 0; 
+        document.getElementById('timer-box').style.display = (mode === 'practice') ? 'none' : 'block';
+        idx = 0; score = 0; userAnswers = [];
         loadQ();
     }
 
     function loadQ() {
-        if (idx >= currentSessionQuestions.length) {
-            showRes();
-            return;
-        }
-
+        if(idx >= currentSessionQuestions.length) { showRes(); return; }
         let q = currentSessionQuestions[idx];
         document.getElementById('q-num').innerText = idx + 1;
         document.getElementById('q-text').innerText = q.q;
-        let box = document.getElementById('opts'); 
-        box.innerHTML = "";
-        document.getElementById('next-btn').style.display = 'none';
-        document.getElementById('feedback').innerText = "";
+        let box = document.getElementById('opts'); box.innerHTML = "";
+        document.getElementById('next-btn').style.display='none';
+        document.getElementById('feedback').innerText="";
+        let btnArray = [];
 
         q.o.forEach((txt, i) => {
             let btn = document.createElement('button');
-            btn.className = 'opt-btn'; 
-            btn.innerText = txt;
+            btn.className = 'opt-btn'; btn.innerText = txt;
+            btnArray.push(btn);
             btn.onclick = () => {
-                document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
-                if (i === q.a) { 
-                    btn.classList.add('correct'); 
-                    score++; 
-                    document.getElementById('feedback').innerText = "✅ Correct"; 
-                    document.getElementById('feedback').style.color = "green"; 
+                btnArray.forEach(b => b.disabled = true);
+                userAnswers.push({ q: q.q, sel: i, cor: q.a, opts: q.o });
+                if(i === q.a) { 
+                    btn.classList.add('correct'); score++; 
+                    document.getElementById('feedback').innerText="✅ Correct"; 
+                    document.getElementById('feedback').style.color="green"; 
                 } else { 
                     btn.classList.add('wrong'); 
-                    document.getElementById('feedback').innerText = "❌ Wrong"; 
-                    document.getElementById('feedback').style.color = "red"; 
+                    btnArray[q.a].classList.add('correct');
+                    document.getElementById('feedback').innerText="❌ Wrong"; 
+                    document.getElementById('feedback').style.color="red"; 
                 }
-                document.getElementById('next-btn').style.display = 'block';
+                document.getElementById('next-btn').style.display='block';
             };
             box.appendChild(btn);
         });
     }
 
-    function nextQ() { 
-        idx++; 
-        loadQ(); 
-    }
+    function nextQ() { idx++; loadQ(); }
 
     function showRes() {
         clearInterval(timerInterval);
         document.getElementById('screen-quiz').classList.remove('active');
         document.getElementById('screen-result').classList.add('active');
-        document.getElementById('score').innerText = score + "/" + currentSessionQuestions.length;
-    }
-
-    function goToMenu() {
-        document.getElementById('screen-result').classList.remove('active');
-        document.getElementById('screen-modes').classList.add('active');
-    }
-
-    function startTimer(duration) {
-        let timer = duration, minutes, seconds;
+        let total = currentSessionQuestions.length;
+        document.getElementById('score').innerText = score + "/" + total;
         
-        // Helper to update text immediately
-        function updateDisplay() {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-            document.getElementById('time-left').textContent = minutes + ":" + seconds;
+        let pct = Math.round((score/total)*100);
+        let msg = document.getElementById('result-msg');
+        if(pct >= 80) {
+            msg.innerText = `🎉 Outstanding! You scored ${pct}%!`; msg.style.color="#16a34a";
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        } else if(pct >= 50) {
+            msg.innerText = `👍 Good job! You scored ${pct}%.`; msg.style.color="#ca8a04";
+        } else {
+            msg.innerText = `📚 Keep practicing! You scored ${pct}%.`; msg.style.color="#dc2626";
         }
+    }
 
-        updateDisplay(); // Run once instantly
+    function showReview() {
+        document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-review').classList.add('active');
+        let list = document.getElementById('review-list'); list.innerHTML = "";
+        userAnswers.forEach((item, index) => {
+            let div = document.createElement('div'); div.className = "review-item";
+            let status = (item.sel === item.cor) ? "<span style='color:green'>✅</span>" : "<span style='color:red'>❌</span>";
+            div.innerHTML = `<div class="review-q">${index+1}. ${item.q}</div>
+                <div class="review-ans">You: <b>${item.opts[item.sel]}</b> ${status}</div>
+                ${item.sel !== item.cor ? `<div class="ans-right">Ans: ${item.opts[item.cor]}</div>` : ''}`;
+            list.appendChild(div);
+        });
+    }
 
-        timerInterval = setInterval(() => {
-            if (--timer < 0) { 
-                clearInterval(timerInterval);
-                showRes(); 
-            } else {
-                updateDisplay();
-            }
-        }, 1000);
+    function closeReview() { document.getElementById('screen-review').classList.remove('active'); document.getElementById('screen-result').classList.add('active'); }
+    function shareScore() { window.open("https://wa.me/?text=" + encodeURIComponent(`🔥 I scored ${score}/${currentSessionQuestions.length} in Police Constable practice! Try here: https://anchit2012.github.io/hunar-app/`), "_blank"); }
+    function goToMenu() { document.getElementById('screen-result').classList.remove('active'); document.getElementById('screen-modes').classList.add('active'); }
+    
+    function startTimer(duration) {
+        let timer = duration, m, s;
+        function update() { m=parseInt(timer/60,10); s=parseInt(timer%60,10); m=m<10?"0"+m:m; s=s<10?"0"+s:s; document.getElementById('time-left').textContent=m+":"+s; }
+        update();
+        timerInterval = setInterval(() => { if (--timer < 0) { clearInterval(timerInterval); showRes(); } else { update(); } }, 1000);
     }
 </script>
 </body>
