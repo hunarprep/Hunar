@@ -66,7 +66,6 @@
         /* BUTTONS */
         .action-btn { background: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 6px rgba(15, 118, 110, 0.2); transition: 0.2s; }
         .action-btn:hover { background: var(--primary-dark); }
-        /* Disabled state for loading */
         .action-btn:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
         
         .secondary-btn { background: var(--text-sub); }
@@ -116,8 +115,7 @@
             <div id="opts"></div>
         </div>
         <div id="feedback" style="text-align:center; font-weight:bold; height:20px; margin-bottom:10px;"></div>
-        <button id="next-btn" class="action-btn" style="display:none;" onclick="nextQ()">Next Question</button>
-    </div>
+        </div>
 
     <div id="screen-result" class="screen" style="text-align:center;">
         <h2 id="lbl-scorecard">Score Card</h2>
@@ -137,13 +135,158 @@
 
 <script>
     // ==========================================
-    // ⚠️ PASTE YOUR LINKS HERE CAREFULLY ⚠️
+    // ✅ YOUR GOOGLE SHEET LINKS
     // ==========================================
     const SHEET_URLS = {
         en: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=0&single=true&output=csv",
         hi: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=1440984595&single=true&output=csv",
         mr: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=2496928&single=true&output=csv",
         ta: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=901218882&single=true&output=csv",
+        te: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=390730614&single=true&output=csv",
+        bn: "<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITI Taiyaari</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            /* PROFESSIONAL EMERALD THEME */
+            --primary: #0f766e;
+            --primary-light: #ccfbf1;
+            --primary-dark: #115e59;
+            --bg-color: #f1f5f9;
+            --white: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg-color); margin: 0; display: flex; justify-content: center; color: var(--text-main); }
+        .app-container { width: 100%; max-width: 500px; background: var(--white); min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white; padding: 30px 20px 40px;
+            border-bottom-left-radius: 24px; border-bottom-right-radius: 24px;
+            position: relative; box-shadow: 0 4px 15px rgba(15, 118, 110, 0.2);
+        }
+        .header a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; position: absolute; top: 20px; left: 20px; }
+        .header h1 { margin: 15px 0 5px; font-size: 24px; font-weight: 700; }
+        .header p { margin: 0; opacity: 0.9; font-size: 14px; }
+        
+        .screen { display: none; padding: 25px; flex-grow: 1; animation: fadeIn 0.3s ease; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* MENU CARDS */
+        .menu-card { 
+            background: var(--white); border: 1px solid #e2e8f0; border-radius: 16px; 
+            padding: 20px; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; 
+            transition: 0.2s; box-shadow: var(--shadow);
+        }
+        .menu-card:hover { border-color: var(--primary); background: var(--primary-light); transform: translateY(-2px); }
+        
+        /* QUIZ UI */
+        #timer-box { text-align: right; font-weight: bold; color: #dc2626; margin-bottom: 10px; display: none; font-size: 18px; }
+        .question-card { background: var(--white); border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: var(--shadow); }
+        .q-text { font-size: 18px; font-weight: 600; color: var(--text-main); margin-bottom: 20px; line-height: 1.5; }
+        
+        .opt-btn { 
+            display: block; width: 100%; padding: 15px; margin-bottom: 10px; 
+            border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 12px; 
+            text-align: left; font-size: 16px; cursor: pointer; transition: 0.2s; color: var(--text-main);
+        }
+        .opt-btn:hover { border-color: var(--primary); background: white; }
+        
+        .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #14532d !important; }
+        .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d !important; }
+        
+        /* BUTTONS */
+        .action-btn { background: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 6px rgba(15, 118, 110, 0.2); transition: 0.2s; }
+        .action-btn:hover { background: var(--primary-dark); }
+        .action-btn:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+        
+        .secondary-btn { background: var(--text-sub); }
+        .share-btn { background: #25D366; }
+        .review-btn { background: #3b82f6; }
+
+        /* REVIEW SECTION */
+        .review-item { border-bottom: 1px solid #e2e8f0; padding: 15px 0; }
+        .review-q { font-weight: bold; margin-bottom: 5px; color: #333; }
+        .review-ans { font-size: 14px; color: #666; }
+        .ans-right { color: #16a34a; font-weight: bold; }
+        .explanation { font-size: 13px; color: var(--primary-dark); background: var(--primary-light); padding: 10px; border-radius: 8px; margin-top: 8px; }
+        
+        /* LOADING */
+        #loading-msg { text-align: center; margin-top: 20px; color: var(--text-sub); font-weight: 500; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <a href="index.html" id="lbl-home">← Home</a>
+        <h1 id="lbl-title">ITI Taiyaari</h1>
+        <p id="lbl-subtitle">Electrician & Fitter</p>
+    </div>
+
+    <div id="screen-modes" class="screen active">
+        <h3 style="color:var(--text-sub); margin-bottom:20px;" id="lbl-select">Select Mode:</h3>
+        
+        <div id="loading-msg">⏳ Connecting to Question Bank...</div>
+
+        <div class="menu-card" id="btn-practice" style="opacity:0.5; pointer-events:none;" onclick="startPractice()">
+            <span style="font-size:24px; margin-right:15px;">📝</span>
+            <div><strong id="lbl-prac">Practice Quiz</strong><br><span style="font-size:12px; color:var(--text-sub);" id="lbl-prac-sub">Instant Feedback</span></div>
+        </div>
+        <div class="menu-card" id="btn-exam" style="opacity:0.5; pointer-events:none;" onclick="startExam()">
+            <span style="font-size:24px; margin-right:15px;">⏱️</span>
+            <div><strong id="lbl-test">Test Mode</strong><br><span style="font-size:12px; color:var(--text-sub);" id="lbl-test-sub">Time Limit</span></div>
+        </div>
+    </div>
+
+    <div id="screen-quiz" class="screen">
+        <div id="timer-box">⏳ <span id="time-left">00:00</span></div>
+        <div class="question-card">
+            <div style="font-size:12px; color:var(--text-sub); margin-bottom:10px;"><span id="lbl-qnum">Question</span> <span id="q-num">1</span></div>
+            <div id="q-text" class="q-text">Loading...</div>
+            <div id="opts"></div>
+        </div>
+        <div id="feedback" style="text-align:center; font-weight:bold; height:20px; margin-bottom:10px;"></div>
+        </div>
+
+    <div id="screen-result" class="screen" style="text-align:center;">
+        <h2 id="lbl-scorecard">Score Card</h2>
+        <h1 id="score" style="font-size:48px; color:var(--primary); margin:20px 0;">0/0</h1>
+        <p id="result-msg" style="color:var(--text-sub); font-size:18px;">...</p>
+        <button class="action-btn review-btn" id="btn-review" onclick="showReview()">Review Answers 🧐</button>
+        <button class="action-btn share-btn" id="btn-share" onclick="shareScore()">Share Score 📲</button>
+        <button class="action-btn secondary-btn" id="btn-menu" onclick="goToMenu()">Back to Menu 🏠</button>
+    </div>
+
+    <div id="screen-review" class="screen">
+        <h3 id="lbl-review">Review Answers</h3>
+        <div id="review-list" style="overflow-y: auto; max-height: 60vh;"></div>
+        <button class="action-btn secondary-btn" id="btn-close" onclick="closeReview()">Close</button>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // ✅ YOUR GOOGLE SHEET LINKS
+    // ==========================================
+    const SHEET_URLS = {
+        en: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=0&single=true&output=csv",
+        hi: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=1440984595&single=true&output=csv",
+        mr: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=2496928&single=true&output=csv",
+        ta: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=703350&single=true&output=csv",
         te: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=390730614&single=true&output=csv",
         bn: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLVDGFJpFOr6NuvZ8gBU1ClBEPrQv6DYsQ54hbTDSsVmem3ZCsrdBrFtupirN4ihCRtFVLjT2M7O7_/pub?gid=901218882&single=true&output=csv"
     };
@@ -152,14 +295,14 @@
     const urlParams = new URLSearchParams(window.location.search);
     const lang = urlParams.get('lang') || 'en';
 
-    // UI TRANSLATIONS (Includes all 6 languages)
+    // UI TRANSLATIONS
     const ui = {
-        en: { title:"ITI Taiyaari", sub:"Electrician & Fitter", home:"← Home", select:"Select Mode:", prac:"Practice Quiz", pracSub:"Instant Feedback", test:"Test Mode", testSub:"Time Limit", next:"Next Question", qnum:"Question", score:"Score Card", review:"Review Answers", share:"Share Score", menu:"Back to Menu", close:"Close" },
-        hi: { title:"आईटीआई तैयारी", sub:"इलेक्ट्रीशियन और फिटर", home:"← होम", select:"मोड चुनें:", prac:"अभ्यास क्विज़", pracSub:"तुरंत उत्तर", test:"परीक्षा मोड", testSub:"समय सीमा", next:"अगला प्रश्न", qnum:"प्रश्न", score:"स्कोर कार्ड", review:"उत्तर देखें", share:"स्कोर शेयर करें", menu:"मेन्यू पर जाएं", close:"बंद करें" },
-        mr: { title:"आय.टी.आय. तयारी", sub:"इलेक्ट्रिशियन आणि फिटर", home:"← होम", select:"मोड निवडा:", prac:"सराव प्रश्नमंजुषा", pracSub:"त्वरित उत्तरे", test:"परीक्षा मोड", testSub:"वेळ मर्यादा", next:"पुढचा प्रश्न", qnum:"प्रश्न", score:"गुणपत्रक", review:"उत्तरे तपासा", share:"गुण शेअर करा", menu:"मेनूवर जा", close:"बंद करा" },
-        ta: { title:"ஐடிஐ தயாரிப்பு", sub:"எலக்ட்ரீஷியன் & பிட்டர்", home:"← முகப்பு", select:"முறை தேர்வு:", prac:"பயிற்சி வினாடி வினா", pracSub:"உடனடி பதில்", test:"தேர்வு முறை", testSub:"நேர வரம்பு", next:"அடுத்த கேள்வி", qnum:"கேள்வி", score:"மதிப்பெண் அட்டை", review:"பதில்களை சரிபார்க்கவும்", share:"பகிரவும்", menu:"மெனு", close:"மூடு" },
-        te: { title:"ITI తయారీ", sub:"ఎలక్ట్రీషియన్ & ఫిట్టర్", home:"← హోమ్", select:"మోడ్ ఎంచుకోండి:", prac:"ప్రాక్టీస్ క్విజ్", pracSub:"తక్షణ సమాధానం", test:"పరీక్ష మోడ్", testSub:"సమయ పరిమితి", next:"తదుపరి ప్రశ్న", qnum:"ప్రశ్న", score:"స్కోర్ కార్డ్", review:"సమాధానాలు", share:"భాగస్వామ్యం", menu:"మెను", close:"మూసివేయి" },
-        bn: { title:"আইটিআই প্রস্তুতি", sub:"ইলেকট্রিশিয়ান এবং ফিটার", home:"← হোম", select:"মোড নির্বাচন:", prac:"অনুশীলন কুইজ", pracSub:"তাত্ক্ষণিক উত্তর", test:"পরীক্ষা মোড", testSub:"সময় সীমা", next:"পরবর্তী প্রশ্ন", qnum:"প্রশ্ন", score:"স্কোর কার্ড", review:"উত্তর দেখুন", share:"শেয়ার করুন", menu:"মেনু", close:"বন্ধ করুন" }
+        en: { title:"ITI Taiyaari", sub:"Electrician & Fitter", home:"← Home", select:"Select Mode:", prac:"Practice Quiz", pracSub:"Instant Feedback", test:"Test Mode", testSub:"Time Limit", qnum:"Question", score:"Score Card", review:"Review Answers", share:"Share Score", menu:"Back to Menu", close:"Close" },
+        hi: { title:"आईटीआई तैयारी", sub:"इलेक्ट्रीशियन और फिटर", home:"← होम", select:"मोड चुनें:", prac:"अभ्यास क्विज़", pracSub:"तुरंत उत्तर", test:"परीक्षा मोड", testSub:"समय सीमा", qnum:"प्रश्न", score:"स्कोर कार्ड", review:"उत्तर देखें", share:"स्कोर शेयर करें", menu:"मेन्यू पर जाएं", close:"बंद करें" },
+        mr: { title:"आय.टी.आय. तयारी", sub:"इलेक्ट्रिशियन आणि फिटर", home:"← होम", select:"मोड निवडा:", prac:"सराव प्रश्नमंजुषा", pracSub:"त्वरित उत्तरे", test:"परीक्षा मोड", testSub:"वेळ मर्यादा", qnum:"प्रश्न", score:"गुणपत्रक", review:"उत्तरे तपासा", share:"गुण शेअर करा", menu:"मेनूवर जा", close:"बंद करा" },
+        ta: { title:"ஐடிஐ தயாரிப்பு", sub:"எலக்ட்ரீஷியன் & பிட்டர்", home:"← முகப்பு", select:"முறை தேர்வு:", prac:"பயிற்சி வினாடி வினா", pracSub:"உடனடி பதில்", test:"தேர்வு முறை", testSub:"நேர வரம்பு", qnum:"கேள்வி", score:"மதிப்பெண் அட்டை", review:"பதில்களை சரிபார்க்கவும்", share:"பகிரவும்", menu:"மெனு", close:"மூடு" },
+        te: { title:"ITI తయారీ", sub:"ఎలక్ట్రీషియన్ & ఫిట్టర్", home:"← హోమ్", select:"మోడ్ ఎంచుకోండి:", prac:"ప్రాక్టీస్ క్విజ్", pracSub:"తక్షణ సమాధానం", test:"పరీక్ష మోడ్", testSub:"సమయ పరిమితి", qnum:"ప్రశ్న", score:"స్కోర్ కార్డ్", review:"సమాధానాలు", share:"భాగస్వామ్యం", menu:"మెను", close:"మూసివేయి" },
+        bn: { title:"আইটিআই প্রস্তুতি", sub:"ইলেকট্রিশিয়ান এবং ফিটার", home:"← হোম", select:"মোড নির্বাচন:", prac:"অনুশীলন কুইজ", pracSub:"তাত্ক্ষণিক উত্তর", test:"পরীক্ষা মোড", testSub:"সময় সীমা", qnum:"প্রশ্ন", score:"স্কোর কার্ড", review:"উত্তর দেখুন", share:"শেয়ার করুন", menu:"মেনু", close:"বন্ধ করুন" }
     };
 
     // Apply UI Text
@@ -172,7 +315,6 @@
     document.getElementById('lbl-prac-sub').innerText = t.pracSub;
     document.getElementById('lbl-test').innerText = t.test;
     document.getElementById('lbl-test-sub').innerText = t.testSub;
-    document.getElementById('next-btn').innerText = t.next;
     document.getElementById('lbl-qnum').innerText = t.qnum;
     document.getElementById('lbl-scorecard').innerText = t.score;
     document.getElementById('btn-review').innerText = t.review;
@@ -184,21 +326,16 @@
     // DATA VARIABLES
     let masterData = [], fullQuestionPool = [], currentSessionQuestions = [], userAnswers = [], idx = 0, score = 0, timerInterval;
 
-    // --- FETCH DATA BASED ON SELECTED LANGUAGE ---
+    // --- FETCH DATA ---
     function loadData() {
-        // Pick the correct URL based on lang (fallback to English if missing)
         const targetURL = SHEET_URLS[lang] || SHEET_URLS['en'];
-
-        if(!targetURL || targetURL.includes("PASTE_")) {
-            document.getElementById('loading-msg').innerText = "⚠️ Error: Link for this language is missing in code.";
-            return;
-        }
 
         Papa.parse(targetURL, {
             download: true,
             header: true,
+            skipEmptyLines: true, 
             complete: function(results) {
-                masterData = results.data; // Since we are loading a specific sheet, all rows are valid
+                masterData = results.data;
                 
                 if(masterData.length > 0) {
                     document.getElementById('loading-msg').style.display = 'none';
@@ -215,8 +352,6 @@
             }
         });
     }
-
-    // Call load immediately
     loadData();
 
     function shuffleArray(array) {
@@ -229,7 +364,9 @@
 
     function startPractice() {
         fullQuestionPool = shuffleArray([...masterData]); 
-        currentSessionQuestions = fullQuestionPool.slice(0, 5); 
+        // Force 5 questions OR full length if less than 5
+        let count = Math.min(5, fullQuestionPool.length);
+        currentSessionQuestions = fullQuestionPool.slice(0, count); 
         setupScreen('practice');
     }
 
@@ -252,16 +389,20 @@
     }
 
     function loadQ() {
-        if(idx >= currentSessionQuestions.length) { showRes(); return; }
+        // Correct Stop Condition
+        if(idx >= currentSessionQuestions.length) { 
+            showRes(); 
+            return; 
+        }
+
         let q = currentSessionQuestions[idx];
         document.getElementById('q-num').innerText = idx + 1;
-        document.getElementById('q-text').innerText = q.q; // Column 'q' in Sheet
+        document.getElementById('q-text').innerText = q.q; 
         let box = document.getElementById('opts'); box.innerHTML = "";
-        document.getElementById('next-btn').style.display='none';
         document.getElementById('feedback').innerText="";
         
-        let options = [q.o1, q.o2, q.o3, q.o4]; // Columns 'o1', 'o2', etc.
-        let correctIndex = parseInt(q.a) - 1; // Convert '1' to 0 (Array index)
+        let options = [q.o1, q.o2, q.o3, q.o4]; 
+        let correctIndex = parseInt(q.a) - 1; 
 
         let btnArray = [];
 
@@ -270,8 +411,13 @@
             btn.className = 'opt-btn'; btn.innerText = txt;
             btnArray.push(btn);
             btn.onclick = () => {
+                // 1. Disable all buttons
                 btnArray.forEach(b => b.disabled = true);
+                
+                // 2. Save Answer
                 userAnswers.push({ q: q.q, sel: i, cor: correctIndex, opts: options, exp: q.explain });
+                
+                // 3. Show Feedback
                 if(i === correctIndex) { 
                     btn.classList.add('correct'); score++; 
                     document.getElementById('feedback').innerText="✅ Correct"; 
@@ -282,13 +428,16 @@
                     document.getElementById('feedback').innerText="❌ Wrong"; 
                     document.getElementById('feedback').style.color="red"; 
                 }
-                document.getElementById('next-btn').style.display='block';
+
+                // 4. AUTO ADVANCE after 1 second
+                setTimeout(() => {
+                    idx++;
+                    loadQ();
+                }, 1000); 
             };
             box.appendChild(btn);
         });
     }
-
-    function nextQ() { idx++; loadQ(); }
 
     function showRes() {
         clearInterval(timerInterval);
@@ -309,11 +458,201 @@
         userAnswers.forEach((item, index) => {
             let div = document.createElement('div'); div.className = "review-item";
             let status = (item.sel === item.cor) ? "<span style='color:green'>✅</span>" : "<span style='color:red'>❌</span>";
-            // Check if explanation exists in the sheet
             let explainHtml = (item.exp && item.exp !== "") ? `<div class="explanation">💡 <b>Explanation:</b> ${item.exp}</div>` : '';
             div.innerHTML = `<div class="review-q">${index+1}. ${item.q}</div>
                 <div class="review-ans">You: <b>${item.opts[item.sel]}</b> ${status}</div>
-                ${item.sel !== item.cor ? `<div class="ans-right">Right: ${item.opts[item.cor]}</div>` : ''}
+                ${item.sel !== item.cor ? `<div class="ans-right">Ans: ${item.opts[item.cor]}</div>` : ''}
+                ${explainHtml}`;
+            list.appendChild(div);
+        });
+    }
+
+    function closeReview() { document.getElementById('screen-review').classList.remove('active'); document.getElementById('screen-result').classList.add('active'); }
+    function shareScore() { window.open("https://wa.me/?text=" + encodeURIComponent(`🔥 I scored ${score}/${currentSessionQuestions.length} in ITI Taiyaari!`), "_blank"); }
+    function goToMenu() { document.getElementById('screen-result').classList.remove('active'); document.getElementById('screen-modes').classList.add('active'); }
+    
+    function startTimer(duration) {
+        let timer = duration, m, s;
+        function update() { m=parseInt(timer/60,10); s=parseInt(timer%60,10); m=m<10?"0"+m:m; s=s<10?"0"+s:s; document.getElementById('time-left').textContent=m+":"+s; }
+        update();
+        timerInterval = setInterval(() => { if (--timer < 0) { clearInterval(timerInterval); showRes(); } else { update(); } }, 1000);
+    }
+</script>
+</body>
+</html>"
+    };
+    // ==========================================
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const lang = urlParams.get('lang') || 'en';
+
+    // UI TRANSLATIONS
+    const ui = {
+        en: { title:"ITI Taiyaari", sub:"Electrician & Fitter", home:"← Home", select:"Select Mode:", prac:"Practice Quiz", pracSub:"Instant Feedback", test:"Test Mode", testSub:"Time Limit", qnum:"Question", score:"Score Card", review:"Review Answers", share:"Share Score", menu:"Back to Menu", close:"Close" },
+        hi: { title:"आईटीआई तैयारी", sub:"इलेक्ट्रीशियन और फिटर", home:"← होम", select:"मोड चुनें:", prac:"अभ्यास क्विज़", pracSub:"तुरंत उत्तर", test:"परीक्षा मोड", testSub:"समय सीमा", qnum:"प्रश्न", score:"स्कोर कार्ड", review:"उत्तर देखें", share:"स्कोर शेयर करें", menu:"मेन्यू पर जाएं", close:"बंद करें" },
+        mr: { title:"आय.टी.आय. तयारी", sub:"इलेक्ट्रिशियन आणि फिटर", home:"← होम", select:"मोड निवडा:", prac:"सराव प्रश्नमंजुषा", pracSub:"त्वरित उत्तरे", test:"परीक्षा मोड", testSub:"वेळ मर्यादा", qnum:"प्रश्न", score:"गुणपत्रक", review:"उत्तरे तपासा", share:"गुण शेअर करा", menu:"मेनूवर जा", close:"बंद करा" },
+        ta: { title:"ஐடிஐ தயாரிப்பு", sub:"எலக்ட்ரீஷியன் & பிட்டர்", home:"← முகப்பு", select:"முறை தேர்வு:", prac:"பயிற்சி வினாடி வினா", pracSub:"உடனடி பதில்", test:"தேர்வு முறை", testSub:"நேர வரம்பு", qnum:"கேள்வி", score:"மதிப்பெண் அட்டை", review:"பதில்களை சரிபார்க்கவும்", share:"பகிரவும்", menu:"மெனு", close:"மூடு" },
+        te: { title:"ITI తయారీ", sub:"ఎలక్ట్రీషియన్ & ఫిట్టర్", home:"← హోమ్", select:"మోడ్ ఎంచుకోండి:", prac:"ప్రాక్టీస్ క్విజ్", pracSub:"తక్షణ సమాధానం", test:"పరీక్ష మోడ్", testSub:"సమయ పరిమితి", qnum:"ప్రశ్న", score:"స్కోర్ కార్డ్", review:"సమాధానాలు", share:"భాగస్వామ్యం", menu:"మెను", close:"మూసివేయి" },
+        bn: { title:"আইটিআই প্রস্তুতি", sub:"ইলেকট্রিশিয়ান এবং ফিটার", home:"← হোম", select:"মোড নির্বাচন:", prac:"অনুশীলন কুইজ", pracSub:"তাত্ক্ষণিক উত্তর", test:"পরীক্ষা মোড", testSub:"সময় সীমা", qnum:"প্রশ্ন", score:"স্কোর কার্ড", review:"উত্তর দেখুন", share:"শেয়ার করুন", menu:"মেনু", close:"বন্ধ করুন" }
+    };
+
+    // Apply UI Text
+    const t = ui[lang] || ui['en'];
+    document.getElementById('lbl-title').innerText = t.title;
+    document.getElementById('lbl-subtitle').innerText = t.sub;
+    document.getElementById('lbl-home').innerText = t.home;
+    document.getElementById('lbl-select').innerText = t.select;
+    document.getElementById('lbl-prac').innerText = t.prac;
+    document.getElementById('lbl-prac-sub').innerText = t.pracSub;
+    document.getElementById('lbl-test').innerText = t.test;
+    document.getElementById('lbl-test-sub').innerText = t.testSub;
+    document.getElementById('lbl-qnum').innerText = t.qnum;
+    document.getElementById('lbl-scorecard').innerText = t.score;
+    document.getElementById('btn-review').innerText = t.review;
+    document.getElementById('btn-share').innerText = t.share;
+    document.getElementById('btn-menu').innerText = t.menu;
+    document.getElementById('lbl-review').innerText = t.review;
+    document.getElementById('btn-close').innerText = t.close;
+
+    // DATA VARIABLES
+    let masterData = [], fullQuestionPool = [], currentSessionQuestions = [], userAnswers = [], idx = 0, score = 0, timerInterval;
+
+    // --- FETCH DATA ---
+    function loadData() {
+        const targetURL = SHEET_URLS[lang] || SHEET_URLS['en'];
+
+        Papa.parse(targetURL, {
+            download: true,
+            header: true,
+            skipEmptyLines: true, 
+            complete: function(results) {
+                masterData = results.data;
+                
+                if(masterData.length > 0) {
+                    document.getElementById('loading-msg').style.display = 'none';
+                    const b1 = document.getElementById('btn-practice');
+                    const b2 = document.getElementById('btn-exam');
+                    b1.style.opacity = "1"; b1.style.pointerEvents = "auto";
+                    b2.style.opacity = "1"; b2.style.pointerEvents = "auto";
+                } else {
+                    document.getElementById('loading-msg').innerText = "⚠️ No questions found in this sheet.";
+                }
+            },
+            error: function(err) {
+                document.getElementById('loading-msg').innerText = "⚠️ Network Error: Could not load questions.";
+            }
+        });
+    }
+    loadData();
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function startPractice() {
+        fullQuestionPool = shuffleArray([...masterData]); 
+        // Force 5 questions OR full length if less than 5
+        let count = Math.min(5, fullQuestionPool.length);
+        currentSessionQuestions = fullQuestionPool.slice(0, count); 
+        setupScreen('practice');
+    }
+
+    function startExam() {
+        let count = Math.min(30, masterData.length);
+        fullQuestionPool = shuffleArray([...masterData]); 
+        currentSessionQuestions = fullQuestionPool.slice(0, count); 
+        setupScreen('exam');
+        startTimer(600);
+    }
+
+    function setupScreen(mode) {
+        document.getElementById('screen-modes').classList.remove('active');
+        document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-review').classList.remove('active');
+        document.getElementById('screen-quiz').classList.add('active');
+        document.getElementById('timer-box').style.display = (mode === 'practice') ? 'none' : 'block';
+        idx = 0; score = 0; userAnswers = [];
+        loadQ();
+    }
+
+    function loadQ() {
+        // Correct Stop Condition
+        if(idx >= currentSessionQuestions.length) { 
+            showRes(); 
+            return; 
+        }
+
+        let q = currentSessionQuestions[idx];
+        document.getElementById('q-num').innerText = idx + 1;
+        document.getElementById('q-text').innerText = q.q; 
+        let box = document.getElementById('opts'); box.innerHTML = "";
+        document.getElementById('feedback').innerText="";
+        
+        let options = [q.o1, q.o2, q.o3, q.o4]; 
+        let correctIndex = parseInt(q.a) - 1; 
+
+        let btnArray = [];
+
+        options.forEach((txt, i) => {
+            let btn = document.createElement('button');
+            btn.className = 'opt-btn'; btn.innerText = txt;
+            btnArray.push(btn);
+            btn.onclick = () => {
+                // 1. Disable all buttons
+                btnArray.forEach(b => b.disabled = true);
+                
+                // 2. Save Answer
+                userAnswers.push({ q: q.q, sel: i, cor: correctIndex, opts: options, exp: q.explain });
+                
+                // 3. Show Feedback
+                if(i === correctIndex) { 
+                    btn.classList.add('correct'); score++; 
+                    document.getElementById('feedback').innerText="✅ Correct"; 
+                    document.getElementById('feedback').style.color="green"; 
+                } else { 
+                    btn.classList.add('wrong'); 
+                    btnArray[correctIndex].classList.add('correct');
+                    document.getElementById('feedback').innerText="❌ Wrong"; 
+                    document.getElementById('feedback').style.color="red"; 
+                }
+
+                // 4. AUTO ADVANCE after 1 second
+                setTimeout(() => {
+                    idx++;
+                    loadQ();
+                }, 1000); 
+            };
+            box.appendChild(btn);
+        });
+    }
+
+    function showRes() {
+        clearInterval(timerInterval);
+        document.getElementById('screen-quiz').classList.remove('active');
+        document.getElementById('screen-result').classList.add('active');
+        let total = currentSessionQuestions.length;
+        document.getElementById('score').innerText = score + "/" + total;
+        let pct = Math.round((score/total)*100);
+        let msg = document.getElementById('result-msg');
+        if(pct >= 80) { msg.innerText = `🎉 Amazing! You scored ${pct}%!`; msg.style.color="#16a34a"; confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); }
+        else { msg.innerText = `📚 Keep practicing! You scored ${pct}%.`; msg.style.color="#0f172a"; }
+    }
+
+    function showReview() {
+        document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-review').classList.add('active');
+        let list = document.getElementById('review-list'); list.innerHTML = "";
+        userAnswers.forEach((item, index) => {
+            let div = document.createElement('div'); div.className = "review-item";
+            let status = (item.sel === item.cor) ? "<span style='color:green'>✅</span>" : "<span style='color:red'>❌</span>";
+            let explainHtml = (item.exp && item.exp !== "") ? `<div class="explanation">💡 <b>Explanation:</b> ${item.exp}</div>` : '';
+            div.innerHTML = `<div class="review-q">${index+1}. ${item.q}</div>
+                <div class="review-ans">You: <b>${item.opts[item.sel]}</b> ${status}</div>
+                ${item.sel !== item.cor ? `<div class="ans-right">Ans: ${item.opts[item.cor]}</div>` : ''}
                 ${explainHtml}`;
             list.appendChild(div);
         });
