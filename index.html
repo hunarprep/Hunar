@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hunar App - Home</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f5f9; /* Light Matte Grey */
+            margin: 0; padding: 0;
+            display: flex; justify-content: center;
+        }
+        .app-container {
+            width: 100%; max-width: 480px;
+            background: white; min-height: 100vh;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column;
+        }
+
+        /* MATTE HEADER */
+        .header {
+            background-color: #1e293b; /* Dark Slate Matte */
+            color: white; padding: 30px 20px;
+            text-align: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+        .header h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.5px; }
+        .header p { margin: 8px 0 0; color: #94a3b8; font-size: 14px; }
+
+        /* CONTENT */
+        .content { padding: 25px; flex-grow: 1; display: none; }
+        .active { display: block; }
+
+        /* GRID BUTTONS */
+        .grid-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        
+        .card {
+            background: white; border: 2px solid #e2e8f0;
+            border-radius: 12px; padding: 20px;
+            text-align: center; cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .card:hover {
+            border-color: #3b82f6; /* Matte Blue */
+            background-color: #f8fafc;
+            transform: translateY(-3px);
+        }
+        .card h3 { margin: 10px 0 5px; color: #334155; font-size: 16px; }
+        .card span { font-size: 12px; color: #64748b; }
+        .card-icon { font-size: 32px; display: block; margin-bottom: 5px; }
+
+        /* Category List Style */
+        .list-btn {
+            display: flex; align-items: center;
+            background: white; border: 2px solid #e2e8f0;
+            padding: 18px; border-radius: 12px;
+            margin-bottom: 15px; cursor: pointer;
+            transition: 0.2s;
+        }
+        .list-btn:hover { border-color: #3b82f6; background-color: #f8fafc; transform: translateX(5px); }
+        .list-icon { font-size: 24px; margin-right: 15px; width: 40px; text-align: center; }
+        .list-text h3 { margin: 0; font-size: 17px; color: #1e293b; }
+        .list-text p { margin: 2px 0 0; font-size: 13px; color: #64748b; }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <div class="header">
+        <h1>HUNAR</h1>
+        <p id="header-sub">Select Language / भाषा चुनें</p>
+    </div>
+
+    <div id="screen-lang" class="content active">
+        <div class="grid-menu">
+            <div class="card" onclick="setLang('en')"><h3>English</h3><span>General</span></div>
+            <div class="card" onclick="setLang('hi')"><h3>हिंदी</h3><span>Hindi</span></div>
+            <div class="card" onclick="setLang('mr')"><h3>मराठी</h3><span>Marathi</span></div>
+            <div class="card" onclick="setLang('ta')"><h3>தமிழ்</h3><span>Tamil</span></div>
+            <div class="card" onclick="setLang('te')"><h3>తెలుగు</h3><span>Telugu</span></div>
+            <div class="card" onclick="setLang('bn')"><h3>বাংলা</h3><span>Bengali</span></div>
+        </div>
+    </div>
+
+    <div id="screen-cat" class="content">
+        <div style="margin-bottom: 20px; color: #64748b; font-size: 14px;">Select Exam Category:</div>
+        
+        <div class="list-btn" onclick="goToApp('iti.html')">
+            <div class="list-icon">⚡</div>
+            <div class="list-text">
+                <h3>ITI Taiyaari</h3>
+                <p>Electrician, Fitter & Welder</p>
+            </div>
+        </div>
+
+        <div class="list-btn" onclick="goToApp('railwayd.html')">
+            <div class="list-icon">🚂</div>
+            <div class="list-text">
+                <h3>Railway Group D</h3>
+                <p>NTPC, ALP & Tech</p>
+            </div>
+        </div>
+
+        <div class="list-btn" onclick="goToApp('policeconstable.html')">
+            <div class="list-icon">👮</div>
+            <div class="list-text">
+                <h3>Police Constable</h3>
+                <p>State Police Exams</p>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="location.reload()" style="background:none; border:none; color:#94a3b8; text-decoration:underline; cursor:pointer;">Back to Language</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let selectedLang = 'en';
+
+    function setLang(lang) {
+        selectedLang = lang;
+        document.getElementById('screen-lang').classList.remove('active');
+        document.getElementById('screen-cat').classList.add('active');
+        document.getElementById('header-sub').innerText = "Select Category";
+    }
+
+    function goToApp(filename) {
+        // Redirects to the file with language variable attached
+        window.location.href = filename + "?lang=" + selectedLang;
+    }
+</script>
+
+</body>
+</html>
