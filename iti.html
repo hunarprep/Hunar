@@ -11,180 +11,212 @@
 
     <style>
         :root {
-            /* PROFESSIONAL EMERALD THEME */
+            /* ITI THEME: EMERALD */
             --primary: #0f766e;
-            --primary-light: #ccfbf1;
-            --primary-dark: #115e59;
-            --bg-color: #f1f5f9;
+            --primary-light: #f0fdfa;
+            --text-dark: #0f172a;
             --white: #ffffff;
-            --text-main: #0f172a;
-            --text-sub: #64748b;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg-color); margin: 0; display: flex; justify-content: center; color: var(--text-main); }
-        .app-container { width: 100%; max-width: 500px; background: var(--white); min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
-        
+        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; margin: 0; display: flex; justify-content: center; min-height: 100vh; }
+        .app-container { width: 100%; max-width: 480px; background: white; min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+
+        /* HEADER - Flexbox to prevent overlap */
         .header {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-            color: white; padding: 30px 20px 40px;
-            border-bottom-left-radius: 24px; border-bottom-right-radius: 24px;
-            position: relative; box-shadow: 0 4px 15px rgba(15, 118, 110, 0.2);
+            background: var(--primary);
+            color: var(--white);
+            padding: 20px;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 10px rgba(15, 118, 110, 0.3);
         }
-        .header a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; position: absolute; top: 20px; left: 20px; }
-        .header h1 { margin: 15px 0 5px; font-size: 24px; font-weight: 700; }
-        .header p { margin: 0; opacity: 0.9; font-size: 14px; }
-        
-        .screen { display: none; padding: 25px; flex-grow: 1; animation: fadeIn 0.3s ease; }
+
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .header a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.1);
+            padding: 5px 10px;
+            border-radius: 12px;
+        }
+
+        .header h1 { margin: 0; font-size: 24px; font-weight: 700; }
+        .header p { margin: 2px 0 0; opacity: 0.9; font-size: 13px; }
+
+        /* SCREENS */
+        .screen { display: none; padding: 25px; flex-grow: 1; animation: fadeIn 0.3s ease-in-out; }
         .active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .menu-card { 
-            background: var(--white); border: 1px solid #e2e8f0; border-radius: 16px; 
-            padding: 20px; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; 
-            transition: 0.2s; box-shadow: var(--shadow);
-        }
-        .menu-card:hover { border-color: var(--primary); background: var(--primary-light); transform: translateY(-2px); }
-        
-        #timer-box { text-align: right; font-weight: bold; color: #dc2626; margin-bottom: 10px; display: none; font-size: 18px; }
-        .question-card { background: var(--white); border: 1px solid #e2e8f0; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: var(--shadow); }
-        .q-text { font-size: 18px; font-weight: 600; color: var(--text-main); margin-bottom: 20px; line-height: 1.5; }
-        
-        .opt-btn { 
-            display: block; width: 100%; padding: 15px; margin-bottom: 10px; 
-            border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 12px; 
-            text-align: left; font-size: 16px; cursor: pointer; transition: 0.2s; color: var(--text-main);
-        }
-        .opt-btn:hover { border-color: var(--primary); background: white; }
-        
-        .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #14532d !important; }
-        .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d !important; }
-        
-        .action-btn { background: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 6px rgba(15, 118, 110, 0.2); }
-        .action-btn:hover { background: var(--primary-dark); }
-        .secondary-btn { background: var(--text-sub); }
-        .share-btn { background: #25D366; }
-        .review-btn { background: #3b82f6; }
 
-        .review-item { border-bottom: 1px solid #e2e8f0; padding: 15px 0; }
-        .ans-right { color: #16a34a; font-weight: bold; }
+        /* MENU CARDS */
+        .menu-card {
+            background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 15px;
+            display: flex; align-items: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        .menu-card:active { transform: scale(0.98); background: var(--primary-light); border-color: var(--primary); }
+
+        /* QUIZ BUTTONS */
+        .opt-btn {
+            width: 100%; padding: 18px; margin-bottom: 12px; border: 2px solid #e2e8f0; background: white;
+            border-radius: 14px; font-size: 16px; text-align: left; color: var(--text-dark); cursor: pointer;
+            transition: background 0.2s;
+        }
+        .opt-btn:active { background: #f8fafc; }
+        .opt-btn.correct { background: #dcfce7; border-color: #22c55e; color: #14532d; }
+        .opt-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #7f1d1d; }
+
+        /* RESULT CIRCLE */
+        .result-box { text-align: center; padding: 40px 20px; }
+        .score-circle {
+            width: 120px; height: 120px; background: var(--primary); color: white; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; margin: 0 auto 20px;
+            box-shadow: 0 10px 20px rgba(15, 118, 110, 0.4);
+        }
+        .action-btn {
+            background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px;
+            font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
 <div class="app-container">
+    
     <div class="header">
-        <a href="index.html" id="lbl-home">← Home</a>
-        <h1 id="lbl-title">ITI Taiyaari</h1>
-        <p>Electrician & Fitter</p>
+        <div class="header-nav">
+            <a href="index.html" id="lbl-home">← Home</a>
+        </div>
+        <h1 id="lbl-title">ITI Electrician</h1>
+        <p>Theory, Safety & Tools</p>
     </div>
 
     <div id="screen-modes" class="screen active">
-        <h3 style="color:var(--text-sub); margin-bottom:20px;" id="lbl-select">Select Mode:</h3>
+        <h3 id="lbl-select" style="color:#64748b; margin-bottom:20px;">Select Mode:</h3>
+
         <div class="menu-card" onclick="startPractice()">
-            <span style="font-size:24px; margin-right:15px;">📝</span>
-            <div><strong id="lbl-prac">Practice Quiz</strong><br><span style="font-size:12px; color:var(--text-sub);" id="lbl-prac-sub">Instant Feedback</span></div>
+            <span style="font-size:24px; margin-right:15px;">⚡</span>
+            <div>
+                <strong id="lbl-prac">Practice Quiz</strong><br>
+                <span id="lbl-prac-sub" style="font-size:12px; color:#64748b;">5 Random Questions</span>
+            </div>
         </div>
+
         <div class="menu-card" onclick="startExam()">
             <span style="font-size:24px; margin-right:15px;">⏱️</span>
-            <div><strong id="lbl-test">Test Mode</strong><br><span style="font-size:12px; color:var(--text-sub);" id="lbl-test-sub">Time Limit</span></div>
+            <div>
+                <strong id="lbl-test">Test Mode</strong><br>
+                <span id="lbl-test-sub" style="font-size:12px; color:#64748b;">100 Questions • 90 Mins</span>
+            </div>
         </div>
     </div>
 
     <div id="screen-quiz" class="screen">
-        <div id="timer-box">⏳ <span id="time-left">00:00</span></div>
-        <div class="question-card">
-            <div style="font-size:12px; color:var(--text-sub); margin-bottom:10px;"><span id="lbl-qnum">Question</span> <span id="q-num">1</span></div>
-            <div id="q-text" class="q-text">Loading...</div>
-            <div id="opts"></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:600; color:#64748b;">
+            <span id="lbl-qnum">Question <span id="q-num">1</span></span>
+            <span id="timer-box" style="color:#ef4444; display:none;">⏱️ <span id="time-left">90:00</span></span>
         </div>
-        <div id="feedback" style="text-align:center; font-weight:bold; height:20px; margin-bottom:10px;"></div>
-        <button id="next-btn" class="action-btn" style="display:none;" onclick="nextQ()">Next Question</button>
+
+        <h2 id="q-text" style="font-size:18px; margin-bottom:25px; line-height:1.5;">Question text loading...</h2>
+        
+        <div id="opts"></div>
+        <div id="feedback" style="height:30px; margin-top:15px; text-align:center;"></div>
     </div>
 
-    <div id="screen-result" class="screen" style="text-align:center;">
-        <h2 id="lbl-scorecard">Score Card</h2>
-        <h1 id="score" style="font-size:48px; color:var(--primary); margin:20px 0;">0/0</h1>
-        <p id="result-msg" style="color:var(--text-sub); font-size:18px;">...</p>
-        <button class="action-btn review-btn" id="btn-review" onclick="showReview()">Review Answers 🧐</button>
-        <button class="action-btn share-btn" id="btn-share" onclick="shareScore()">Share Score 📲</button>
-        <button class="action-btn secondary-btn" id="btn-menu" onclick="goToMenu()">Back to Menu 🏠</button>
+    <div id="screen-result" class="screen">
+        <div class="result-box">
+            <div class="score-circle" id="final-score">0</div>
+            <h2 id="score-text">You Scored</h2>
+            <p id="result-msg" style="font-size:18px; margin-bottom:30px;"></p>
+            
+            <button class="action-btn" onclick="showReview()" id="lbl-review" style="background:#fff; color:#333; border:1px solid #ddd; margin-bottom:10px;">Review Answers</button>
+            <button class="action-btn" onclick="shareScore()" id="lbl-share">Share Score</button>
+            <button class="action-btn" onclick="goToMenu()" id="lbl-menu" style="background:transparent; color:#64748b; margin-top:5px;">Back to Menu</button>
+        </div>
     </div>
 
     <div id="screen-review" class="screen">
-        <h3 id="lbl-review">Review Answers</h3>
-        <div id="review-list" style="overflow-y: auto; max-height: 60vh;"></div>
-        <button class="action-btn secondary-btn" id="btn-close" onclick="closeReview()">Close</button>
+        <h3 style="margin-bottom:20px;">Review Answers</h3>
+        <div id="review-list"></div>
+        <button class="action-btn" onclick="closeReview()">Close</button>
     </div>
+
 </div>
 
 <script>
-    // 1. GET URL PARAMETERS (Language)
+    // 1. URL & LANGUAGE
     const urlParams = new URLSearchParams(window.location.search);
     const lang = urlParams.get('lang') || 'en';
-    
-    // 2. UI TRANSLATIONS
+
     const ui = {
-        en: { home: "← Home", title: "ITI Taiyaari", practice: "Practice Quiz", practiceSub: "5 Random Questions", test: "Test Mode", testSub: "100 Questions • 90 Mins", qNum: "Question", next: "Next", finish: "Finish", review: "Review Answers", share: "Share Score", menu: "Main Menu" },
-        hi: { home: "← घर", title: "ITI तैयारी", practice: "अभ्यास क्विज़", practiceSub: "5 यादृच्छिक प्रश्न", test: "परीक्षा मोड", testSub: "100 प्रश्न • 90 मिनट", qNum: "प्रश्न", next: "अगला", finish: "समाप्त करें", review: "उत्तर देखें", share: "स्कोर साझा करें", menu: "मेनू" },
-        mr: { home: "← मुख्यपृष्ठ", title: "ITI तयारी", practice: "सराव प्रश्नमंजुषा", practiceSub: "5 यादृच्छिक प्रश्न", test: "परीक्षा मोड", testSub: "100 प्रश्न • 90 मिनिटे", qNum: "प्रश्न", next: "पुढील", finish: "समाप्त करा", review: "उत्तरे तपासा", share: "स्कोर शेअर करा", menu: "मेनू" },
-        bn: { home: "← বাড়ি", title: "ITI প্রস্তুতি", practice: "অনুশীলন কুইজ", practiceSub: "৫টি র্যান্ডম প্রশ্ন", test: "টেস্ট মোড", testSub: "১০০টি প্রশ্ন • ৯০ মিনিট", qNum: "প্রশ্ন", next: "পরবর্তী", finish: "শেষ করুন", review: "উত্তর দেখুন", share: "শেয়ার করুন", menu: "মেনু" },
-        ta: { home: "← முகப்பு", title: "ITI தயாரிப்பு", practice: "பயிற்சி வினாடி வினா", practiceSub: "5 சீரற்ற கேள்விகள்", test: "தேர்வு முறை", testSub: "100 கேள்விகள் • 90 நிமிடங்கள்", qNum: "கேள்வி", next: "அடுத்து", finish: "முடிக்கவும்", review: "பதில்களைப் பார்க்கவும்", share: "மதிப்பெண்ணைப் பகிரவும்", menu: "மெனு" },
-        te: { home: "← హోమ్", title: "ITI తయారీ", practice: "ప్రాక్టీస్ క్విజ్", practiceSub: "5 యాదృచ్ఛిక ప్రశ్నలు", test: "పరీక్ష మోడ్", testSub: "100 ప్రశ్నలు • 90 నిమిషాలు", qNum: "ప్రశ్న", next: "తరువాత", finish: "పూర్తి చేయండి", review: "సమాధానాలను చూడండి", share: "స్కోర్‌ను షేర్ చేయండి", menu: "మెను" }
+        en: { home: "← Home", title: "ITI Electrician", select: "Select Mode:", prac: "Practice Quiz", pracSub: "5 Random Questions", test: "Test Mode", testSub: "100 Questions • 90 Mins", qNum: "Question", review: "Review Answers", share: "Share Score", menu: "Main Menu" },
+        hi: { home: "← घर", title: "ITI इलेक्ट्रीशियन", select: "मोड चुनें:", prac: "अभ्यास क्विज़", pracSub: "5 यादृच्छिक प्रश्न", test: "परीक्षा मोड", testSub: "100 प्रश्न • 90 मिनट", qNum: "प्रश्न", review: "उत्तर देखें", share: "स्कोर साझा करें", menu: "मेनू" },
+        mr: { home: "← मुख्यपृष्ठ", title: "ITI इलेक्ट्रिशियन", select: "मोड निवडा:", prac: "सराव प्रश्नमंजुषा", pracSub: "5 यादृच्छिक प्रश्न", test: "परीक्षा मोड", testSub: "100 प्रश्न • 90 मिनिटे", qNum: "प्रश्न", review: "उत्तरे तपासा", share: "स्कोर शेअर करा", menu: "मेनू" },
+        bn: { home: "← বাড়ি", title: "ITI ইলেকট্রিশিয়ান", select: "মোড নির্বাচন করুন:", prac: "অনুশীলন কুইজ", pracSub: "৫টি র্যান্ডম প্রশ্ন", test: "টেস্ট মোড", testSub: "১০০টি প্রশ্ন • ৯০ মিনিট", qNum: "প্রশ্ন", review: "উত্তর দেখুন", share: "শেয়ার করুন", menu: "মেনু" },
+        ta: { home: "← முகப்பு", title: "ஐடிஐ எலக்ட்ரீசியன்", select: "முறையைத் தேர்ந்தெடுக்கவும்:", prac: "பயிற்சி வினாடி வினா", pracSub: "5 சீரற்ற கேள்விகள்", test: "தேர்வு முறை", testSub: "100 கேள்விகள் • 90 நிமிடங்கள்", qNum: "கேள்வி", review: "பதில்களைப் பார்க்கவும்", share: "பகிரவும்", menu: "மெனு" },
+        te: { home: "← హోమ్", title: "ITI ఎలక్ట్రీషియన్", select: "మోడ్‌ని ఎంచుకోండి:", prac: "ప్రాక్టీస్ క్విజ్", pracSub: "5 యాదృచ్ఛిక ప్రశ్నలు", test: "పరీక్ష మోడ్", testSub: "100 ప్రశ్నలు • 90 నిమిషాలు", qNum: "ప్రశ్న", review: "సమాధానాలు", share: "షేర్ చేయండి", menu: "మెను" }
     };
 
-    // Apply Translations immediately
     const t = ui[lang] || ui['en'];
+    
+    // Apply UI Text
     document.getElementById('lbl-home').innerText = t.home;
     document.getElementById('lbl-title').innerText = t.title;
-    document.getElementById('lbl-prac').innerText = t.practice;
-    document.getElementById('lbl-prac-sub').innerText = t.practiceSub;
+    document.getElementById('lbl-select').innerText = t.select;
+    document.getElementById('lbl-prac').innerText = t.prac;
+    document.getElementById('lbl-prac-sub').innerText = t.pracSub;
     document.getElementById('lbl-test').innerText = t.test;
     document.getElementById('lbl-test-sub').innerText = t.testSub;
+    document.getElementById('lbl-qnum').firstChild.nodeValue = t.qNum + " ";
+    document.getElementById('lbl-review').innerText = t.review;
+    document.getElementById('lbl-share').innerText = t.share;
+    document.getElementById('lbl-menu').innerText = t.menu;
 
-    // 3. GAME LOGIC VARIABLES
+    // 2. LOGIC
     let currentSessionQuestions = [];
     let currentQIndex = 0;
     let score = 0;
     let userAnswers = [];
     let timerInterval;
 
-    // 4. START FUNCTIONS
     function startPractice() {
-        // Validation: Check if DB loaded
-        if (typeof masterDB === 'undefined') {
-            alert("Database not loaded! Check if 'itiquestions.js' exists.");
-            return;
-        }
+        if (typeof masterDB === 'undefined') { alert("Error: 'itiquestions.js' not found. Please rename the file."); return; }
         
-        // Fetch 5 random questions
+        // Fetch Questions
         let allQs = masterDB.iti[lang] || masterDB.iti['en'];
+        // Shuffle
         let shuffled = [...allQs].sort(() => 0.5 - Math.random());
         currentSessionQuestions = shuffled.slice(0, 5);
-        
         startQuiz();
     }
 
     function startExam() {
-        if (typeof masterDB === 'undefined') { alert("Database Error"); return; }
+        if (typeof masterDB === 'undefined') { alert("Error: DB not loaded"); return; }
         let allQs = masterDB.iti[lang] || masterDB.iti['en'];
-        currentSessionQuestions = [...allQs].sort(() => 0.5 - Math.random()).slice(0, 100); // Full Exam
-        startQuiz(true); // true = enable timer
+        currentSessionQuestions = [...allQs].sort(() => 0.5 - Math.random()).slice(0, 100);
+        startQuiz(true);
     }
 
     function startQuiz(isExam = false) {
         currentQIndex = 0;
         score = 0;
         userAnswers = [];
-        
         document.getElementById('screen-modes').classList.remove('active');
         document.getElementById('screen-quiz').classList.add('active');
-        
         loadQuestion();
         
         if (isExam) {
-            document.getElementById('timer-box').style.display = "block";
-            startTimer(90 * 60); // 90 minutes
+            document.getElementById('timer-box').style.display = "inline";
+            startTimer(90 * 60);
         } else {
             document.getElementById('timer-box').style.display = "none";
         }
@@ -197,10 +229,9 @@
         
         let optsDiv = document.getElementById('opts');
         optsDiv.innerHTML = "";
-        document.getElementById('feedback').innerHTML = ""; // Clear feedback
+        document.getElementById('feedback').innerHTML = "";
         
         let btnArray = [];
-        
         q.o.forEach((optText, idx) => {
             let btn = document.createElement('button');
             btn.className = 'opt-btn';
@@ -212,31 +243,18 @@
     }
 
     function checkAnswer(selectedIdx, correctIdx, btn, btnArray, qData) {
-        // Disable all buttons
         btnArray.forEach(b => b.disabled = true);
-        
         let isCorrect = (selectedIdx === correctIdx);
         if (isCorrect) score++;
         
-        // Save for review
-        userAnswers.push({
-            q: qData.q,
-            opts: qData.o,
-            sel: selectedIdx,
-            cor: correctIdx
-        });
+        userAnswers.push({ q: qData.q, opts: qData.o, sel: selectedIdx, cor: correctIdx });
 
-        // Visual Feedback
-        if (isCorrect) {
-            btn.classList.add('correct');
-            document.getElementById('feedback').innerHTML = "<span style='color:green; font-weight:bold'>✅ Correct!</span>";
-        } else {
+        if (isCorrect) btn.classList.add('correct');
+        else {
             btn.classList.add('wrong');
-            btnArray[correctIdx].classList.add('correct'); // Show right answer
-            document.getElementById('feedback').innerHTML = "<span style='color:red; font-weight:bold'>❌ Wrong!</span>";
+            btnArray[correctIdx].classList.add('correct');
         }
 
-        // Auto next after 1.5s
         setTimeout(() => {
             if (currentQIndex < currentSessionQuestions.length - 1) {
                 currentQIndex++;
@@ -244,7 +262,7 @@
             } else {
                 showResults();
             }
-        }, 1500);
+        }, 1200);
     }
 
     function showResults() {
@@ -253,6 +271,7 @@
         document.getElementById('screen-result').classList.add('active');
         
         let percentage = (score / currentSessionQuestions.length) * 100;
+        document.getElementById('final-score').innerText = score;
         document.getElementById('score-text').innerText = `You Scored ${score} / ${currentSessionQuestions.length}`;
         
         let msg = document.getElementById('result-msg');
@@ -266,29 +285,47 @@
         }
     }
 
-    // Helper: Timer
+    function showReview() {
+        document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-review').classList.add('active');
+        let list = document.getElementById('review-list');
+        list.innerHTML = "";
+        userAnswers.forEach((item, index) => {
+            let div = document.createElement('div');
+            div.style.cssText = "margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;";
+            let status = (item.sel === item.cor) ? "✅" : "❌";
+            div.innerHTML = `<div style="font-weight:600; font-size:14px;">${index+1}. ${item.q}</div>
+                <div style="font-size:13px; color:#555; margin-top:4px;">
+                Your Ans: <b>${item.opts[item.sel]}</b> ${status} <br>
+                ${item.sel !== item.cor ? `<span style="color:green">Correct: ${item.opts[item.cor]}</span>` : ''}</div>`;
+            list.appendChild(div);
+        });
+    }
+
+    function closeReview() {
+        document.getElementById('screen-review').classList.remove('active');
+        document.getElementById('screen-result').classList.add('active');
+    }
+
+    function shareScore() {
+        let text = `🔥 I just scored ${score}/${currentSessionQuestions.length} in ITI Electrician practice on Hunar App!`;
+        window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+    }
+
+    function goToMenu() { window.location.reload(); }
+
     function startTimer(duration) {
-        let timer = duration, minutes, seconds;
+        let timer = duration, m, s;
         timerInterval = setInterval(() => {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-            document.getElementById('time-left').textContent = minutes + ":" + seconds;
-            if (--timer < 0) {
-                clearInterval(timerInterval);
-                showResults();
-            }
+            m = parseInt(timer / 60, 10);
+            s = parseInt(timer % 60, 10);
+            m = m < 10 ? "0" + m : m;
+            s = s < 10 ? "0" + s : s;
+            document.getElementById('time-left').textContent = m + ":" + s;
+            if (--timer < 0) { clearInterval(timerInterval); showResults(); }
         }, 1000);
     }
-    
-    // Navigation Functions
-    function goToMenu() {
-        window.location.reload(); // Simple reload to reset
-    }
-    
-    // (Add review function if needed similar to logic above)
-
 </script>
+
 </body>
 </html>
