@@ -1,31 +1,47 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ITI Taiyaari</title>
-    <script src="itiquestions.js"></script> 
     
+    <script src="questions.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
-        /* ... (Keep your existing CSS completely same) ... */
         body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; margin: 0; display: flex; justify-content: center; }
         .app-container { width: 100%; max-width: 480px; background: white; min-height: 100vh; box-shadow: 0 0 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        
+        /* ITI BLUE HEADER */
         .header { background: #2563eb; color: white; padding: 20px 20px 30px; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; position: relative; }
         .header a { color: white; text-decoration: none; font-size: 14px; opacity: 0.9; position: absolute; top: 20px; left: 20px; }
         .header h1 { margin: 15px 0 5px; font-size: 24px; }
+        
         .screen { display: none; padding: 25px; flex-grow: 1; }
         .active { display: block; }
+        
         .menu-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; transition: 0.2s; }
-        .menu-card:hover { border-color: #2563eb; background: #f8fafc; }
+        .menu-card:hover { border-color: #2563eb; background: #eff6ff; }
+        
         #timer-box { text-align: right; font-weight: bold; color: #dc2626; margin-bottom: 10px; display: none; font-size: 18px; }
         .question-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
         .q-text { font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 20px; }
         .opt-btn { display: block; width: 100%; padding: 15px; margin-bottom: 10px; border: 2px solid #e2e8f0; background: white; border-radius: 10px; text-align: left; font-size: 16px; cursor: pointer; }
-        .correct { background: #dcfce7; border-color: #22c55e; color: #14532d; }
-        .wrong { background: #fee2e2; border-color: #ef4444; color: #7f1d1d; }
-        .action-btn { background: #2563eb; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        .secondary-btn { background: #94a3b8; margin-top: 10px; }
+        
+        /* Colors */
+        .correct { background: #dcfce7 !important; border-color: #22c55e !important; color: #14532d !important; }
+        .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; color: #7f1d1d !important; }
+        
+        .action-btn { background: #2563eb; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .secondary-btn { background: #64748b; }
+        .share-btn { background: #25D366; }
+        .review-btn { background: #3b82f6; }
+
+        /* Review List */
+        .review-item { border-bottom: 1px solid #e2e8f0; padding: 15px 0; }
+        .review-q { font-weight: bold; margin-bottom: 5px; color: #333; }
+        .review-ans { font-size: 14px; color: #666; }
+        .ans-right { color: #16a34a; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -63,8 +79,16 @@
     <div id="screen-result" class="screen" style="text-align:center;">
         <h2>Score Card</h2>
         <h1 id="score" style="font-size:48px; color:#2563eb; margin:20px 0;">0/0</h1>
-        <p id="result-msg" style="color:#64748b;">Great effort!</p>
-        <button class="action-btn" onclick="goToMenu()">Back to Main Menu 🏠</button>
+        <p id="result-msg" style="color:#64748b; font-size:18px; font-weight:500;">...</p>
+        <button class="action-btn review-btn" onclick="showReview()">Review Answers 🧐</button>
+        <button class="action-btn share-btn" onclick="shareScore()">Share Score 📲</button>
+        <button class="action-btn secondary-btn" onclick="goToMenu()">Back to Menu 🏠</button>
+    </div>
+
+    <div id="screen-review" class="screen">
+        <h3>Review Answers</h3>
+        <div id="review-list" style="overflow-y: auto; max-height: 60vh;"></div>
+        <button class="action-btn secondary-btn" onclick="closeReview()">Close Review</button>
     </div>
 </div>
 
@@ -72,12 +96,8 @@
     const urlParams = new URLSearchParams(window.location.search);
     const lang = urlParams.get('lang') || 'en';
 
-    // VARIABLES
-    let fullQuestionPool = [];
-    let currentSessionQuestions = [];
-    let idx = 0;
-    let score = 0;
-    let timerInterval;
+    let fullQuestionPool = [], currentSessionQuestions = [], userAnswers = [];
+    let idx = 0, score = 0, timerInterval;
 
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -88,23 +108,17 @@
     }
 
     function startPractice() {
-        // 2. LOAD FROM MASTER DB (Notice: masterDB.iti)
-        // Checks if 'iti' exists, then checks language
-        if (typeof masterDB === 'undefined') { alert("Error: Database not loaded!"); return; }
-        
-        fullQuestionPool = masterDB.iti[lang] || masterDB.iti['en'];
-        
+        if (typeof masterDB === 'undefined') { alert("Error: DB not linked! Check questions.js"); return; }
+        fullQuestionPool = (masterDB.iti && masterDB.iti[lang] && masterDB.iti[lang].length > 0) ? masterDB.iti[lang] : masterDB.iti['en'];
         fullQuestionPool = shuffleArray([...fullQuestionPool]); 
         currentSessionQuestions = fullQuestionPool.slice(0, 5); 
         setupScreen('practice');
     }
 
     function startExam() {
-        if (typeof masterDB === 'undefined') { alert("Error: Database not loaded!"); return; }
-        
-        fullQuestionPool = masterDB.iti[lang] || masterDB.iti['en'];
+        if (typeof masterDB === 'undefined') { alert("Error: DB not linked!"); return; }
+        fullQuestionPool = (masterDB.iti && masterDB.iti[lang] && masterDB.iti[lang].length > 0) ? masterDB.iti[lang] : masterDB.iti['en'];
         let count = Math.min(30, fullQuestionPool.length);
-        
         fullQuestionPool = shuffleArray([...fullQuestionPool]); 
         currentSessionQuestions = fullQuestionPool.slice(0, count); 
         setupScreen('exam');
@@ -114,13 +128,11 @@
     function setupScreen(mode) {
         document.getElementById('screen-modes').classList.remove('active');
         document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-review').classList.remove('active');
         document.getElementById('screen-quiz').classList.add('active');
-        if(mode === 'practice') {
-            document.getElementById('timer-box').style.display = 'none';
-        } else {
-            document.getElementById('timer-box').style.display = 'block';
-        }
-        idx = 0; score = 0; loadQ();
+        document.getElementById('timer-box').style.display = (mode === 'practice') ? 'none' : 'block';
+        idx = 0; score = 0; userAnswers = [];
+        loadQ();
     }
 
     function loadQ() {
@@ -131,18 +143,22 @@
         let box = document.getElementById('opts'); box.innerHTML = "";
         document.getElementById('next-btn').style.display='none';
         document.getElementById('feedback').innerText="";
-        
+        let btnArray = [];
+
         q.o.forEach((txt, i) => {
             let btn = document.createElement('button');
             btn.className = 'opt-btn'; btn.innerText = txt;
+            btnArray.push(btn);
             btn.onclick = () => {
-                document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+                btnArray.forEach(b => b.disabled = true);
+                userAnswers.push({ q: q.q, sel: i, cor: q.a, opts: q.o });
                 if(i === q.a) { 
                     btn.classList.add('correct'); score++; 
                     document.getElementById('feedback').innerText="✅ Correct"; 
                     document.getElementById('feedback').style.color="green"; 
                 } else { 
                     btn.classList.add('wrong'); 
+                    btnArray[q.a].classList.add('correct');
                     document.getElementById('feedback').innerText="❌ Wrong"; 
                     document.getElementById('feedback').style.color="red"; 
                 }
@@ -158,24 +174,44 @@
         clearInterval(timerInterval);
         document.getElementById('screen-quiz').classList.remove('active');
         document.getElementById('screen-result').classList.add('active');
-        document.getElementById('score').innerText = score + "/" + currentSessionQuestions.length;
+        let total = currentSessionQuestions.length;
+        document.getElementById('score').innerText = score + "/" + total;
+        
+        let pct = Math.round((score/total)*100);
+        let msg = document.getElementById('result-msg');
+        if(pct >= 80) {
+            msg.innerText = `🎉 Amazing! You scored ${pct}%!`; msg.style.color="#16a34a";
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        } else if(pct >= 50) {
+            msg.innerText = `👍 Good job! You scored ${pct}%.`; msg.style.color="#ca8a04";
+        } else {
+            msg.innerText = `📚 Keep practicing! You scored ${pct}%.`; msg.style.color="#dc2626";
+        }
     }
 
-    function goToMenu() {
+    function showReview() {
         document.getElementById('screen-result').classList.remove('active');
-        document.getElementById('screen-modes').classList.add('active');
+        document.getElementById('screen-review').classList.add('active');
+        let list = document.getElementById('review-list'); list.innerHTML = "";
+        userAnswers.forEach((item, index) => {
+            let div = document.createElement('div'); div.className = "review-item";
+            let status = (item.sel === item.cor) ? "<span style='color:green'>✅</span>" : "<span style='color:red'>❌</span>";
+            div.innerHTML = `<div class="review-q">${index+1}. ${item.q}</div>
+                <div class="review-ans">You: <b>${item.opts[item.sel]}</b> ${status}</div>
+                ${item.sel !== item.cor ? `<div class="ans-right">Ans: ${item.opts[item.cor]}</div>` : ''}`;
+            list.appendChild(div);
+        });
     }
 
+    function closeReview() { document.getElementById('screen-review').classList.remove('active'); document.getElementById('screen-result').classList.add('active'); }
+    function shareScore() { window.open("https://wa.me/?text=" + encodeURIComponent(`🔥 I scored ${score}/${currentSessionQuestions.length} in ITI Taiyaari! Try here: https://anchit2012.github.io/hunar-app/`), "_blank"); }
+    function goToMenu() { document.getElementById('screen-result').classList.remove('active'); document.getElementById('screen-modes').classList.add('active'); }
+    
     function startTimer(duration) {
-        let timer = duration, minutes, seconds;
-        timerInterval = setInterval(function () {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-            document.getElementById('time-left').textContent = minutes + ":" + seconds;
-            if (--timer < 0) { showRes(); }
-        }, 1000);
+        let timer = duration, m, s;
+        function update() { m=parseInt(timer/60,10); s=parseInt(timer%60,10); m=m<10?"0"+m:m; s=s<10?"0"+s:s; document.getElementById('time-left').textContent=m+":"+s; }
+        update();
+        timerInterval = setInterval(() => { if (--timer < 0) { clearInterval(timerInterval); showRes(); } else { update(); } }, 1000);
     }
 </script>
 </body>
