@@ -1,8 +1,8 @@
 // railwaydquestions.js
 // Master Database for Railway Group D (100 Qs: Eng, Hin, Mar)
 
-window.masterDB = window.masterDB || {};
-window.masterDB.railway = {
+const masterDB = {
+    railway: {
         // ================= ENGLISH (100 Qs) =================
         en: [
             // --- GENERAL SCIENCE (1-35) ---
@@ -654,4 +654,10 @@ window.masterDB.railway = {
             {q:"3 అంకెల అతిపెద్ద సంఖ్య?",o:["100","900","999","1000"],a:2}
         ]
     }
+};
+
+// CommonJS export (optional)
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = masterDB;
+}
 
