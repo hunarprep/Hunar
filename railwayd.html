@@ -10,20 +10,13 @@
 
     <style>
         :root {
-            /* RAILWAY RED */
             --primary: #dc2626; --primary-dark: #b91c1c; --primary-soft: #fef2f2;
             --bg-body: #f3f4f6; --surface: #ffffff; --text-main: #111827;
-            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; display: flex; justify-content: center; }
         .app-container { width: 100%; max-width: 480px; background: var(--surface); min-height: 100vh; display: flex; flex-direction: column; box-shadow: 0 0 25px rgba(0,0,0,0.05); }
 
-        .header {
-            background: linear-gradient(180deg, var(--primary-dark), var(--primary));
-            color: white; padding: 30px 25px 40px;
-            border-bottom-left-radius: 32px; border-bottom-right-radius: 32px;
-        }
+        .header { background: linear-gradient(180deg, var(--primary-dark), var(--primary)); color: white; padding: 30px 25px 40px; border-bottom-left-radius: 32px; border-bottom-right-radius: 32px; }
         .header-nav a { background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; text-decoration: none; color: white; font-size: 13px; font-weight: 600; backdrop-filter: blur(4px); }
         .header h1 { margin: 20px 0 5px; font-size: 28px; }
 
@@ -32,20 +25,16 @@
         .active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
 
-        .menu-card {
-            background: white; border: 1px solid #e5e7eb; border-radius: 20px; padding: 20px;
-            margin-bottom: 16px; display: flex; align-items: center; cursor: pointer;
-            box-shadow: var(--shadow-card); transition: transform 0.2s;
-        }
+        .menu-card { background: white; border: 1px solid #e5e7eb; border-radius: 20px; padding: 20px; margin-bottom: 16px; display: flex; align-items: center; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: transform 0.2s; }
         .menu-card:active { transform: scale(0.98); background: var(--primary-soft); }
 
-        .opt-btn {
-            width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #e5e7eb;
-            background: white; border-radius: 16px; font-size: 16px; text-align: left;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02); color: var(--text-main);
-        }
+        .opt-btn { width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #e5e7eb; background: white; border-radius: 16px; font-size: 16px; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.02); color: var(--text-main); cursor: pointer; }
         .opt-btn.correct { background: #dcfce7; border-color: #22c55e; color: #14532d; }
         .opt-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #7f1d1d; }
+
+        .action-btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 600; font-size: 16px; margin-top: 10px; cursor: pointer; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-outline { background: white; border: 1px solid #d1d5db; color: var(--text-main); }
     </style>
 </head>
 <body>
@@ -60,12 +49,10 @@
     <div class="content">
         <div id="screen-modes" class="screen active">
             <h3 id="lbl-select" style="color:#6b7280; margin-bottom:20px; text-transform:uppercase; font-size:13px; letter-spacing:1px;">Select Mode</h3>
-            
             <div class="menu-card" onclick="startPractice()">
-                <div style="font-size:28px; margin-right:15px;">📝</div>
+                <div style="font-size:28px; margin-right:15px;">🚂</div>
                 <div><strong id="lbl-prac">Practice Quiz</strong><br><span id="lbl-prac-sub" style="font-size:13px; color:#6b7280;">5 Random Questions</span></div>
             </div>
-
             <div class="menu-card" onclick="startExam()">
                 <div style="font-size:28px; margin-right:15px;">⏱️</div>
                 <div><strong id="lbl-test">Test Mode</strong><br><span id="lbl-test-sub" style="font-size:13px; color:#6b7280;">100 Questions • 90 Mins</span></div>
@@ -85,7 +72,16 @@
             <div style="font-size:60px; margin-bottom:10px;">🏆</div>
             <h2 id="score-text" style="margin-bottom:5px;">Score: 0</h2>
             <p id="result-msg" style="color:#6b7280; margin-bottom:30px;">Great Effort!</p>
-            <button class="opt-btn" onclick="location.reload()" style="text-align:center; background:var(--primary); color:white; font-weight:bold;">Back to Menu</button>
+            
+            <button class="action-btn btn-outline" onclick="showReview()">Review Answers</button>
+            <button class="action-btn btn-primary" onclick="shareScore()">Share on WhatsApp</button>
+            <button class="action-btn btn-outline" onclick="window.location.reload()" style="border:none; background:transparent; color:#6b7280;">Back to Menu</button>
+        </div>
+
+        <div id="screen-review" class="screen">
+            <h3 style="margin-bottom:20px;">Review Answers</h3>
+            <div id="review-list"></div>
+            <button class="action-btn btn-primary" onclick="closeReview()">Close Review</button>
         </div>
     </div>
 </div>
@@ -104,7 +100,7 @@
     };
 
     window.onload = function() {
-        if(typeof masterDB === 'undefined') alert("⚠️ Error: 'railwaydquestions.js' not found.\nRename your file correctly!");
+        if(typeof masterDB === 'undefined') alert("⚠️ Error: 'railwaydquestions.js' not found.");
         const t = ui[lang] || ui['en'];
         document.getElementById('lbl-home').innerText = t.home;
         document.getElementById('lbl-title').innerText = t.title;
@@ -116,7 +112,7 @@
         document.getElementById('lbl-qnum').firstChild.nodeValue = t.qNum + " ";
     };
 
-    let questions = [], index = 0, score = 0, timer;
+    let questions = [], index = 0, score = 0, timer, userAnswers = [];
 
     function startPractice() {
         if(typeof masterDB === 'undefined') return alert("Database Missing!");
@@ -133,7 +129,7 @@
     }
 
     function startQuiz(isExam) {
-        index = 0; score = 0;
+        index = 0; score = 0; userAnswers = [];
         document.getElementById('screen-modes').classList.remove('active');
         document.getElementById('screen-quiz').classList.add('active');
         document.getElementById('timer-box').style.display = isExam ? "inline" : "none";
@@ -151,19 +147,18 @@
             let btn = document.createElement('button');
             btn.className = 'opt-btn';
             btn.innerText = opt;
-            btn.onclick = () => check(i, q.a, btn);
+            btn.onclick = () => check(i, q.a, btn, q);
             div.appendChild(btn);
         });
     }
 
-    function check(sel, cor, btn) {
+    function check(sel, cor, btn, qData) {
         let btns = document.getElementsByClassName('opt-btn');
         for(let b of btns) b.disabled = true;
+        userAnswers.push({ q: qData.q, opts: qData.o, sel: sel, cor: cor });
         if(sel === cor) { score++; btn.classList.add('correct'); }
         else { btn.classList.add('wrong'); btns[cor].classList.add('correct'); }
-        setTimeout(() => {
-            if(index < questions.length - 1) { index++; loadQ(); } else endQuiz();
-        }, 1000);
+        setTimeout(() => { if(index < questions.length - 1) { index++; loadQ(); } else endQuiz(); }, 1000);
     }
 
     function endQuiz() {
@@ -174,13 +169,16 @@
         if(score/questions.length >= 0.35) confetti();
     }
 
-    function startTimer(sec) {
-        timer = setInterval(() => {
-            let m = Math.floor(sec/60), s = sec%60;
-            document.getElementById('time-left').innerText = `${m}:${s<10?'0'+s:s}`;
-            if(--sec < 0) endQuiz();
-        }, 1000);
+    function shareScore() {
+        let msg = `🔥 I scored ${score}/${questions.length} in Railway Group D! Can you beat me?`;
+        window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
     }
-</script>
-</body>
-</html>
+
+    function showReview() {
+        document.getElementById('screen-result').classList.remove('active');
+        document.getElementById('screen-review').classList.add('active');
+        let list = document.getElementById('review-list');
+        list.innerHTML = "";
+        userAnswers.forEach((item, i) => {
+            let color = item.sel === item.cor ? "green" : "red";
+            let div = document
