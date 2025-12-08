@@ -2,7 +2,7 @@
 // Contains 100 ITI Electrician Questions in English, Hindi, and Marathi.
 
 const masterDB = {
-    railway: {
+    iti: {
         // ================= ENGLISH (100 Qs) =================
         en: [
             // --- BASICS (1-10) ---
@@ -690,7 +690,6 @@ const masterDB = {
         ]
     }
 };
-// CommonJS export (optional)
 if (typeof module !== "undefined" && module.exports) {
     module.exports = masterDB;
 }
