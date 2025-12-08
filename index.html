@@ -3,21 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hunar App - Exam Prep</title>
+    <title>Hunar - Professional Prep</title>
     <style>
         :root {
-            /* THEME: PROFESSIONAL EMERALD */
-            --primary: #0f766e;
-            --primary-dark: #115e59;
-            --bg-color: #f8fafc;
-            --white: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
+            /* CORPORATE EMERALD PALETTE */
+            --primary: #059669;       /* Richer Emerald */
+            --primary-dark: #047857;  /* Deep Green */
+            --primary-soft: #ecfdf5;  /* Very light green background */
+            
+            --bg-body: #f3f4f6;       /* Light Gray Body */
+            --surface: #ffffff;       /* Pure White Surface */
+            
+            --text-main: #111827;     /* Almost Black */
+            --text-muted: #6b7280;    /* Muted Gray */
+            
+            /* PREMIUM SHADOWS */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-float: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-color);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-body);
             margin: 0;
             display: flex;
             justify-content: center;
@@ -28,135 +36,157 @@
         .app-container {
             width: 100%;
             max-width: 480px;
-            background: var(--white);
+            background: var(--surface);
             min-height: 100vh;
-            box-shadow: 0 0 30px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
             position: relative;
+            box-shadow: var(--shadow-float); /* Deep shadow for the app container itself */
         }
 
-        /* --- MODERN HEADER WITH GLASS EFFECT --- */
+        /* --- HEADER SECTION --- */
         .header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--white);
-            padding: 30px 25px 40px;
-            border-bottom-left-radius: 35px;
-            border-bottom-right-radius: 35px;
+            background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: var(--surface);
+            padding: 40px 30px 50px; /* Generous padding */
+            border-bottom-left-radius: 32px;
+            border-bottom-right-radius: 32px;
             position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 25px -10px rgba(15, 118, 110, 0.6);
+            z-index: 10;
         }
 
-        /* Decorative circles in header */
-        .header::before {
-            content: ''; position: absolute; top: -20px; right: -20px;
-            width: 100px; height: 100px; background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-        }
-        .header::after {
-            content: ''; position: absolute; top: 40px; left: -30px;
-            width: 80px; height: 80px; background: rgba(255,255,255,0.05);
-            border-radius: 50%;
-        }
-
-        .header-top {
+        .brand-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            position: relative;
-            z-index: 2;
         }
 
-        .brand-logo {
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
+        .logo-area {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
         }
 
-        .lang-badge {
+        .lang-toggle {
             background: rgba(255, 255, 255, 0.2);
-            padding: 6px 14px;
+            backdrop-filter: blur(8px);
+            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
-            backdrop-filter: blur(5px);
             cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: background 0.2s;
         }
-        .lang-badge:active { background: rgba(255,255,255,0.3); }
+        .lang-toggle:active { background: rgba(255, 255, 255, 0.4); }
 
-        .header h2 { margin: 0; font-size: 28px; font-weight: 700; position: relative; z-index: 2; }
-        .header p { margin: 5px 0 0; font-size: 15px; opacity: 0.9; position: relative; z-index: 2; }
+        .header h2 { margin: 0; font-size: 32px; font-weight: 700; line-height: 1.2; }
+        .header p { margin: 8px 0 0; font-size: 16px; opacity: 0.9; font-weight: 400; }
 
-        /* --- CONTENT AREA --- */
-        .content { padding: 25px; flex-grow: 1; margin-top: -30px; position: relative; z-index: 5; }
+        /* --- MAIN CONTENT (No Overlap) --- */
+        .content {
+            padding: 30px;
+            flex-grow: 1;
+            /* No negative margins -> No overlapping issues */
+        }
 
-        .screen { display: none; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .screen { display: none; animation: fadeIn 0.4s ease-out; }
         .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .section-label {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            display: block;
         }
 
-        /* --- LANGUAGE GRID --- */
-        .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        /* --- BUTTONS & CARDS --- */
         
-        .lang-btn {
-            background: white;
-            border: 1px solid #e2e8f0;
-            padding: 18px;
+        /* Language Grid */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .btn-glass {
+            background: var(--surface);
+            border: 1px solid #e5e7eb;
+            padding: 20px;
             border-radius: 16px;
             text-align: center;
             font-size: 16px;
             font-weight: 600;
             color: var(--text-main);
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .lang-btn:active { transform: scale(0.96); border-color: var(--primary); background: #f0fdfa; }
 
-        /* --- COURSE CARDS --- */
+        /* Button Interaction */
+        .btn-glass:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-card);
+            transform: translateY(-2px); /* Subtle lift */
+        }
+        .btn-glass:active {
+            transform: translateY(0);
+            background: var(--primary-soft);
+            border-color: var(--primary);
+        }
+
+        /* Course Cards */
         .course-card {
-            background: white;
+            background: var(--surface);
             border-radius: 20px;
-            padding: 18px;
-            margin-bottom: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
+            justify-content: space-between; /* Pushes arrow to right */
+            border: 1px solid #f3f4f6;
+            box-shadow: var(--shadow-card);
             cursor: pointer;
-            border: 1px solid #f1f5f9;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        .course-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            border-color: #d1fae5;
+        }
+
         .course-card:active { transform: scale(0.98); }
 
-        .icon-box {
-            width: 50px; height: 50px; border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            margin-right: 15px; flex-shrink: 0;
-        }
-        
-        /* SVG Icon styling */
-        .icon-box svg { width: 24px; height: 24px; }
+        .card-left { display: flex; align-items: center; gap: 18px; }
 
-        .section-title {
-            font-size: 12px; font-weight: 700; text-transform: uppercase;
-            color: var(--text-sub); letter-spacing: 1px; margin-bottom: 15px; display: block;
+        .icon-circle {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
         }
+
+        .card-info strong { display: block; font-size: 17px; margin-bottom: 4px; color: var(--text-main); }
+        .card-info span { font-size: 13px; color: var(--text-muted); }
+
+        .arrow-icon { color: #d1d5db; transition: transform 0.2s; }
+        .course-card:hover .arrow-icon { color: var(--primary); transform: translateX(5px); }
 
         /* --- FOOTER --- */
         .footer {
-            text-align: center; padding: 20px;
-            color: #94a3b8; font-size: 12px;
-            border-top: 1px solid #f1f5f9;
+            padding: 25px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 12px;
+            border-top: 1px solid #f3f4f6;
+            margin-top: auto;
         }
     </style>
 </head>
@@ -165,69 +195,80 @@
 <div class="app-container">
     
     <div class="header">
-        <div class="header-top">
-            <div class="brand-logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10v6"/><path d="M20 20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12z"/><path d="M10 22v-8"/><path d="M14 22v-8"/><path d="M12 2v4"/></svg>
+        <div class="brand-row">
+            <div class="logo-area">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/></svg>
                 Hunar
             </div>
-            <div id="lbl-back" class="lang-badge" onclick="window.location.reload()" style="display:none;">Change Language</div>
+            <div id="lbl-back" class="lang-toggle" onclick="window.location.reload()" style="display:none;">Change Language</div>
         </div>
-        <h2 id="header-title">Welcome!</h2>
-        <p id="header-sub">Let's prepare for success.</p>
+        
+        <h2 id="header-title">Hello, Student!</h2>
+        <p id="header-sub">What would you like to learn today?</p>
     </div>
 
     <div class="content">
         
         <div id="screen-lang" class="screen active">
-            <span class="section-title">Select Language</span>
-            <div class="lang-grid">
-                <div class="lang-btn" onclick="setLang('en')">English</div>
-                <div class="lang-btn" onclick="setLang('hi')">हिंदी</div>
-                <div class="lang-btn" onclick="setLang('mr')">मराठी</div>
-                <div class="lang-btn" onclick="setLang('bn')">বাংলা</div>
-                <div class="lang-btn" onclick="setLang('ta')">தமிழ்</div>
-                <div class="lang-btn" onclick="setLang('te')">తెలుగు</div>
+            <span class="section-label">Select Your Language</span>
+            
+            <div class="grid-2">
+                <div class="btn-glass" onclick="setLang('en')">English</div>
+                <div class="btn-glass" onclick="setLang('hi')">हिंदी</div>
+                <div class="btn-glass" onclick="setLang('mr')">मराठी</div>
+                <div class="btn-glass" onclick="setLang('bn')">বাংলা</div>
+                <div class="btn-glass" onclick="setLang('ta')">தமிழ்</div>
+                <div class="btn-glass" onclick="setLang('te')">తెలుగు</div>
             </div>
         </div>
 
         <div id="screen-cat" class="screen">
-            <span class="section-title" id="lbl-courses">Available Courses</span>
+            <span class="section-label" id="lbl-courses">Available Courses</span>
 
             <div class="course-card" onclick="goToApp('iti.html')">
-                <div class="icon-box" style="background:#ccfbf1; color:#0f766e;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                <div class="card-left">
+                    <div class="icon-circle" style="background:#ecfdf5; color:#059669;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    </div>
+                    <div class="card-info">
+                        <strong id="lbl-iti">ITI Electrician</strong>
+                        <span>Theory • Safety • Tools</span>
+                    </div>
                 </div>
-                <div>
-                    <strong id="lbl-iti" style="font-size:16px;">ITI Electrician</strong><br>
-                    <span style="font-size:13px; color:#64748b;">Theory & Safety</span>
-                </div>
+                <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </div>
 
             <div class="course-card" onclick="goToApp('railwayd.html')">
-                <div class="icon-box" style="background:#fee2e2; color:#dc2626;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M12 3v16"/><path d="M8 19l-2 3"/><path d="M16 19l2 3"/><circle cx="8" cy="13" r="1"/><circle cx="16" cy="13" r="1"/></svg>
+                <div class="card-left">
+                    <div class="icon-circle" style="background:#fef2f2; color:#dc2626;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M12 3v16"/><path d="M8 19l-2 3"/><path d="M16 19l2 3"/><line x1="8" y1="13" x2="8.01" y2="13"/><line x1="16" y1="13" x2="16.01" y2="13"/></svg>
+                    </div>
+                    <div class="card-info">
+                        <strong id="lbl-rail">Railway Group D</strong>
+                        <span>Science • Math • GK</span>
+                    </div>
                 </div>
-                <div>
-                    <strong id="lbl-rail" style="font-size:16px;">Railway Group D</strong><br>
-                    <span style="font-size:13px; color:#64748b;">Science & Math</span>
-                </div>
+                <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </div>
 
             <div class="course-card" onclick="goToApp('policeconstable.html')">
-                <div class="icon-box" style="background:#fefce8; color:#854d0e;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div class="card-left">
+                    <div class="icon-circle" style="background:#fffbeb; color:#d97706;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <div class="card-info">
+                        <strong id="lbl-police">Police Constable</strong>
+                        <span>GK • Reasoning</span>
+                    </div>
                 </div>
-                <div>
-                    <strong id="lbl-police" style="font-size:16px;">Police Constable</strong><br>
-                    <span style="font-size:13px; color:#64748b;">GK & Reasoning</span>
-                </div>
+                <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </div>
         </div>
 
     </div>
 
     <div class="footer">
-        © 2024 Hunar App • Made with ❤️ in India
+        © 2024 Hunar App • Empowering Careers
     </div>
 </div>
 
@@ -236,12 +277,12 @@
 
     // UI TRANSLATION
     const uiText = {
-        en: { title: "Welcome!", sub: "Choose your Exam", courses: "Select Course", iti: "ITI Electrician", rail: "Railway Group D", police: "Police Constable", back: "Change Lang" },
-        hi: { title: "स्वागत है!", sub: "अपनी परीक्षा चुनें", courses: "कोर्स चुनें", iti: "ITI इलेक्ट्रीशियन", rail: "रेलवे ग्रुप डी", police: "पुलिस कांस्टेबल", back: "भाषा बदलें" },
-        mr: { title: "स्वागत आहे!", sub: "तुमची परीक्षा निवडा", courses: "अभ्यासक्रम निवडा", iti: "ITI इलेक्ट्रिशियन", rail: "रेल्वे ग्रुप डी", police: "पोलीस भरती", back: "भाषा बदला" },
-        ta: { title: "வரவேற்கிறோம்!", sub: "தேர்வைத் தேர்ந்தெடுக்கவும்", courses: "பாடநெறியைத் தேர்வுசெய்க", iti: "ஐடிஐ எலக்ட்ரீசியன்", rail: "ரயில்வே குரூப் டி", police: "போலீஸ் கான்ஸ்டபிள்", back: "மொழி மாற்றம்" },
-        te: { title: "స్వాగతం!", sub: "మీ పరీక్షను ఎంచుకోండి", courses: "కోర్సును ఎంచుకోండి", iti: "ITI ఎలక్ట్రీషియన్", rail: "రైల్వే గ్రూప్ D", police: "పోలీస్ కానిస్టేబుల్", back: "భాష మార్చండి" },
-        bn: { title: "স্বাগতম!", sub: "আপনার পরীক্ষা নির্বাচন করুন", courses: "কোর্স নির্বাচন করুন", iti: "আইটিআই ইলেকট্রিশিয়ান", rail: "রেলওয়ে গ্রুপ ডি", police: "পুলিশ কনস্টেবল", back: "ভাষা পরিবর্তন" }
+        en: { title: "Hello, Student!", sub: "What would you like to learn?", courses: "Select Course", iti: "ITI Electrician", rail: "Railway Group D", police: "Police Constable", back: "Change Lang" },
+        hi: { title: "नमस्ते छात्र!", sub: "आज आप क्या सीखना चाहेंगे?", courses: "कोर्स चुनें", iti: "ITI इलेक्ट्रीशियन", rail: "रेलवे ग्रुप डी", police: "पुलिस कांस्टेबल", back: "भाषा बदलें" },
+        mr: { title: "नमस्कार विद्यार्थी!", sub: "तुम्हाला काय शिकायला आवडेल?", courses: "अभ्यासक्रम निवडा", iti: "ITI इलेक्ट्रिशियन", rail: "रेल्वे ग्रुप डी", police: "पोलीस भरती", back: "भाषा बदला" },
+        ta: { title: "வணக்கம்!", sub: "இன்று என்ன படிக்க விரும்புகிறீர்கள்?", courses: "பாடநெறியைத் தேர்வுசெய்க", iti: "ஐடிஐ எலக்ட்ரீசியன்", rail: "ரயில்வே குரூப் டி", police: "போலீஸ் கான்ஸ்டபிள்", back: "மொழி மாற்றம்" },
+        te: { title: "హలో స్టూడెంట్!", sub: "మీరు ఈరోజు ఏమి నేర్చుకుంటారు?", courses: "కోర్సును ఎంచుకోండి", iti: "ITI ఎలక్ట్రీషియన్", rail: "రైల్వే గ్రూప్ D", police: "పోలీస్ కానిస్టేబుల్", back: "భాష మార్చండి" },
+        bn: { title: "হ্যালো ছাত্র!", sub: "আজ আপনি কি শিখতে চান?", courses: "কোর্স নির্বাচন করুন", iti: "আইটিআই ইলেকট্রিশিয়ান", rail: "রেলওয়ে গ্রুপ ডি", police: "পুলিশ কনস্টেবল", back: "ভাষা পরিবর্তন" }
     };
 
     function setLang(lang) {
