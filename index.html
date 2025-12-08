@@ -3,131 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hunar App</title>
+    <title>Hunar App - Exam Prep</title>
     <style>
         :root {
-            /* NEW THEME: PROFESSIONAL EMERALD */
-            --primary: #0f766e;       /* Deep Teal - Trustworthy & Educational */
-            --primary-light: #ccfbf1; /* Very light teal for backgrounds */
-            --primary-dark: #115e59;  /* Darker teal for gradients */
-            
-            --bg-color: #f1f5f9;      /* Slate Grey Background (Easier on eyes) */
+            /* PROFESSIONAL EMERALD THEME */
+            --primary: #0f766e;
+            --primary-dark: #115e59;
+            --bg-color: #f8fafc;
             --white: #ffffff;
-            
-            --text-main: #0f172a;     /* Dark Slate for text (Not pure black) */
-            --text-sub: #64748b;      /* Muted grey for subtitles */
-            
-            /* Professional Soft Shadows */
-            --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --text-main: #1e293b;
+            --text-sub: #64748b;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0; padding: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
             color: var(--text-main);
-            display: flex; justify-content: center;
         }
 
         .app-container {
-            width: 100%; max-width: 500px;
-            background: var(--bg-color); /* Matches body for seamless look */
+            width: 100%;
+            max-width: 480px;
+            background: var(--white);
             min-height: 100vh;
-            display: flex; flex-direction: column;
+            box-shadow: 0 0 25px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
             position: relative;
         }
 
-        /* HERO HEADER - THEME ANCHOR */
+        /* MODERN HEADER - No Overlap */
         .header {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-            color: white;
-            padding: 45px 25px 55px 25px;
-            text-align: left; /* Professional Alignment */
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
-            box-shadow: 0 4px 20px rgba(15, 118, 110, 0.25);
-            margin-bottom: -30px; /* Overlap effect */
-            position: relative;
-            z-index: 10;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            padding: 25px 25px 35px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 10px 20px -10px rgba(15, 118, 110, 0.5);
         }
-        .header h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.5px; }
-        .header p { margin: 6px 0 0; opacity: 0.85; font-size: 14px; font-weight: 400; }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .lang-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            font-size: 15px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
 
         /* CONTENT AREA */
-        .content { padding: 0 20px 30px 20px; flex-grow: 1; display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .content {
+            padding: 25px;
+            flex-grow: 1;
+        }
+
+        .screen { display: none; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .active { display: block; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        .section-title {
-            font-size: 13px; font-weight: 600; color: var(--text-sub);
-            text-transform: uppercase; letter-spacing: 1.2px;
-            margin: 40px 0 12px 5px; display: block;
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* LANGUAGE GRID */
-        .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
-        
-        .lang-card {
-            background: var(--white);
-            border: 1px solid white; /* Clean border */
-            border-radius: 12px; padding: 16px;
-            text-align: center; cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: var(--shadow-card);
+        .lang-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
-        .lang-card:hover {
+
+        .lang-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .lang-btn:active {
+            transform: scale(0.96);
             border-color: var(--primary);
-            background: var(--primary-light);
-            color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
+            background: #f0fdfa;
         }
-        .lang-card h3 { margin: 0 0 4px; font-size: 16px; font-weight: 600; }
-        .lang-card span { font-size: 12px; opacity: 0.7; }
 
-        /* EXAM CARDS - Consistent Professional Theme */
-        .exam-card {
-            display: flex; align-items: center;
-            background: var(--white);
-            border: 1px solid transparent;
-            border-radius: 16px; padding: 16px;
-            margin-bottom: 12px; cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: var(--shadow-card);
+        /* COURSE CARDS */
+        .course-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
         }
-        .exam-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--primary); /* Consistent Theme Color on Hover */
-        }
-        
-        /* Icons keep their identity colors, but muted */
+
+        .course-card:active { transform: scale(0.98); }
+
         .icon-box {
-            width: 48px; height: 48px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 24px; margin-right: 16px; flex-shrink: 0;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 15px;
         }
-        .icon-iti { background: #eff6ff; color: #2563eb; } /* Industrial Blue */
-        .icon-rail { background: #fef2f2; color: #dc2626; } /* Transport Red */
-        .icon-police { background: #fff7ed; color: #d97706; } /* Khaki Orange */
 
-        .card-text h3 { margin: 0 0 4px; font-size: 16px; font-weight: 700; color: var(--text-main); }
-        .card-text p { margin: 0; font-size: 13px; color: var(--text-sub); }
-        
-        /* Arrow uses theme color */
-        .arrow { margin-left: auto; color: var(--primary-dark); opacity: 0.3; font-weight: bold; font-size: 20px; transition: 0.2s; }
-        .exam-card:hover .arrow { opacity: 1; transform: translateX(3px); }
-
-        /* BACK BUTTON */
-        .back-btn {
-            background: none; border: none; color: var(--text-sub);
-            font-size: 14px; cursor: pointer; 
-            margin-top: 25px; display: block; width: 100%; text-align: center;
-            transition: 0.2s;
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-sub);
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: block;
         }
-        .back-btn:hover { color: var(--primary); text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -135,95 +160,91 @@
 <div class="app-container">
     
     <div class="header">
-        <h1>HUNAR</h1>
-        <p id="header-sub">Select Language / भाषा चुनें</p>
-    </div>
-
-    <div id="screen-lang" class="content active">
-        <div class="lang-grid">
-            <div class="lang-card" onclick="setLang('en')"><h3>English</h3><span>General</span></div>
-            <div class="lang-card" onclick="setLang('hi')"><h3>हिंदी</h3><span>Hindi</span></div>
-            <div class="lang-card" onclick="setLang('mr')"><h3>मराठी</h3><span>Marathi</span></div>
-            <div class="lang-card" onclick="setLang('ta')"><h3>தமிழ்</h3><span>Tamil</span></div>
-            <div class="lang-card" onclick="setLang('te')"><h3>తెలుగు</h3><span>Telugu</span></div>
-            <div class="lang-card" onclick="setLang('bn')"><h3>বাংলা</h3><span>Bengali</span></div>
+        <div class="header-top">
+            <span style="font-size:24px;">🎓</span>
+            <div id="lbl-back" class="lang-badge" onclick="window.location.reload()" style="display:none;">Change Language</div>
         </div>
+        <h1>Hunar App</h1>
+        <p id="header-sub">Prepare for your future</p>
     </div>
 
-    <div id="screen-cat" class="content">
-        <span class="section-title" id="lbl-courses">Available Courses</span>
+    <div class="content">
         
-        <div class="exam-card" onclick="goToApp('iti.html')">
-            <div class="icon-box icon-iti">⚡</div>
-            <div class="card-text">
-                <h3 id="lbl-iti">ITI Taiyaari</h3>
-                <p>Electrician & Fitter</p>
+        <div id="screen-lang" class="screen active">
+            <span class="section-title">Select Language</span>
+            <div class="lang-grid">
+                <div class="lang-btn" onclick="setLang('en')">English</div>
+                <div class="lang-btn" onclick="setLang('hi')">हिंदी</div>
+                <div class="lang-btn" onclick="setLang('mr')">मराठी</div>
+                <div class="lang-btn" onclick="setLang('bn')">বাংলা</div>
+                <div class="lang-btn" onclick="setLang('ta')">தமிழ்</div>
+                <div class="lang-btn" onclick="setLang('te')">తెలుగు</div>
             </div>
-            <div class="arrow">›</div>
         </div>
 
-        <div class="exam-card" onclick="goToApp('railwayd.html')">
-            <div class="icon-box icon-rail">🚂</div>
-            <div class="card-text">
-                <h3 id="lbl-rail">Railway Group D</h3>
-                <p>NTPC, ALP & GK</p>
+        <div id="screen-cat" class="screen">
+            <span class="section-title" id="lbl-courses">Available Courses</span>
+
+            <div class="course-card" onclick="goToApp('iti.html')">
+                <div class="icon-box" style="background:#ccfbf1; color:#0f766e;">⚡</div>
+                <div>
+                    <strong id="lbl-iti" style="font-size:16px;">ITI Electrician</strong><br>
+                    <span style="font-size:13px; color:#64748b;">Theory & Safety</span>
+                </div>
             </div>
-            <div class="arrow">›</div>
+
+            <div class="course-card" onclick="goToApp('railwayd.html')">
+                <div class="icon-box" style="background:#fee2e2; color:#dc2626;">🚂</div>
+                <div>
+                    <strong id="lbl-rail" style="font-size:16px;">Railway Group D</strong><br>
+                    <span style="font-size:13px; color:#64748b;">Science & Math</span>
+                </div>
+            </div>
+
+            <div class="course-card" onclick="goToApp('policeconstable.html')">
+                <div class="icon-box" style="background:#fefce8; color:#854d0e;">👮</div>
+                <div>
+                    <strong id="lbl-police" style="font-size:16px;">Police Constable</strong><br>
+                    <span style="font-size:13px; color:#64748b;">GK & Reasoning</span>
+                </div>
+            </div>
         </div>
 
-        <div class="exam-card" onclick="goToApp('policeconstable.html')">
-            <div class="icon-box icon-police">👮</div>
-            <div class="card-text">
-                <h3 id="lbl-police">Police Constable</h3>
-                <p>State Police Exams</p>
-            </div>
-            <div class="arrow">›</div>
-        </div>
-        
-        <button class="back-btn" id="lbl-back" onclick="location.reload()">← Change Language</button>
     </div>
-
 </div>
 
 <script>
     let selectedLang = 'en';
 
-    // TRANSLATION DICTIONARY (Updated with all languages)
     const uiText = {
-        en: { sub: "Select Your Exam", courses: "Select Course", iti: "ITI Taiyaari", rail: "Railway Group D", police: "Police Constable", back: "Change Language" },
-        
-        hi: { sub: "अपनी परीक्षा चुनें", courses: "कोर्स चुनें", iti: "आईटीआई तैयारी", rail: "रेलवे ग्रुप डी", police: "पुलिस कांस्टेबल", back: "भाषा बदलें" },
-        
-        mr: { sub: "परीक्षा निवडा", courses: "अभ्यासक्रम निवडा", iti: "आय.टी.आय. तयारी", rail: "रेल्वे ग्रुप डी", police: "पोलीस कॉन्स्टेबल", back: "भाषा बदला" },
-        
-        ta: { sub: "உங்கள் தேர்வை தேர்வு செய்யவும்", courses: "பாடநெறியைத் தேர்ந்தெடுக்கவும்", iti: "ஐடிஐ தயாரிப்பு", rail: "ரயில்வே குரூப் டி", police: "போலீஸ் கான்ஸ்டபிள்", back: "மொழியை மாற்றவும்" },
-        
-        te: { sub: "మీ పరీక్షను ఎంచుకోండి", courses: "కోర్సును ఎంచుకోండి", iti: "ITI తయారీ", rail: "రైల్వే గ్రూప్ D", police: "పోలీస్ కానిస్టేబుల్", back: "భాషను మార్చండి" },
-        
-        bn: { sub: "আপনার পরীক্ষা নির্বাচন করুন", courses: "কোর্স নির্বাচন করুন", iti: "আইটিআই প্রস্তুতি", rail: "রেলওয়ে গ্রুপ ডি", police: "পুলিশ কনস্টেবল", back: "ভাষা পরিবর্তন করুন" }
+        en: { sub: "Choose your Exam", courses: "Select Course", iti: "ITI Electrician", rail: "Railway Group D", police: "Police Constable", back: "Change Lang" },
+        hi: { sub: "अपनी परीक्षा चुनें", courses: "कोर्स चुनें", iti: "ITI इलेक्ट्रीशियन", rail: "रेलवे ग्रुप डी", police: "पुलिस कांस्टेबल", back: "भाषा बदलें" },
+        mr: { sub: "तुमची परीक्षा निवडा", courses: "अभ्यासक्रम निवडा", iti: "ITI इलेक्ट्रिशियन", rail: "रेल्वे ग्रुप डी", police: "पोलीस भरती", back: "भाषा बदला" },
+        ta: { sub: "உங்கள் தேர்வைத் தேர்ந்தெடுக்கவும்", courses: "பாடநெறியைத் தேர்ந்தெடுக்கவும்", iti: "ஐடிஐ எலக்ட்ரீசியன்", rail: "ரயில்வே குரூப் டி", police: "போலீஸ் கான்ஸ்டபிள்", back: "மொழி மாற்றம்" },
+        te: { sub: "మీ పరీక్షను ఎంచుకోండి", courses: "కోర్సును ఎంచుకోండి", iti: "ITI ఎలక్ట్రీషియన్", rail: "రైల్వే గ్రూప్ D", police: "పోలీస్ కానిస్టేబుల్", back: "భాష మార్చండి" },
+        bn: { sub: "আপনার পরীক্ষা নির্বাচন করুন", courses: "কোর্স নির্বাচন করুন", iti: "আইটিআই ইলেকট্রিশিয়ান", rail: "রেলওয়ে গ্রুপ ডি", police: "পুলিশ কনস্টেবল", back: "ভাষা পরিবর্তন" }
     };
 
     function setLang(lang) {
         selectedLang = lang;
         
-        // 1. Switch Screen Animation
+        // UI Transition
         document.getElementById('screen-lang').classList.remove('active');
         document.getElementById('screen-cat').classList.add('active');
+        document.getElementById('lbl-back').style.display = 'block';
         
-        // 2. Apply Translations
-        const text = uiText[lang] || uiText['en'];
-        
-        document.getElementById('header-sub').innerText = text.sub;
-        document.getElementById('lbl-courses').innerText = text.courses;
-        document.getElementById('lbl-iti').innerText = text.iti;
-        document.getElementById('lbl-rail').innerText = text.rail;
-        document.getElementById('lbl-police').innerText = text.police;
-        document.getElementById('lbl-back').innerText = text.back;
+        // Apply Text
+        const t = uiText[lang] || uiText['en'];
+        document.getElementById('header-sub').innerText = t.sub;
+        document.getElementById('lbl-courses').innerText = t.courses;
+        document.getElementById('lbl-iti').innerText = t.iti;
+        document.getElementById('lbl-rail').innerText = t.rail;
+        document.getElementById('lbl-police').innerText = t.police;
+        document.getElementById('lbl-back').innerText = t.back;
     }
 
-    function goToApp(filename) {
-        // Pass the language to the next page
-        window.location.href = filename + "?lang=" + selectedLang;
+    function goToApp(page) {
+        window.location.href = page + "?lang=" + selectedLang;
     }
 </script>
 
