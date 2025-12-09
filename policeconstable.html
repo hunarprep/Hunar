@@ -1,228 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Police Constable - Premium</title>
-    
-    <script src="policeconstablequestions.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Police Constable Quiz</title>
 
-    <style>
-        :root {
-            /* POLICE KHAKI/BROWN */
-            --primary: #854d0e; --primary-dark: #713f12; --primary-soft: #fefce8;
-            --bg-body: #f3f4f6; --surface: #ffffff; --text-main: #111827;
-        }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; display: flex; justify-content: center; }
-        .app-container { width: 100%; max-width: 480px; background: var(--surface); min-height: 100vh; display: flex; flex-direction: column; box-shadow: 0 0 25px rgba(0,0,0,0.05); }
+<style>
+/* SAME CLEAN UI AS ITI */
+:root{
+  --primary:#0f766e; --primary-light:#ccfbf1; --primary-dark:#115e59;
+  --bg-color:#f1f5f9; --white:#fff; --text-main:#0f172a; --text-sub:#64748b;
+}
+body{font-family:Segoe UI, Roboto, sans-serif;background:var(--bg-color);margin:0;display:flex;justify-content:center;color:var(--text-main)}
+.app-container{width:100%;max-width:500px;background:var(--white);min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,0.05);display:flex;flex-direction:column}
+.header{background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;padding:30px 20px 40px;border-bottom-left-radius:24px;border-bottom-right-radius:24px;position:relative;}
+.header a{color:#fff;text-decoration:none;opacity:.8;font-size:14px;position:absolute;top:20px;left:20px}
+.header h1{margin:15px 0 5px;font-size:24px;font-weight:700}
+.header p{margin:0;opacity:.9;font-size:14px}
 
-        /* HEADER */
-        .header {
-            background: linear-gradient(180deg, var(--primary-dark), var(--primary));
-            color: white; padding: 30px 25px 40px;
-            border-bottom-left-radius: 32px; border-bottom-right-radius: 32px;
-        }
-        .header-nav a { background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; text-decoration: none; color: white; font-size: 13px; font-weight: 600; backdrop-filter: blur(4px); }
-        .header h1 { margin: 20px 0 5px; font-size: 28px; }
+.screen{display:none;padding:25px;flex-grow:1}
+.active{display:block}
 
-        /* CONTENT */
-        .content { padding: 30px; flex-grow: 1; }
-        .screen { display: none; animation: fadeIn 0.3s ease-out; }
-        .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+.menu-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:20px;margin-bottom:15px;cursor:pointer;display:flex;align-items:center;transition:.2s}
+.menu-card:hover{border-color:var(--primary);background:var(--primary-light)}
 
-        /* CARDS & BUTTONS */
-        .menu-card { background: white; border: 1px solid #e5e7eb; border-radius: 20px; padding: 20px; margin-bottom: 16px; display: flex; align-items: center; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: transform 0.2s; }
-        .menu-card:active { transform: scale(0.98); background: var(--primary-soft); }
+.question-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:25px;margin-bottom:20px}
+.q-text{font-size:18px;font-weight:600;margin-bottom:20px}
 
-        .opt-btn { width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid #e5e7eb; background: white; border-radius: 16px; font-size: 16px; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.02); color: var(--text-main); cursor: pointer; }
-        .opt-btn.correct { background: #dcfce7; border-color: #22c55e; color: #14532d; }
-        .opt-btn.wrong { background: #fee2e2; border-color: #ef4444; color: #7f1d1d; }
+.opt-btn{display:block;width:100%;padding:15px;margin-bottom:10px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:12px;cursor:pointer}
+.opt-btn.correct{background:#dcfce7!important;border-color:#22c55e!important;color:#14532d!important}
+.opt-btn.wrong{background:#fee2e2!important;border-color:#ef4444!important;color:#7f1d1d!important}
 
-        .action-btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 600; font-size: 16px; margin-top: 10px; cursor: pointer; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-outline { background: white; border: 1px solid #d1d5db; color: var(--text-main); }
-    </style>
+.action-btn{background:var(--primary);color:#fff;border:none;padding:16px;width:100%;border-radius:12px;font-size:16px;margin-top:10px;cursor:pointer}
+.action-btn.secondary-btn{background:#64748b}
+.action-btn.review-btn{background:#3b82f6}
+.action-btn.share-btn{background:#25D366}
+
+#timer-box{text-align:right;font-size:18px;color:#dc2626;margin-bottom:10px}
+.review-item{border-bottom:1px solid #e2e8f0;padding:15px 0}
+.explanation{background:#ccfbf1;padding:8px;border-radius:8px;margin-top:5px;color:#115e59;font-size:13px}
+#loading-msg{text-align:center;color:#64748b;margin-top:20px}
+</style>
 </head>
 <body>
 
 <div class="app-container">
-    <div class="header">
-        <div class="header-nav"><a href="index.html" id="lbl-home">← Home</a></div>
-        <h1 id="lbl-title">Police Constable</h1>
-        <p>GK & Reasoning</p>
+  <div class="header">
+    <a href="index.html">← Home</a>
+    <h1>Police Constable</h1>
+    <p>GK • Reasoning • Math • Computer</p>
+  </div>
+
+  <div id="screen-modes" class="screen active">
+    <h3 style="color:#64748b;margin-bottom:20px;">Select Mode</h3>
+    <div id="loading-msg">Loading Question Bank...</div>
+
+    <div id="btn-practice" class="menu-card" style="opacity:.5;pointer-events:none">
+      <span style="font-size:24px;margin-right:15px">📝</span>
+      <div><b>Practice Mode</b><br><span style="font-size:13px;color:#64748b">Instant Answer</span></div>
     </div>
 
-    <div class="content">
-        <div id="screen-modes" class="screen active">
-            <h3 id="lbl-select" style="color:#6b7280; margin-bottom:20px; text-transform:uppercase; font-size:13px; letter-spacing:1px;">Select Mode</h3>
-            <div class="menu-card" onclick="startPractice()">
-                <div style="font-size:28px; margin-right:15px;">👮</div>
-                <div><strong id="lbl-prac">Practice Quiz</strong><br><span id="lbl-prac-sub" style="font-size:13px; color:#6b7280;">5 Random Questions</span></div>
-            </div>
-            <div class="menu-card" onclick="startExam()">
-                <div style="font-size:28px; margin-right:15px;">⏱️</div>
-                <div><strong id="lbl-test">Test Mode</strong><br><span id="lbl-test-sub" style="font-size:13px; color:#6b7280;">100 Questions • 90 Mins</span></div>
-            </div>
-        </div>
-
-        <div id="screen-quiz" class="screen">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px; color:#6b7280; font-weight:600;">
-                <span id="lbl-qnum">Question <span id="q-num">1</span></span>
-                <span id="timer-box" style="color:#ef4444; display:none;">⏱️ <span id="time-left">90:00</span></span>
-            </div>
-            <h2 id="q-text" style="font-size:19px; line-height:1.5; margin-bottom:25px;">Loading...</h2>
-            <div id="opts"></div>
-        </div>
-
-        <div id="screen-result" class="screen" style="text-align:center;">
-            <div style="font-size:60px; margin-bottom:10px;">🏆</div>
-            <h2 id="score-text" style="margin-bottom:5px;">Score: 0</h2>
-            <p id="result-msg" style="color:#6b7280; margin-bottom:30px;">Great Job!</p>
-            
-            <button class="action-btn btn-outline" onclick="showReview()">Review Answers</button>
-            <button class="action-btn btn-primary" onclick="shareScore()">Share on WhatsApp</button>
-            <button class="action-btn btn-outline" onclick="window.location.reload()" style="border:none; background:transparent; color:#6b7280;">Back to Menu</button>
-        </div>
-
-        <div id="screen-review" class="screen">
-            <h3 style="margin-bottom:20px;">Review Answers</h3>
-            <div id="review-list"></div>
-            <button class="action-btn btn-primary" onclick="closeReview()">Close Review</button>
-        </div>
+    <div id="btn-exam" class="menu-card" style="opacity:.5;pointer-events:none">
+      <span style="font-size:24px;margin-right:15px">⏱️</span>
+      <div><b>Exam Mode</b><br><span style="font-size:13px;color:#64748b">Timed Test</span></div>
     </div>
+  </div>
+
+  <div id="screen-quiz" class="screen">
+    <div id="timer-box">⏳ <span id="time-left">00:00</span></div>
+    <div class="question-card">
+      <div style="font-size:13px;color:#64748b;margin-bottom:10px;">Question <span id="q-num">1</span></div>
+      <div id="q-text" class="q-text">Loading...</div>
+      <div id="opts"></div>
+    </div>
+    <div id="feedback" style="text-align:center;margin-bottom:10px;font-size:16px;font-weight:600"></div>
+  </div>
+
+  <div id="screen-result" class="screen" style="text-align:center">
+    <h2>Score Card</h2>
+    <h1 id="score" style="font-size:48px;color:#0f766e">0/0</h1>
+    <p id="result-msg" style="color:#64748b;font-size:18px"></p>
+    <button class="action-btn review-btn" onclick="showReview()">Review Answers</button>
+    <button class="action-btn share-btn" onclick="shareScore()">Share Score</button>
+    <button class="action-btn secondary-btn" onclick="goToMenu()">Back to Menu</button>
+  </div>
+
+  <div id="screen-review" class="screen">
+    <h3>Review Answers</h3>
+    <div id="review-list" style="max-height:60vh;overflow-y:auto"></div>
+    <button class="action-btn secondary-btn" onclick="closeReview()">Close</button>
+  </div>
 </div>
 
 <script>
-    // 1. SETUP
-    const urlParams = new URLSearchParams(window.location.search);
-    const lang = urlParams.get('lang') || 'en';
+/* ======= GOOGLE SHEET CSV LINKS — REPLACE THESE ======= */
+const SHEET_URLS = {
+  en: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbss64i39-2Fs8rayRzELr42HkOLkVE73rwCg-h9mkHgj88DJzfPcoUBxwTcN9Vf9-Re_1IZgXeXXp/pub?gid=0&single=true&output=csv",
+  hi: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbss64i39-2Fs8rayRzELr42HkOLkVE73rwCg-h9mkHgj88DJzfPcoUBxwTcN9Vf9-Re_1IZgXeXXp/pub?gid=360464023&single=true&output=csv",
+  mr: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbss64i39-2Fs8rayRzELr42HkOLkVE73rwCg-h9mkHgj88DJzfPcoUBxwTcN9Vf9-Re_1IZgXeXXp/pub?gid=167861512&single=true&output=csv",
+  bn: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbss64i39-2Fs8rayRzELr42HkOLkVE73rwCg-h9mkHgj88DJzfPcoUBxwTcN9Vf9-Re_1IZgXeXXp/pub?gid=354284516&single=true&output=csv",
+  ta: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbss64i39-2Fs8rayRzELr42HkOLkVE73rwCg-h9mkHgj88DJzfPcoUBxwTcN9Vf9-Re_1IZgXeXXp/pub?gid=426655728&single=true&output=csv",
+  te: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbss64i39-2Fs8rayRzELr42HkOLkVE73rwCg-h9mkHgj88DJzfPcoUBxwTcN9Vf9-Re_1IZgXeXXp/pub?gid=777874548&single=true&output=csv"
+};
+/* ======================================================= */
 
-    // 2. TRANSLATIONS
-    const ui = {
-        en: { home:"← Home", title:"Police Constable", select:"Select Mode", prac:"Practice Quiz", pracSub:"5 Random Questions", test:"Test Mode", testSub:"100 Qs • 90 Mins", qNum:"Question" },
-        hi: { home:"← घर", title:"पुलिस कांस्टेबल", select:"मोड चुनें", prac:"अभ्यास क्विज़", pracSub:"5 यादृच्छिक प्रश्न", test:"परीक्षा मोड", testSub:"100 प्रश्न • 90 मिनट", qNum:"प्रश्न" },
-        mr: { home:"← मुख्यपृष्ठ", title:"पोलीस भरती", select:"मोड निवडा", prac:"सराव प्रश्नमंजुषा", pracSub:"5 प्रश्न", test:"परीक्षा मोड", testSub:"100 प्रश्न • 90 मिनिटे", qNum:"प्रश्न" },
-        bn: { home:"← বাড়ি", title:"পুলিশ কনস্টেবল", select:"মোড নির্বাচন", prac:"অনুশীলন কুইজ", pracSub:"৫টি প্রশ্ন", test:"টেস্ট মোড", testSub:"১০০টি প্রশ্ন • ৯০ মিনিট", qNum:"প্রশ্ন" },
-        ta: { home:"← முகப்பு", title:"போலீஸ் கான்ஸ்டபிள்", select:"முறை தேர்வு", prac:"பயிற்சி", pracSub:"5 கேள்விகள்", test:"தேர்வு", testSub:"100 கேள்விகள்", qNum:"கேள்வி" },
-        te: { home:"← హోమ్", title:"పోలీస్ కానిస్టేబుల్", select:"మోడ్ ఎంపిక", prac:"ప్రాక్టీస్", pracSub:"5 ప్రశ్నలు", test:"పరీక్ష", testSub:"100 ప్రశ్నలు", qNum:"ప్రశ్న" }
+const lang = new URLSearchParams(window.location.search).get("lang") || "en";
+let masterData = [], questions = [], userAnswers = [];
+let idx = 0, score = 0, timerInterval;
+
+function loadData(){
+  Papa.parse(SHEET_URLS[lang], {
+    download:true,
+    header:true,
+    skipEmptyLines:true,
+    complete: res => {
+      masterData = res.data.filter(r => r.q);
+      document.getElementById("loading-msg").style.display = "none";
+      enableMenus();
+    }
+  });
+}
+loadData();
+
+function enableMenus(){
+  document.getElementById("btn-practice").style.opacity = "1";
+  document.getElementById("btn-practice").style.pointerEvents = "auto";
+  document.getElementById("btn-exam").style.opacity = "1";
+  document.getElementById("btn-exam").style.pointerEvents = "auto";
+
+  document.getElementById("btn-practice").onclick = startPractice;
+  document.getElementById("btn-exam").onclick = startExam;
+}
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    let j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function startPractice(){
+  questions = shuffle([...masterData]).slice(0,5);
+  beginQuiz(false);
+}
+
+function startExam(){
+  questions = shuffle([...masterData]).slice(0,30);
+  beginQuiz(true);
+}
+
+function beginQuiz(timed){
+  idx=0; score=0; userAnswers=[];
+  document.getElementById("screen-modes").classList.remove("active");
+  document.getElementById("screen-result").classList.remove("active");
+  document.getElementById("screen-review").classList.remove("active");
+  document.getElementById("screen-quiz").classList.add("active");
+
+  document.getElementById("timer-box").style.display = timed ? "block" : "none";
+  if(timed) startTimer(600);
+
+  loadQ();
+}
+
+function loadQ(){
+  if(idx >= questions.length) return showResult();
+
+  let q = questions[idx];
+  document.getElementById("q-num").innerText = idx+1;
+  document.getElementById("q-text").innerText = q.q;
+
+  const opts = [q.o1, q.o2, q.o3, q.o4];
+  const correct = parseInt(q.a)-1;
+
+  let box = document.getElementById("opts");
+  box.innerHTML = "";
+
+  let btns = [];
+
+  opts.forEach((txt,i)=>{
+    let b=document.createElement("button");
+    b.className="opt-btn";
+    b.innerText = txt;
+
+    btns.push(b);
+
+    b.onclick = ()=>{
+      btns.forEach(bb=>bb.disabled=true);
+
+      userAnswers.push({ q:q.q, opts, sel:i, cor:correct, exp:q.explain });
+
+      if(i===correct){
+        b.classList.add("correct");
+        score++;
+        showFeedback("Correct","green");
+      } else {
+        b.classList.add("wrong");
+        btns[correct].classList.add("correct");
+        showFeedback("Wrong","red");
+      }
+
+      setTimeout(()=>{ idx++; loadQ(); },1000);
     };
 
-    window.onload = function() {
-        if(typeof masterDB === 'undefined') {
-            // DEBUGGING ALERT FOR YOU
-            alert("⚠️ Critical Error: 'policeconstablequestions.js' file not found.\nPlease ensure the file is named 'policeconstablequestions.js' in your folder!");
-        }
-        const t = ui[lang] || ui['en'];
-        document.getElementById('lbl-home').innerText = t.home;
-        document.getElementById('lbl-title').innerText = t.title;
-        document.getElementById('lbl-select').innerText = t.select;
-        document.getElementById('lbl-prac').innerText = t.prac;
-        document.getElementById('lbl-prac-sub').innerText = t.pracSub;
-        document.getElementById('lbl-test').innerText = t.test;
-        document.getElementById('lbl-test-sub').innerText = t.testSub;
-        document.getElementById('lbl-qnum').firstChild.nodeValue = t.qNum + " ";
-    };
+    box.appendChild(b);
+  });
+}
 
-    // 3. LOGIC
-    let questions = [], index = 0, score = 0, timer, userAnswers = [];
+function showFeedback(text,color){
+  let fb=document.getElementById("feedback");
+  fb.innerText=text;
+  fb.style.color=color;
+}
 
-    function startPractice() {
-        if(typeof masterDB === 'undefined') return alert("Database not found. Check filename.");
-        let all = masterDB.police[lang] || masterDB.police['en'];
-        questions = [...all].sort(()=>0.5-Math.random()).slice(0, 5);
-        startQuiz(false);
+function showResult(){
+  clearInterval(timerInterval);
+
+  document.getElementById("screen-quiz").classList.remove("active");
+  document.getElementById("screen-result").classList.add("active");
+
+  document.getElementById("score").innerText = score+"/"+questions.length;
+  let pct = Math.round(score/questions.length*100);
+
+  let msg = document.getElementById("result-msg");
+  if(pct>=80){
+    msg.innerText = "Excellent!";
+    msg.style.color="#16a34a";
+    confetti({particleCount:150, spread:70});
+  } else {
+    msg.innerText = "Keep Practicing!";
+    msg.style.color="#64748b";
+  }
+}
+
+function showReview(){
+  document.getElementById("screen-result").classList.remove("active");
+  document.getElementById("screen-review").classList.add("active");
+
+  let list=document.getElementById("review-list");
+  list.innerHTML="";
+
+  userAnswers.forEach((it,i)=>{
+    let div=document.createElement("div");
+    div.className="review-item";
+
+    div.innerHTML = `
+      <b>${i+1}. ${it.q}</b><br>
+      আপনার উত্তর: <b>${it.opts[it.sel]}</b><br>
+      সঠিক উত্তর: <b>${it.opts[it.cor]}</b>
+      ${it.exp ? `<div class="explanation">ব্যাখ্যা: ${it.exp}</div>` : ""}
+    `;
+
+    list.appendChild(div);
+  });
+}
+
+function closeReview(){
+  document.getElementById("screen-review").classList.remove("active");
+  document.getElementById("screen-result").classList.add("active");
+}
+
+function goToMenu(){
+  document.getElementById("screen-result").classList.remove("active");
+  document.getElementById("screen-modes").classList.add("active");
+}
+
+function shareScore(){
+  window.open("https://wa.me/?text=I scored "+score+"/"+questions.length+" in Police Constable Quiz!");
+}
+
+function startTimer(t){
+  function update(){
+    let m=("0"+Math.floor(t/60)).slice(-2);
+    let s=("0"+(t%60)).slice(-2);
+    document.getElementById("time-left").innerText=m+":"+s;
+  }
+  update();
+  timerInterval=setInterval(()=>{
+    t--;
+    update();
+    if(t<0){
+      clearInterval(timerInterval);
+      showResult();
     }
-
-    function startExam() {
-        if(typeof masterDB === 'undefined') return alert("Database not found.");
-        let all = masterDB.police[lang] || masterDB.police['en'];
-        questions = [...all].sort(()=>0.5-Math.random()).slice(0, 100);
-        startQuiz(true);
-    }
-
-    function startQuiz(isExam) {
-        index = 0; score = 0; userAnswers = [];
-        document.getElementById('screen-modes').classList.remove('active');
-        document.getElementById('screen-quiz').classList.add('active');
-        document.getElementById('timer-box').style.display = isExam ? "inline" : "none";
-        loadQ();
-        if(isExam) startTimer(90*60);
-    }
-
-    function loadQ() {
-        let q = questions[index];
-        document.getElementById('q-num').innerText = index + 1;
-        document.getElementById('q-text').innerText = q.q;
-        let div = document.getElementById('opts');
-        div.innerHTML = "";
-        q.o.forEach((opt, i) => {
-            let btn = document.createElement('button');
-            btn.className = 'opt-btn';
-            btn.innerText = opt;
-            btn.onclick = () => check(i, q.a, btn, q);
-            div.appendChild(btn);
-        });
-    }
-
-    function check(sel, cor, btn, qData) {
-        let btns = document.getElementsByClassName('opt-btn');
-        for(let b of btns) b.disabled = true;
-        
-        userAnswers.push({ q: qData.q, opts: qData.o, sel: sel, cor: cor });
-        
-        if(sel === cor) { score++; btn.classList.add('correct'); }
-        else { btn.classList.add('wrong'); btns[cor].classList.add('correct'); }
-
-        setTimeout(() => {
-            if(index < questions.length - 1) { index++; loadQ(); }
-            else endQuiz();
-        }, 1000);
-    }
-
-    function endQuiz() {
-        clearInterval(timer);
-        document.getElementById('screen-quiz').classList.remove('active');
-        document.getElementById('screen-result').classList.add('active');
-        document.getElementById('score-text').innerText = `Score: ${score} / ${questions.length}`;
-        if(score/questions.length >= 0.35) confetti();
-    }
-
-    function shareScore() {
-        let msg = `🔥 I scored ${score}/${questions.length} in Police Constable preparation! Can you beat me?`;
-        window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
-    }
-
-    function showReview() {
-        document.getElementById('screen-result').classList.remove('active');
-        document.getElementById('screen-review').classList.add('active');
-        let list = document.getElementById('review-list');
-        list.innerHTML = "";
-        userAnswers.forEach((item, i) => {
-            let color = item.sel === item.cor ? "green" : "red";
-            let div = document.createElement('div');
-            div.style.cssText = "border-bottom:1px solid #eee; padding:10px 0;";
-            div.innerHTML = `<div><strong>${i+1}. ${item.q}</strong></div>
-                             <div style="color:${color}; font-size:14px; margin-top:4px;">You: ${item.opts[item.sel]}</div>
-                             ${item.sel !== item.cor ? `<div style="color:green; font-size:14px;">Ans: ${item.opts[item.cor]}</div>` : ''}`;
-            list.appendChild(div);
-        });
-    }
-
-    function closeReview() {
-        document.getElementById('screen-review').classList.remove('active');
-        document.getElementById('screen-result').classList.add('active');
-    }
-
-    function startTimer(sec) {
-        timer = setInterval(() => {
-            let m = Math.floor(sec/60), s = sec%60;
-            document.getElementById('time-left').innerText = `${m}:${s<10?'0'+s:s}`;
-            if(--sec < 0) endQuiz();
-        }, 1000);
-    }
+  },1000);
+}
 </script>
+
 </body>
 </html>
