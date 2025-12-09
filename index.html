@@ -6,21 +6,45 @@
     <title>Hunar - Professional Prep</title>
     <style>
         :root {
-            /* CORPORATE EMERALD PALETTE */
-            --primary: #059669;       /* Richer Emerald */
-            --primary-dark: #047857;  /* Deep Green */
-            --primary-soft: #ecfdf5;  /* Very light green background */
+            /* --- LIGHT THEME (Default) --- */
+            --primary: #059669;       /* Emerald */
+            --primary-dark: #047857;
+            --primary-soft: #ecfdf5;
             
-            --bg-body: #f3f4f6;       /* Light Gray Body */
-            --surface: #ffffff;       /* Pure White Surface */
+            --bg-body: #f3f4f6;       /* Light Gray */
+            --surface: #ffffff;       /* White Cards */
             
-            --text-main: #111827;     /* Almost Black */
-            --text-muted: #6b7280;    /* Muted Gray */
+            --text-main: #111827;     /* Black-ish */
+            --text-muted: #6b7280;    /* Gray */
             
-            /* PREMIUM SHADOWS */
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-float: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-color: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            
+            /* Icon Specific Colors (Light Mode) */
+            --iti-bg: #ecfdf5; --iti-text: #059669;
+            --rail-bg: #fef2f2; --rail-text: #dc2626;
+            --pol-bg: #fffbeb; --pol-text: #d97706;
+        }
+
+        /* --- DARK THEME OVERRIDES --- */
+        [data-theme="dark"] {
+            --primary: #34d399;       /* Neon Teal */
+            --primary-dark: #064e3b;  /* Deep Green for Header */
+            --primary-soft: #134e4a;  /* Dark Teal Bg */
+            
+            --bg-body: #0f172a;       /* Deep Slate Body */
+            --surface: #1e293b;       /* Slate 800 Cards */
+            
+            --text-main: #f3f4f6;     /* White text */
+            --text-muted: #94a3b8;    /* Light Gray */
+            
+            --border-color: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+
+            /* Icon Specific Colors (Dark Mode) */
+            --iti-bg: #064e3b; --iti-text: #34d399;
+            --rail-bg: #450a0a; --rail-text: #f87171;
+            --pol-bg: #451a03; --pol-text: #fbbf24;
         }
 
         body {
@@ -30,6 +54,7 @@
             display: flex;
             justify-content: center;
             color: var(--text-main);
+            transition: background 0.3s ease; /* Smooth Theme Switch */
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -41,18 +66,20 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: var(--shadow-float); /* Deep shadow for the app container itself */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease;
         }
 
-        /* --- HEADER SECTION --- */
+        /* --- HEADER --- */
         .header {
-            background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 100%);
-            color: var(--surface);
-            padding: 40px 30px 50px; /* Generous padding */
+            background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 40px 30px 50px;
             border-bottom-left-radius: 32px;
             border-bottom-right-radius: 32px;
             position: relative;
             z-index: 10;
+            transition: background 0.3s;
         }
 
         .brand-row {
@@ -63,130 +90,112 @@
         }
 
         .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 26px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
+            display: flex; align-items: center; gap: 12px;
+            font-size: 26px; font-weight: 800; letter-spacing: -0.5px;
         }
 
-        .lang-toggle {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(8px);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: background 0.2s;
+        /* Dark Mode Toggle Button */
+        .theme-btn {
+            background: rgba(255,255,255,0.2);
+            border: none; cursor: pointer;
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: white;
+            transition: 0.2s; backdrop-filter: blur(5px);
         }
-        .lang-toggle:active { background: rgba(255, 255, 255, 0.4); }
+        .theme-btn:hover { background: rgba(255,255,255,0.3); transform: rotate(15deg); }
 
         .header h2 { margin: 0; font-size: 32px; font-weight: 700; line-height: 1.2; }
         .header p { margin: 8px 0 0; font-size: 16px; opacity: 0.9; font-weight: 400; }
 
-        /* --- MAIN CONTENT (No Overlap) --- */
-        .content {
-            padding: 30px;
-            flex-grow: 1;
-            /* No negative margins -> No overlapping issues */
-        }
+        /* --- CONTENT --- */
+        .content { padding: 30px; flex-grow: 1; position: relative; }
 
         .screen { display: none; animation: fadeIn 0.4s ease-out; }
         .active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .section-label {
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            display: block;
+            font-size: 13px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.2px;
+            color: var(--text-muted); margin-bottom: 20px; display: block;
         }
 
-        /* --- BUTTONS & CARDS --- */
-        
-        /* Language Grid */
+        /* --- LANGUAGE GRID --- */
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
         .btn-glass {
             background: var(--surface);
-            border: 1px solid #e5e7eb;
-            padding: 20px;
-            border-radius: 16px;
-            text-align: center;
-            font-size: 16px;
-            font-weight: 600;
+            border: 1px solid var(--border-color);
+            padding: 20px; border-radius: 16px;
+            text-align: center; font-size: 16px; font-weight: 600;
             color: var(--text-main);
-            box-shadow: var(--shadow-sm);
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease; cursor: pointer;
         }
-
-        /* Button Interaction */
         .btn-glass:hover {
             border-color: var(--primary);
-            box-shadow: var(--shadow-card);
-            transform: translateY(-2px); /* Subtle lift */
-        }
-        .btn-glass:active {
-            transform: translateY(0);
-            background: var(--primary-soft);
-            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        /* Course Cards */
+        /* --- COURSE CARDS --- */
         .course-card {
             background: var(--surface);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between; /* Pushes arrow to right */
-            border: 1px solid #f3f4f6;
-            box-shadow: var(--shadow-card);
-            cursor: pointer;
+            border-radius: 20px; padding: 20px; margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow); cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         .course-card:hover {
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             transform: translateY(-3px);
-            border-color: #d1fae5;
+            border-color: var(--primary);
         }
-
-        .course-card:active { transform: scale(0.98); }
 
         .card-left { display: flex; align-items: center; gap: 18px; }
 
         .icon-circle {
-            width: 52px; height: 52px;
-            border-radius: 14px;
+            width: 52px; height: 52px; border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 24px;
-            flex-shrink: 0;
+            font-size: 24px; flex-shrink: 0;
+            transition: background 0.3s, color 0.3s;
         }
+
+        /* Dynamic Colors via Variables */
+        .ico-iti { background: var(--iti-bg); color: var(--iti-text); }
+        .ico-rail { background: var(--rail-bg); color: var(--rail-text); }
+        .ico-pol { background: var(--pol-bg); color: var(--pol-text); }
 
         .card-info strong { display: block; font-size: 17px; margin-bottom: 4px; color: var(--text-main); }
         .card-info span { font-size: 13px; color: var(--text-muted); }
 
-        .arrow-icon { color: #d1d5db; transition: transform 0.2s; }
-        .course-card:hover .arrow-icon { color: var(--primary); transform: translateX(5px); }
+        .arrow-icon { color: var(--text-muted); transition: transform 0.2s; opacity: 0.5; }
+        .course-card:hover .arrow-icon { color: var(--primary); transform: translateX(5px); opacity: 1; }
+
+        /* --- LOADING OVERLAY --- */
+        #loader-screen {
+            display: none; text-align: center; padding-top: 50px;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary); border-radius: 50%;
+            animation: spin 1s linear infinite; margin: 0 auto 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- FOOTER --- */
         .footer {
-            padding: 25px;
-            text-align: center;
-            color: #9ca3af;
-            font-size: 12px;
-            border-top: 1px solid #f3f4f6;
-            margin-top: auto;
+            padding: 25px; text-align: center;
+            color: var(--text-muted); font-size: 12px;
+            border-top: 1px solid var(--border-color); margin-top: auto;
+        }
+        
+        .lang-change-btn {
+            display: none; width: 100%; text-align: center;
+            margin-top: 20px; color: var(--primary); 
+            background: none; border: none; font-weight: 600; cursor: pointer;
         }
     </style>
 </head>
@@ -200,7 +209,7 @@
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/></svg>
                 Hunar
             </div>
-            <div id="lbl-back" class="lang-toggle" onclick="window.location.reload()" style="display:none;">Change Language</div>
+            <button class="theme-btn" onclick="toggleTheme()">🌓</button>
         </div>
         
         <h2 id="header-title">Hello, Student!</h2>
@@ -213,13 +222,18 @@
             <span class="section-label">Select Your Language</span>
             
             <div class="grid-2">
-                <div class="btn-glass" onclick="setLang('en')">English</div>
-                <div class="btn-glass" onclick="setLang('hi')">हिंदी</div>
-                <div class="btn-glass" onclick="setLang('mr')">मराठी</div>
-                <div class="btn-glass" onclick="setLang('bn')">বাংলা</div>
-                <div class="btn-glass" onclick="setLang('ta')">தமிழ்</div>
-                <div class="btn-glass" onclick="setLang('te')">తెలుగు</div>
+                <div class="btn-glass" onclick="handleLangSelect('en')">English</div>
+                <div class="btn-glass" onclick="handleLangSelect('hi')">हिंदी</div>
+                <div class="btn-glass" onclick="handleLangSelect('mr')">मराठी</div>
+                <div class="btn-glass" onclick="handleLangSelect('bn')">বাংলা</div>
+                <div class="btn-glass" onclick="handleLangSelect('ta')">தமிழ்</div>
+                <div class="btn-glass" onclick="handleLangSelect('te')">తెలుగు</div>
             </div>
+        </div>
+
+        <div id="loader-screen" class="screen">
+            <div class="spinner"></div>
+            <p id="loading-text" style="color:var(--text-muted);">Setting up your experience...</p>
         </div>
 
         <div id="screen-cat" class="screen">
@@ -227,7 +241,7 @@
 
             <div class="course-card" onclick="goToApp('iti.html')">
                 <div class="card-left">
-                    <div class="icon-circle" style="background:#ecfdf5; color:#059669;">
+                    <div class="icon-circle ico-iti">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                     </div>
                     <div class="card-info">
@@ -240,7 +254,7 @@
 
             <div class="course-card" onclick="goToApp('railwayd.html')">
                 <div class="card-left">
-                    <div class="icon-circle" style="background:#fef2f2; color:#dc2626;">
+                    <div class="icon-circle ico-rail">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M12 3v16"/><path d="M8 19l-2 3"/><path d="M16 19l2 3"/><line x1="8" y1="13" x2="8.01" y2="13"/><line x1="16" y1="13" x2="16.01" y2="13"/></svg>
                     </div>
                     <div class="card-info">
@@ -253,7 +267,7 @@
 
             <div class="course-card" onclick="goToApp('policeconstable.html')">
                 <div class="card-left">
-                    <div class="icon-circle" style="background:#fffbeb; color:#d97706;">
+                    <div class="icon-circle ico-pol">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     </div>
                     <div class="card-info">
@@ -263,6 +277,8 @@
                 </div>
                 <svg class="arrow-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </div>
+
+            <button id="lbl-back" class="lang-change-btn" onclick="window.location.reload()">Change Language</button>
         </div>
 
     </div>
@@ -277,31 +293,61 @@
 
     // UI TRANSLATION
     const uiText = {
-        en: { title: "Hello, Student!", sub: "What would you like to learn?", courses: "Select Course", iti: "ITI Electrician", rail: "Railway Group D", police: "Police Constable", back: "Change Lang" },
-        hi: { title: "नमस्ते छात्र!", sub: "आज आप क्या सीखना चाहेंगे?", courses: "कोर्स चुनें", iti: "ITI इलेक्ट्रीशियन", rail: "रेलवे ग्रुप डी", police: "पुलिस कांस्टेबल", back: "भाषा बदलें" },
-        mr: { title: "नमस्कार विद्यार्थी!", sub: "तुम्हाला काय शिकायला आवडेल?", courses: "अभ्यासक्रम निवडा", iti: "ITI इलेक्ट्रिशियन", rail: "रेल्वे ग्रुप डी", police: "पोलीस भरती", back: "भाषा बदला" },
-        ta: { title: "வணக்கம்!", sub: "இன்று என்ன படிக்க விரும்புகிறீர்கள்?", courses: "பாடநெறியைத் தேர்வுசெய்க", iti: "ஐடிஐ எலக்ட்ரீசியன்", rail: "ரயில்வே குரூப் டி", police: "போலீஸ் கான்ஸ்டபிள்", back: "மொழி மாற்றம்" },
-        te: { title: "హలో స్టూడెంట్!", sub: "మీరు ఈరోజు ఏమి నేర్చుకుంటారు?", courses: "కోర్సును ఎంచుకోండి", iti: "ITI ఎలక్ట్రీషియన్", rail: "రైల్వే గ్రూప్ D", police: "పోలీస్ కానిస్టేబుల్", back: "భాష మార్చండి" },
-        bn: { title: "হ্যালো ছাত্র!", sub: "আজ আপনি কি শিখতে চান?", courses: "কোর্স নির্বাচন করুন", iti: "আইটিআই ইলেকট্রিশিয়ান", rail: "রেলওয়ে গ্রুপ ডি", police: "পুলিশ কনস্টেবল", back: "ভাষা পরিবর্তন" }
+        en: { title: "Hello, Student!", sub: "What would you like to learn?", courses: "Select Course", iti: "ITI Electrician", rail: "Railway Group D", police: "Police Constable", back: "← Change Language" },
+        hi: { title: "नमस्ते छात्र!", sub: "आज आप क्या सीखना चाहेंगे?", courses: "कोर्स चुनें", iti: "ITI इलेक्ट्रीशियन", rail: "रेलवे ग्रुप डी", police: "पुलिस कांस्टेबल", back: "← भाषा बदलें" },
+        mr: { title: "नमस्कार विद्यार्थी!", sub: "तुम्हाला काय शिकायला आवडेल?", courses: "अभ्यासक्रम निवडा", iti: "ITI इलेक्ट्रिशियन", rail: "रेल्वे ग्रुप डी", police: "पोलीस भरती", back: "← भाषा बदला" },
+        ta: { title: "வணக்கம்!", sub: "இன்று என்ன படிக்க விரும்புகிறீர்கள்?", courses: "பாடநெறியைத் தேர்வுசெய்க", iti: "ஐடிஐ எலக்ட்ரீசியன்", rail: "ரயில்வே குரூப் டி", police: "போலீஸ் கான்ஸ்டபிள்", back: "← மொழி மாற்றம்" },
+        te: { title: "హలో స్టూడెంట్!", sub: "మీరు ఈరోజు ఏమి నేర్చుకుంటారు?", courses: "కోర్సును ఎంచుకోండి", iti: "ITI ఎలక్ట్రీషియన్", rail: "రైల్వే గ్రూప్ D", police: "పోలీస్ కానిస్టేబుల్", back: "← భాష మార్చండి" },
+        bn: { title: "হ্যালো ছাত্র!", sub: "আজ আপনি কি শিখতে চান?", courses: "কোর্স নির্বাচন করুন", iti: "আইটিআই ইলেকট্রিশিয়ান", rail: "রেলওয়ে গ্রুপ ডি", police: "পুলিশ কনস্টেবল", back: "← ভাষা পরিবর্তন" }
     };
 
-    function setLang(lang) {
+    // --- 1. DARK MODE LOGIC ---
+    function toggleTheme() {
+        const body = document.body;
+        const isDark = body.getAttribute('data-theme') === 'dark';
+        
+        if (isDark) {
+            body.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    // Check saved theme on load
+    if(localStorage.getItem('theme') === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+    }
+
+    // --- 2. LOADING ANIMATION LOGIC ---
+    function handleLangSelect(lang) {
         selectedLang = lang;
         
-        // UI Transition
+        // Hide Language Screen
         document.getElementById('screen-lang').classList.remove('active');
-        document.getElementById('screen-cat').classList.add('active');
-        document.getElementById('lbl-back').style.display = 'block';
         
-        // Apply Text
+        // Show Loading Screen
+        document.getElementById('loader-screen').classList.add('active');
+        
+        // Update Text while loading
         const t = uiText[lang] || uiText['en'];
-        document.getElementById('header-title').innerText = t.title;
-        document.getElementById('header-sub').innerText = t.sub;
-        document.getElementById('lbl-courses').innerText = t.courses;
-        document.getElementById('lbl-iti').innerText = t.iti;
-        document.getElementById('lbl-rail').innerText = t.rail;
-        document.getElementById('lbl-police').innerText = t.police;
-        document.getElementById('lbl-back').innerText = t.back;
+        
+        // Simulate "App Setup" delay (800ms) for professional feel
+        setTimeout(() => {
+            document.getElementById('loader-screen').classList.remove('active');
+            document.getElementById('screen-cat').classList.add('active');
+            
+            // Apply Translations
+            document.getElementById('header-title').innerText = t.title;
+            document.getElementById('header-sub').innerText = t.sub;
+            document.getElementById('lbl-courses').innerText = t.courses;
+            document.getElementById('lbl-iti').innerText = t.iti;
+            document.getElementById('lbl-rail').innerText = t.rail;
+            document.getElementById('lbl-police').innerText = t.police;
+            document.getElementById('lbl-back').innerText = t.back;
+            document.getElementById('lbl-back').style.display = 'block';
+        }, 700);
     }
 
     function goToApp(page) {
