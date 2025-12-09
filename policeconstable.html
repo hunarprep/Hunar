@@ -9,40 +9,86 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
-/* SAME CLEAN UI AS ITI */
+/* --- 1. CSS VARIABLES WITH DARK MODE SUPPORT --- */
 :root{
-  --primary:#0f766e; --primary-light:#ccfbf1; --primary-dark:#115e59;
-  --bg-color:#f1f5f9; --white:#fff; --text-main:#0f172a; --text-sub:#64748b;
+  /* Light Theme (Default) */
+  --primary:#0f766e; 
+  --primary-light:#ccfbf1; 
+  --primary-dark:#115e59;
+  --bg-color:#f1f5f9; 
+  --white:#fff; 
+  --text-main:#0f172a; 
+  --text-sub:#64748b;
+  --shadow:0 4px 6px -1px rgba(0,0,0,0.1);
+  --btn-bg: #f8fafc;
+  --border: #e2e8f0;
 }
-body{font-family:Segoe UI, Roboto, sans-serif;background:var(--bg-color);margin:0;display:flex;justify-content:center;color:var(--text-main)}
-.app-container{width:100%;max-width:500px;background:var(--white);min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,0.05);display:flex;flex-direction:column}
-.header{background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;padding:30px 20px 40px;border-bottom-left-radius:24px;border-bottom-right-radius:24px;position:relative;}
-.header a{color:#fff;text-decoration:none;opacity:.8;font-size:14px;position:absolute;top:20px;left:20px}
+
+/* Dark Theme Overrides */
+[data-theme="dark"] {
+  --primary: #2dd4bf;       /* Brighter Teal */
+  --primary-light: #134e4a; /* Dark Teal BG */
+  --primary-dark: #064e3b;
+  --bg-color: #0f172a;      /* Dark Slate Body */
+  --white: #1e293b;         /* Slate 800 Cards */
+  --text-main: #f1f5f9;     /* White Text */
+  --text-sub: #94a3b8;      /* Light Gray */
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --btn-bg: #0f172a;        /* Dark Button Bg */
+  --border: #334155;
+}
+
+body{font-family:Segoe UI, Roboto, sans-serif;background:var(--bg-color);margin:0;display:flex;justify-content:center;color:var(--text-main);transition:background 0.3s, color 0.3s;}
+.app-container{width:100%;max-width:500px;background:var(--white);min-height:100vh;box-shadow:0 0 20px rgba(0,0,0,0.05);display:flex;flex-direction:column;transition:background 0.3s;}
+
+/* Header */
+.header{background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;padding:30px 20px 40px;border-bottom-left-radius:24px;border-bottom-right-radius:24px;position:relative;box-shadow:0 4px 15px rgba(15,118,110,0.2);}
+.header a{color:rgba(255,255,255,0.9);text-decoration:none;font-size:14px;position:absolute;top:20px;left:20px;font-weight:600;}
 .header h1{margin:15px 0 5px;font-size:24px;font-weight:700}
 .header p{margin:0;opacity:.9;font-size:14px}
 
-.screen{display:none;padding:25px;flex-grow:1}
+/* Dark Mode Button */
+.theme-btn {
+    position: absolute; top: 15px; right: 20px;
+    background: rgba(255,255,255,0.2); border: none; cursor: pointer;
+    width: 35px; height: 35px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: white; transition: 0.2s; backdrop-filter: blur(5px);
+}
+.theme-btn:hover { background: rgba(255,255,255,0.3); transform: rotate(15deg); }
+
+.screen{display:none;padding:25px;flex-grow:1;}
 .active{display:block}
 
-.menu-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:20px;margin-bottom:15px;cursor:pointer;display:flex;align-items:center;transition:.2s}
-.menu-card:hover{border-color:var(--primary);background:var(--primary-light)}
+/* Cards */
+.menu-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:15px;cursor:pointer;display:flex;align-items:center;transition:.2s;box-shadow:var(--shadow);}
+.menu-card:hover{border-color:var(--primary);background:var(--primary-light);color:var(--text-main);}
 
-.question-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:25px;margin-bottom:20px}
-.q-text{font-size:18px;font-weight:600;margin-bottom:20px}
+.question-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:25px;margin-bottom:20px;box-shadow:var(--shadow);}
+.q-text{font-size:18px;font-weight:600;margin-bottom:20px;color:var(--text-main);}
 
-.opt-btn{display:block;width:100%;padding:15px;margin-bottom:10px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:12px;cursor:pointer}
+/* Options */
+.opt-btn{display:block;width:100%;padding:15px;margin-bottom:10px;border:1px solid var(--border);background:var(--btn-bg);border-radius:12px;cursor:pointer;color:var(--text-main);transition:0.2s;}
+.opt-btn:hover{border-color:var(--primary);}
+
 .opt-btn.correct{background:#dcfce7!important;border-color:#22c55e!important;color:#14532d!important}
 .opt-btn.wrong{background:#fee2e2!important;border-color:#ef4444!important;color:#7f1d1d!important}
 
-.action-btn{background:var(--primary);color:#fff;border:none;padding:16px;width:100%;border-radius:12px;font-size:16px;margin-top:10px;cursor:pointer}
-.action-btn.secondary-btn{background:#64748b}
+/* Dark mode specific feedback colors for readability */
+[data-theme="dark"] .opt-btn.correct { background: #064e3b !important; color: #d1fae5 !important; border-color: #34d399 !important; }
+[data-theme="dark"] .opt-btn.wrong { background: #450a0a !important; color: #fecaca !important; border-color: #f87171 !important; }
+
+/* Buttons */
+.action-btn{background:var(--primary);color:#fff;border:none;padding:16px;width:100%;border-radius:12px;font-size:16px;margin-top:10px;cursor:pointer;transition:0.2s;}
+.action-btn:hover{opacity:0.9;}
+.action-btn.secondary-btn{background:var(--text-sub)}
 .action-btn.review-btn{background:#3b82f6}
 .action-btn.share-btn{background:#25D366}
 
 #timer-box{text-align:right;font-size:18px;color:#dc2626;margin-bottom:10px}
-.review-item{border-bottom:1px solid #e2e8f0;padding:15px 0}
-.explanation{background:#ccfbf1;padding:8px;border-radius:8px;margin-top:5px;color:#115e59;font-size:13px}
-#loading-msg{text-align:center;color:#64748b;margin-top:20px}
+.review-item{border-bottom:1px solid var(--border);padding:15px 0}
+.explanation{background:var(--primary-light);padding:10px;border-radius:8px;margin-top:5px;color:var(--primary-dark);font-size:13px}
+#loading-msg{text-align:center;color:var(--text-sub);margin-top:20px}
 </style>
 </head>
 <body>
@@ -50,29 +96,31 @@ body{font-family:Segoe UI, Roboto, sans-serif;background:var(--bg-color);margin:
 <div class="app-container">
   <div class="header">
     <a href="index.html">← Home</a>
+    <button class="theme-btn" onclick="toggleTheme()">🌓</button>
+    
     <h1>Police Constable</h1>
     <p>GK • Reasoning • Math • Computer</p>
   </div>
 
   <div id="screen-modes" class="screen active">
-    <h3 style="color:#64748b;margin-bottom:20px;">Select Mode</h3>
+    <h3 style="color:var(--text-sub);margin-bottom:20px;">Select Mode</h3>
     <div id="loading-msg">Loading Question Bank...</div>
 
     <div id="btn-practice" class="menu-card" style="opacity:.5;pointer-events:none">
       <span style="font-size:24px;margin-right:15px">📝</span>
-      <div><b>Practice Mode</b><br><span style="font-size:13px;color:#64748b">Instant Answer</span></div>
+      <div><b>Practice Mode</b><br><span style="font-size:13px;color:var(--text-sub)">Instant Answer</span></div>
     </div>
 
     <div id="btn-exam" class="menu-card" style="opacity:.5;pointer-events:none">
       <span style="font-size:24px;margin-right:15px">⏱️</span>
-      <div><b>Exam Mode</b><br><span style="font-size:13px;color:#64748b">Timed Test</span></div>
+      <div><b>Exam Mode</b><br><span style="font-size:13px;color:var(--text-sub)">Timed Test</span></div>
     </div>
   </div>
 
   <div id="screen-quiz" class="screen">
     <div id="timer-box">⏳ <span id="time-left">00:00</span></div>
     <div class="question-card">
-      <div style="font-size:13px;color:#64748b;margin-bottom:10px;">Question <span id="q-num">1</span></div>
+      <div style="font-size:13px;color:var(--text-sub);margin-bottom:10px;">Question <span id="q-num">1</span></div>
       <div id="q-text" class="q-text">Loading...</div>
       <div id="opts"></div>
     </div>
@@ -81,8 +129,8 @@ body{font-family:Segoe UI, Roboto, sans-serif;background:var(--bg-color);margin:
 
   <div id="screen-result" class="screen" style="text-align:center">
     <h2>Score Card</h2>
-    <h1 id="score" style="font-size:48px;color:#0f766e">0/0</h1>
-    <p id="result-msg" style="color:#64748b;font-size:18px"></p>
+    <h1 id="score" style="font-size:48px;color:var(--primary)">0/0</h1>
+    <p id="result-msg" style="color:var(--text-sub);font-size:18px"></p>
     <button class="action-btn review-btn" onclick="showReview()">Review Answers</button>
     <button class="action-btn share-btn" onclick="shareScore()">Share Score</button>
     <button class="action-btn secondary-btn" onclick="goToMenu()">Back to Menu</button>
@@ -96,7 +144,7 @@ body{font-family:Segoe UI, Roboto, sans-serif;background:var(--bg-color);margin:
 </div>
 
 <script>
-/* ======= GOOGLE SHEET CSV LINKS — REPLACE THESE ======= */
+/* ======= GOOGLE SHEET CSV LINKS ======= */
 const SHEET_URLS = {
   en: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbss64i39-2Fs8rayRzELr42HkOLkVE73rwCg-h9mkHgj88DJzfPcoUBxwTcN9Vf9-Re_1IZgXeXXp/pub?gid=0&single=true&output=csv",
   hi: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbss64i39-2Fs8rayRzELr42HkOLkVE73rwCg-h9mkHgj88DJzfPcoUBxwTcN9Vf9-Re_1IZgXeXXp/pub?gid=360464023&single=true&output=csv",
@@ -105,11 +153,26 @@ const SHEET_URLS = {
   ta: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbss64i39-2Fs8rayRzELr42HkOLkVE73rwCg-h9mkHgj88DJzfPcoUBxwTcN9Vf9-Re_1IZgXeXXp/pub?gid=426655728&single=true&output=csv",
   te: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbss64i39-2Fs8rayRzELr42HkOLkVE73rwCg-h9mkHgj88DJzfPcoUBxwTcN9Vf9-Re_1IZgXeXXp/pub?gid=777874548&single=true&output=csv"
 };
-/* ======================================================= */
+/* ======================================= */
 
 const lang = new URLSearchParams(window.location.search).get("lang") || "en";
 let masterData = [], questions = [], userAnswers = [];
 let idx = 0, score = 0, timerInterval;
+
+// --- 3. DARK MODE JS LOGIC ---
+function toggleTheme() {
+    const body = document.body;
+    const isDark = body.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+        body.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+    } else {
+        body.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+    }
+}
+// Apply on load
+if(localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
 
 function loadData(){
   Papa.parse(SHEET_URLS[lang], {
@@ -178,6 +241,7 @@ function loadQ(){
 
   let box = document.getElementById("opts");
   box.innerHTML = "";
+  document.getElementById("feedback").innerText = ""; // Clear feedback
 
   let btns = [];
 
@@ -213,7 +277,9 @@ function loadQ(){
 function showFeedback(text,color){
   let fb=document.getElementById("feedback");
   fb.innerText=text;
-  fb.style.color=color;
+  // In dark mode we might want lighter text, but direct colors work ok here
+  fb.style.color = (document.body.getAttribute('data-theme') === 'dark' && color === 'green') ? '#34d399' : color;
+  if(color === 'red' && document.body.getAttribute('data-theme') === 'dark') fb.style.color = '#f87171';
 }
 
 function showResult(){
@@ -228,11 +294,11 @@ function showResult(){
   let msg = document.getElementById("result-msg");
   if(pct>=80){
     msg.innerText = "Excellent!";
-    msg.style.color="#16a34a";
+    msg.style.color="var(--primary)";
     confetti({particleCount:150, spread:70});
   } else {
     msg.innerText = "Keep Practicing!";
-    msg.style.color="#64748b";
+    msg.style.color="var(--text-sub)";
   }
 }
 
@@ -247,11 +313,14 @@ function showReview(){
     let div=document.createElement("div");
     div.className="review-item";
 
+    // Dynamic Success/Fail Icons
+    let statusIcon = (it.sel === it.cor) ? "✅" : "❌";
+
     div.innerHTML = `
       <b>${i+1}. ${it.q}</b><br>
-      আপনার উত্তর: <b>${it.opts[it.sel]}</b><br>
-      সঠিক উত্তর: <b>${it.opts[it.cor]}</b>
-      ${it.exp ? `<div class="explanation">ব্যাখ্যা: ${it.exp}</div>` : ""}
+      Your Answer: <b>${it.opts[it.sel]}</b> ${statusIcon}<br>
+      ${it.sel !== it.cor ? `<div style="color:var(--primary); font-weight:bold; margin-top:4px;">Correct: ${it.opts[it.cor]}</div>` : ""}
+      ${it.exp ? `<div class="explanation">💡 ${it.exp}</div>` : ""}
     `;
 
     list.appendChild(div);
@@ -269,7 +338,7 @@ function goToMenu(){
 }
 
 function shareScore(){
-  window.open("https://wa.me/?text=I scored "+score+"/"+questions.length+" in Police Constable Quiz!");
+  window.open("https://wa.me/?text="+encodeURIComponent("I scored "+score+"/"+questions.length+" in Police Constable Quiz! Try it here."));
 }
 
 function startTimer(t){
